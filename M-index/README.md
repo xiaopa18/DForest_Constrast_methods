@@ -1,0 +1,16 @@
+## M-index
+
+Pretreatment Pivots: `[dataid] [pivotNumber] `
+
+Example: `./hfi.exe audio 5 `
+
+Usage:` [dataid] [queryid] [pivotNumber] [blockSize] [r_num] [r1] [r2] ... [r_rnum] [knum] [k1] [k2]...[k_knum]`
+Example: `./main.exe audio uniform1000 5 4096 5 33055 39128 42210 44364 46798 5 10 20 30 40 50`
+
+- dataid: the id of dataset
+- queryid: query distribution + the number of query point
+- pivotNumber: the number of pivots
+- blockSize: the size of block that stores the node of B+-Tree and the unit of size is KB
+- r num: the number of r for Range query
+- k num: the number of r for KNN query
+

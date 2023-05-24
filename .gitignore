@@ -1,0 +1,10 @@
+*.o
+*.swp
+*.pyc
+*.exe
+*.csv
+*.txt
+.idea/*
+model_*
+model
+index_*
