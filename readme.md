@@ -9,7 +9,7 @@ p_{n1},p_{n2},p_{n3},\cdots,p_{nd}\\
 $$
 
 
-We are using Python 3.10 to run our Python code, and we need to have the `scikit-learn` package installed. We are using ` CodeBlocks 20.04 or makefile with GCC 8.1.0` to compile our C++ code, with the following compilation parameters: `-O3 -Wall -ffast-math`.
+We are using ` CodeBlocks 20.04 or makefile with GCC 8.1.0` to compile those C++ code, with the following compilation parameters: `-O3 -Wall -ffast-math`.
 
 - Original link ：
 - BB-Tree：https://hu.berlin/bbtree
