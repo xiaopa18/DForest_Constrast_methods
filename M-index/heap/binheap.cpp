@@ -225,7 +225,7 @@ void BinHeap::adjust_upward(BinHeapEntry *_he)
 
 	while (he->parent)
 	{
-		int rslt = compare(he->parent->data, he->data);
+		long long rslt = compare(he->parent->data, he->data);
 		
 		if (rslt == 1)
 		{
@@ -266,7 +266,7 @@ void BinHeap::adjust_downward()
 	{
 		if (!he->rightchild)
 		{
-			int rslt = compare(he->data, he->leftchild->data);
+			long long rslt = compare(he->data, he->leftchild->data);
 			if (rslt == 1)
 			{
 				swap_data(he, he->leftchild);
@@ -277,14 +277,14 @@ void BinHeap::adjust_downward()
 		}
 		else
 		{
-			int rslt1 = compare(he->data, he->leftchild->data);
-			int rslt2 = compare(he->data, he->rightchild->data);
+			long long rslt1 = compare(he->data, he->leftchild->data);
+			long long rslt2 = compare(he->data, he->rightchild->data);
 
 			if (rslt1 != 1 && rslt2 != 1)
 				break;
 			else
 			{
-				int rslt3 = compare(he->leftchild->data, he->rightchild->data);
+				long long rslt3 = compare(he->leftchild->data, he->rightchild->data);
 				if (rslt3 == -1)
 				{
 					swap_data(he, he->leftchild);

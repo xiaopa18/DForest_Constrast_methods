@@ -1,5 +1,5 @@
 SOURCES=$(shell find . -name "*.cpp")
-CXXFLAGS= -O3 -Wall -ffast-math
+CXXFLAGS= -O3 -Wall -ffast-math -std=c++14
 OBJECTS=$(SOURCES:%.cpp=%.o)
 TARGET=main
 
@@ -7,7 +7,7 @@ TARGET=main
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LINK.cpp) $^ -lpsapi $(LOADLIBES) $(LDLIBS) -o $@
+	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 .PHONY: clean
 clean:

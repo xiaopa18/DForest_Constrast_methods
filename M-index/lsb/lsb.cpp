@@ -48,7 +48,7 @@ LSB::~LSB()
 
 	if (trees)
 	{
-		for (int i = 0; i < L; i ++)
+		for (long long i = 0; i < L; i ++)
 		{
 			trees[i]->close();
 			delete trees[i];
@@ -71,14 +71,14 @@ z2		as above
 the level
 *****************************************************************/
 
-int LSB::getLowestCommonLevel(int *_z1, int *_z2)
+long long LSB::getLowestCommonLevel(long long *_z1, long long *_z2)
 {
-	int ret		= 0;
+	long long ret		= 0;
 	
-	int	c		= -1;
-	int	i		= -1;
-	int	j		= -1;
-	int	mask	= -1;
+	long long	c		= -1;
+	long long	i		= -1;
+	long long	j		= -1;
+	long long	mask	= -1;
 
 	c = u * m;
 
@@ -121,9 +121,9 @@ d	 dimensionality
 m
 *****************************************************************/
 
-int LSB::get_m(int _r, float _w, int _n, int _B, int _d)
+long long LSB::get_m(long long _r, float _w, long long _n, long long _B, long long _d)
 {
-	int				ret = -1; 
+	long long				ret = -1; 
 
 	const double	PI	= 3.14159265;
 	double			p2	= 1;
@@ -131,7 +131,7 @@ int LSB::get_m(int _r, float _w, int _n, int _B, int _d)
 	p2 -= 2 * normal_cdf(-_w/_r, (float) 0.001);
 	p2 -= (2 * _r / (sqrt(2*PI) * _w)) * (1 - exp(-_w*_w / (2*_r*_r)));
 
-	ret = (int) ceil( log( ((double) _n) * _d/_B) / log(1.0/p2));
+	ret = (long long) ceil( log( ((double) _n) * _d/_B) / log(1.0/p2));
 
 	return ret;
 }
@@ -152,7 +152,7 @@ distributions" by mayur datar et al. in scg 04.
 rho
 *****************************************************************/
 
-double LSB::get_rho(int _r, float _w)
+double LSB::get_rho(long long _r, float _w)
 {
 	double ret = -1;
 
@@ -185,7 +185,7 @@ L		number of lsb-trees (set it to 0 if you want to build a
 ratio	approximation ratio
 *****************************************************************/
 
-void LSB::init(int _t, int _d, int _n, int _B, int _L, int _ratio)
+void LSB::init(long long _t, long long _d, long long _n, long long _B, long long _L, long long _ratio)
 {
 	t		= _t;
 	d		= _d;
@@ -194,10 +194,10 @@ void LSB::init(int _t, int _d, int _n, int _B, int _L, int _ratio)
 	ratio	= _ratio;
 
 	w		= 4; 
-	f		= (int) ceil( log((double) d)/log(2.0) + log((double) t)/log(2.0) );
+	f		= (long long) ceil( log((double) d)/log(2.0) + log((double) t)/log(2.0) );
 	m		= get_m(ratio, w, n, B, d);
 
-	L	= (int) ceil( pow( (float) n*d/B, (float) 1/ratio) );								
+	L	= (long long) ceil( pow( (float) n*d/B, (float) 1/ratio) );								
 	if (_L > 0 && _L < L)
 		L = _L;
 	
@@ -207,7 +207,7 @@ void LSB::init(int _t, int _d, int _n, int _B, int _L, int _ratio)
 	if (u > 30)
 		error("u too large\n", true);
 
-	pz		= (int) ceil( ((double) (u * m)) / 31 );
+	pz		= (long long) ceil( ((double) (u * m)) / 31 );
 
 	U = (1 << u) * w;
 
@@ -232,16 +232,16 @@ fname		full path of the para file
 1		failure
 *****************************************************************/
 
-int LSB::readParaFile(char *_fname)
+long long LSB::readParaFile(char *_fname)
 {
-	int		ret		= 0;
+	long long		ret		= 0;
 
 	FILE	*fp		= NULL;
-	int		acnt	= 0;
-	int		bcnt	= 0;
-	int		i		= -1;
-	int		j		= -1;
-	int		k		= -1;		
+	long long		acnt	= 0;
+	long long		bcnt	= 0;
+	long long		i		= -1;
+	long long		j		= -1;
+	long long		k		= -1;		
 	
 	fp = fopen(_fname, "r");
 
@@ -264,7 +264,7 @@ int LSB::readParaFile(char *_fname)
 	fscanf(fp, "l = %d\n", &L);
 
 	w	= 4;
-	f	= (int) ceil( log((double) d)/log(2.0) + log((double) t)/log(2.0) );
+	f	= (long long) ceil( log((double) d)/log(2.0) + log((double) t)/log(2.0) );
 
 	m = get_m(ratio, w, n, B, d);
 
@@ -297,7 +297,7 @@ int LSB::readParaFile(char *_fname)
 
 	u = get_u();
 
-	pz = (int) ceil( ((double) (u * m)) / 31 );
+	pz = (long long) ceil( ((double) (u * m)) / 31 );
 
 	U = (1 << u) * w;
 
@@ -320,13 +320,13 @@ paramath		The full path of the parameter file
 1		failure
 *****************************************************************/
 
-int LSB::restore(char *_paraPath)
+long long LSB::restore(char *_paraPath)
 {
-	int		ret			= 0;
+	long long		ret			= 0;
 
 	char	fname[100];
-	int		i			= -1;
-	int		len			= -1;
+	long long		i			= -1;
+	long long		len			= -1;
 
 	strcpy(forestPath, _paraPath);
 
@@ -365,7 +365,7 @@ i		which tree it is, from 0 to L- 1
 fname	(out) the file name 
 *****************************************************************/
 
-void LSB::getTreeFname(int _i, char *_fname)
+void LSB::getTreeFname(long long _i, char *_fname)
 {
 	char c[100];
 
@@ -390,15 +390,15 @@ forestPath		the folder containing the forest
 all tree parameters properly set.
 *****************************************************************/
 
-int LSB::buildFromFile(char *_dsPath, char *_forestPath)
+long long LSB::buildFromFile(char *_dsPath, char *_forestPath)
 {
-	int		ret			= 0;
+	long long		ret			= 0;
 
 	char	fname[100];
-	int		cnt			= -1;
-	int		i			= -1;
-	int		* key		= NULL;
-	int		son			= -1;
+	long long		cnt			= -1;
+	long long		i			= -1;
+	long long		* key		= NULL;
+	long long		son			= -1;
 	FILE	* fp		= NULL;
 	
 	fp = fopen(_dsPath, "r");
@@ -429,7 +429,7 @@ int LSB::buildFromFile(char *_dsPath, char *_forestPath)
 		goto recycle;
 	}
 
-	key = new int[d];
+	key = new long long[d];
 	trees = new LSBtreePtr[L];
 
 	for (i = 0; i < L; i ++)
@@ -521,18 +521,18 @@ forestPath	folder of the forest
 all tree parameters properly set.
 *****************************************************************/
 
-int LSB::bulkload(char *_dsPath, char *_forestPath)
+long long LSB::bulkload(char *_dsPath, char *_forestPath)
 {
-	int				ret			= 0;
+	long long				ret			= 0;
 
 	char			c;
 	char			fname[100];
 	FILE			* fp		= NULL;
-	int				cnt			= -1;
-	int				* ds		= NULL;		/* dataset sorted by id */
-	int				i			= -1;
-	int				j			= -1;
-	int				memSize		= -1;
+	long long				cnt			= -1;
+	long long				* ds		= NULL;		/* dataset sorted by id */
+	long long				i			= -1;
+	long long				j			= -1;
+	long long				memSize		= -1;
 	float			* g			= NULL;
 	LSBqsortElem	* dsz		= NULL;		/* dataset sorted by z-value */
 
@@ -577,7 +577,7 @@ int LSB::bulkload(char *_dsPath, char *_forestPath)
 		goto recycle;
 	}
 
-	ds = new int[n * (d + 1)];
+	ds = new long long[n * (d + 1)];
 
 	fp = fopen(dsPath, "r");
 
@@ -613,7 +613,7 @@ int LSB::bulkload(char *_dsPath, char *_forestPath)
 		dsz[i].ds	= ds;
 		dsz[i].pos	= i;
 		dsz[i].pz	= pz;
-		dsz[i].z	= new int[pz];
+		dsz[i].z	= new long long[pz];
 	}
 		
 	for (i = 0; i < L; i ++)
@@ -699,9 +699,9 @@ son		(out) pt id
 key		pt coordinates 
 *****************************************************************/
 
-void LSB::freadNextEntry(FILE *_fp, int * _son, int * _key)
+void LSB::freadNextEntry(FILE *_fp, long long * _son, long long * _key)
 {
-	int		 i;
+	long long		 i;
 
 	fscanf(_fp, "%d", _son);
 
@@ -720,9 +720,9 @@ key			raw coordinates
 g			(out) the returned hash vector
 *****************************************************************/
 
-void LSB::getHashVector(int _tableID, int *_key, float *_g)
+void LSB::getHashVector(long long _tableID, long long *_key, float *_g)
 {
-	int i; 
+	long long i; 
 
 	for (i = 0; i < m; i ++)
 	{
@@ -742,13 +742,13 @@ key		the raw coordinates
 the hash value
 *****************************************************************/
 
-float LSB::get1HashV(int _u, int _v, int *_key)
+float LSB::get1HashV(long long _u, long long _v, long long *_key)
 {
 	float	ret			= 0;
 
 	float	* a_vector	= NULL;
 	float	b;
-	int		i;
+	long long		i;
 
 	getHashPara(_u, _v, &a_vector, &b);
 
@@ -775,7 +775,7 @@ contains l *m values.
 
 void LSB::gen_vectors()
 {
-	int		i		= -1; 
+	long long		i		= -1; 
 	float	max_b	= (float) pow(2.0, f) * w * w;
 
 	a_array = new float[L * m * d];
@@ -794,12 +794,12 @@ get u
 u
 *****************************************************************/
 
-int LSB::get_u()
+long long LSB::get_u()
 {
-	int		ret			= -1;
+	long long		ret			= -1;
 
-	int		i			= -1;
-	int		j			= -1;
+	long long		i			= -1;
+	long long		j			= -1;
 	float	absSum		= -1;
 	float	* aVector	= NULL; 
 	float	b			= -1;
@@ -826,7 +826,7 @@ int LSB::get_u()
 		}
 	}
 
-	ret = (int) ceil(log((double) maxV) / log(2.0) - 1) + 1;
+	ret = (long long) ceil(log((double) maxV) / log(2.0) - 1) + 1;
 
 	return ret;
 }
@@ -843,7 +843,7 @@ b			(out) address of the b value
 
 *****************************************************************/
 
-void LSB::getHashPara(int _u, int _v, float **_a_vector, float *_b)
+void LSB::getHashPara(long long _u, long long _v, float **_a_vector, float *_b)
 {
 	(*_a_vector) = &(a_array[_u * (m * d) + _v * d]);
 	(*_b) = b_array[_u * m + _v];
@@ -860,9 +860,9 @@ return:
 - the # of bytes
 *****************************************************************/
 
-int LSB::get_obj_size(int _dim)
+long long LSB::get_obj_size(long long _dim)
 {
-	int ret = sizeof(int) + sizeof(int) + _dim * sizeof(int);
+	long long ret = sizeof(long long) + sizeof(long long) + _dim * sizeof(long long);
 
 	//for id, z-order value, and _dim coordinates
 	return ret;
@@ -880,26 +880,26 @@ z		(out) the z-value stored in an array of size m.
 1	failure
 *****************************************************************/
 
-int LSB::getZ(float *_g, int *_z)
+long long LSB::getZ(float *_g, long long *_z)
 {
-	int ret = 0;
+	long long ret = 0;
 
-	int		c			= -1;
-	int		cc			= -1;
-	int		numCell_Dim	= -1;
-	int		* g			= NULL;
-	int		i			= -1;
-	int		j			= -1;
-	int		mask		= -1;
-	int		v			= -1;
+	long long		c			= -1;
+	long long		cc			= -1;
+	long long		numCell_Dim	= -1;
+	long long		* g			= NULL;
+	long long		i			= -1;
+	long long		j			= -1;
+	long long		mask		= -1;
+	long long		v			= -1;
 
 	numCell_Dim = 1 << u;
 
-	g = new int[m];
+	g = new long long[m];
 
 	for (i = 0; i < m; i ++)
 	{
-		g[i] = (int) ((_g[i] + U/2) / w);
+		g[i] = (long long) ((_g[i] + U/2) / w);
 
 		if (g[i] < 0 || g[i] >= numCell_Dim)
 		{
@@ -971,16 +971,16 @@ key		its coordinates
 1		failure
 *****************************************************************/
 
-int LSB::insert(int _treeID, int _son, int * _key)
+long long LSB::insert(long long _treeID, long long _son, long long * _key)
 {
-	int		ret		= 0;
+	long long		ret		= 0;
 
 	B_Entry	* e		= NULL;
 	float	* g		= NULL;
-	int		* z		= NULL;
+	long long		* z		= NULL;
 
 	g = new float[m];
-	z = new int[pz];
+	z = new long long[pz];
 
 	getHashVector(_treeID, _key, g);
 	if (getZ(g, z))
@@ -993,8 +993,8 @@ int LSB::insert(int _treeID, int _son, int * _key)
 
 	((LSBentry *) e)->init(trees[_treeID], 0);
 	e->son = e->leafson = _son;
-	memcpy(((LSBentry *) e)->key, z, pz * sizeof(int));
-	memcpy(((LSBentry *) e)->pt, _key, d * sizeof(int));
+	memcpy(((LSBentry *) e)->key, z, pz * sizeof(long long));
+	memcpy(((LSBentry *) e)->pt, _key, d * sizeof(long long));
 
 	trees[_treeID]->insert(e);
 
@@ -1021,9 +1021,9 @@ must use a full forest.
 normally the cost. -1 if something wrong.
 *****************************************************************/
 
-int LSB::cpFind_r(int * _r)
+long long LSB::cpFind_r(long long * _r)
 {
-	int			ret			= -1;
+	long long			ret			= -1;
 
 	B_Node		* oldnd		= NULL;
 	B_Node		* nd		= NULL;
@@ -1031,14 +1031,14 @@ int LSB::cpFind_r(int * _r)
 	__int64		* bktcnt	= 0;
 	__int64		* cnt		= 0;
 	__int64		limit		= -1;
-	int			block		= -1;
-	int			i			= -1;
-	int			ii			= -1;
-	int			j			= -1;
-	int			jj			= -1;
+	long long			block		= -1;
+	long long			i			= -1;
+	long long			ii			= -1;
+	long long			j			= -1;
+	long long			jj			= -1;
 	intPtr		* stZ		= NULL;
 
-	if (L < (int) ceil( pow( (float) n*d/B,(float) 0.5) ))
+	if (L < (long long) ceil( pow( (float) n*d/B,(float) 0.5) ))
 	{
 		printf("I must play with a full forest for that.\n");
 
@@ -1063,7 +1063,7 @@ int LSB::cpFind_r(int * _r)
 
 	stZ = new intPtr[u];
 	for (i = 0; i < u; i ++)
-		stZ[i] = new int[pz];
+		stZ[i] = new long long[pz];
 
 	ret = 0;
 
@@ -1089,7 +1089,7 @@ int LSB::cpFind_r(int * _r)
 		
 		for (j = 0; j < u; j ++)
 		{
-			memcpy(stZ[j], nd->entries[0]->key, sizeof(int) * pz);
+			memcpy(stZ[j], nd->entries[0]->key, sizeof(long long) * pz);
 
 			bktcnt[j] = 1;
 		}
@@ -1110,7 +1110,7 @@ int LSB::cpFind_r(int * _r)
 				{
 					cnt[ii] += bktcnt[ii] * (bktcnt[ii] - 1) / 2;
 
-					memcpy(stZ[ii], nd->entries[j]->key, sizeof(int) * pz); 
+					memcpy(stZ[ii], nd->entries[j]->key, sizeof(long long) * pz); 
 
 					bktcnt[ii] = 1;
 				}
@@ -1204,9 +1204,9 @@ success probability.
 normally, the number of node accesses. -1 if something wrong.
 *****************************************************************/
 
-int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
+long long LSB::closepair(long long _r, long long _k, float *_dist, long long *_pairid)
 {
-	int			ret			= -1;
+	long long			ret			= -1;
 
 	B_Node		* oldnd		= NULL;
 	B_Node		* nd		= NULL;
@@ -1216,29 +1216,29 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 	float		thisDist	= -1;
 	__int64		cnt			= 0;
 	__int64		limit		= -1;
-	int			block		= -1;
-	int			i			= -1;
-	int			ii			= -1;
-	int			iii			= -1;
-	int			id1			= -1;
-	int			id2			= -1;
-	int			j			= -1;
-	int			jj			= -1;
-	int			* pool		= NULL;
-	int			* pool2		= NULL;
-	int			poolSize	= -1;
-	int			poolUsed	= 0;
-	int			* stZ	= NULL;
-	int			zlevel		= -1;
+	long long			block		= -1;
+	long long			i			= -1;
+	long long			ii			= -1;
+	long long			iii			= -1;
+	long long			id1			= -1;
+	long long			id2			= -1;
+	long long			j			= -1;
+	long long			jj			= -1;
+	long long			* pool		= NULL;
+	long long			* pool2		= NULL;
+	long long			poolSize	= -1;
+	long long			poolUsed	= 0;
+	long long			* stZ	= NULL;
+	long long			zlevel		= -1;
 
-	if (L < (int) ceil( pow( (float) n*d/B, (float) 0.5) ))
+	if (L < (long long) ceil( pow( (float) n*d/B, (float) 0.5) ))
 	{
 		printf("I must play with a full forest for that.\n");
 
 		goto recycle;
 	}
 
-	zlevel = (int) (log( (float) _r ) / log(2.0));
+	zlevel = (long long) (log( (float) _r ) / log(2.0));
 
 	for (i = 0; i < _k; i ++)
 	{
@@ -1250,9 +1250,9 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 	poolSize = 100;
 	poolUsed = 0;
 
-	pool = new int[poolSize * (d+1)];
+	pool = new long long[poolSize * (d+1)];
 
-	stZ = new int[pz];
+	stZ = new long long[pz];
 
 	cnt = 0;
 	limit = (__int64) 2 * B * n * L;
@@ -1289,10 +1289,10 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 			ret ++;
 		}	
 		
-		memcpy(stZ, nd->entries[0]->key, sizeof(int) * pz);
+		memcpy(stZ, nd->entries[0]->key, sizeof(long long) * pz);
 
 		pool[0] = nd->entries[0]->son;
-		memcpy(&pool[1], ((LSBentry *) nd->entries[0])->pt, sizeof(int) * d);
+		memcpy(&pool[1], ((LSBentry *) nd->entries[0])->pt, sizeof(long long) * d);
 		poolUsed++;
 
 		j = 1;
@@ -1310,7 +1310,7 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 				poolUsed = 0;
 
 				pool[0] = nd->entries[j]->son;
-				memcpy(&pool[1], ((LSBentry *) nd->entries[j])->pt, sizeof(int) * d);
+				memcpy(&pool[1], ((LSBentry *) nd->entries[j])->pt, sizeof(long long) * d);
 
 				poolUsed ++;
 			}
@@ -1373,7 +1373,7 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 					break;
 
 				pool[poolUsed * (d + 1)] = nd->entries[j]->son;
-				memcpy(&pool[poolUsed * (d + 1) + 1], ((LSBentry *) nd->entries[j])->pt, sizeof(int) * d);
+				memcpy(&pool[poolUsed * (d + 1) + 1], ((LSBentry *) nd->entries[j])->pt, sizeof(long long) * d);
 
 				poolUsed ++;
 
@@ -1381,9 +1381,9 @@ int LSB::closepair(int _r, int _k, float *_dist, int *_pairid)
 				{
 					pool2 = pool;
 
-					pool = new int [2 * poolSize * (d + 1)];
+					pool = new long long [2 * poolSize * (d + 1)];
 
-					memcpy(pool, pool2, sizeof(int) * poolSize * (d + 1));
+					memcpy(pool, pool2, sizeof(long long) * poolSize * (d + 1));
 
 					delete [] pool2;
 					pool2 = NULL;
@@ -1454,9 +1454,9 @@ pairid		size of 2k. stores the ids of the k pairs reported
 normally, the number of node accesses. -1 if something wrong.
 *****************************************************************/
 
-int LSB::cpFast(int _k, int _numTrees, float *_dist, int *_pairid)
+long long LSB::cpFast(long long _k, long long _numTrees, float *_dist, long long *_pairid)
 {
-	int			ret			= -1;
+	long long			ret			= -1;
 
 	B_Node		* oldnd		= NULL;
 	B_Node		* nd1		= NULL;
@@ -1464,16 +1464,16 @@ int LSB::cpFast(int _k, int _numTrees, float *_dist, int *_pairid)
 	bool		again		= false;
 	bool		alreadyin	= false;
 	float		thisDist	= -1;
-	int			block		= -1;
-	int			i			= -1;
-	int			ii			= -1;
-	int			iii			= -1;
-	int			id1			= -1;
-	int			id2			= -1;
-	int			j			= -1;
-	int			jj			= -1;
-	int			numTrees	= -1;
-	int			* stZ	= NULL;
+	long long			block		= -1;
+	long long			i			= -1;
+	long long			ii			= -1;
+	long long			iii			= -1;
+	long long			id1			= -1;
+	long long			id2			= -1;
+	long long			j			= -1;
+	long long			jj			= -1;
+	long long			numTrees	= -1;
+	long long			* stZ	= NULL;
 
 	for (i = 0; i < _k; i ++)
 	{
@@ -1484,7 +1484,7 @@ int LSB::cpFast(int _k, int _numTrees, float *_dist, int *_pairid)
 
 	numTrees = min(L, _numTrees);
 
-	stZ = new int[pz];
+	stZ = new long long[pz];
 
 	ret = 0;
 
@@ -1560,7 +1560,7 @@ int LSB::cpFast(int _k, int _numTrees, float *_dist, int *_pairid)
 				}
 			}
 
-			memcpy(stZ, nd1->entries[j - 1]->key, sizeof(int) * pz);
+			memcpy(stZ, nd1->entries[j - 1]->key, sizeof(long long) * pz);
 
 			nd2 = nd1;
 
@@ -1684,9 +1684,9 @@ numTrees	number of trees used (1 to L). set it to 0 has the
 normally, the number of node accesses. -1 if something wrong.
 *****************************************************************/
 
-int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
+long long LSB::knn(long long *_q, long long _k, LSB_Hentry *_rslt, long long _numTrees)
 {
-	int				ret				= 0;
+	long long				ret				= 0;
 
 	BinHeap			* hp			= NULL;
 	BinHeapEntry	* bhe			= NULL;
@@ -1698,18 +1698,18 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 	float			knnDist			= -1;
 	float			old_knnDist		= -1;
 	float			* qg			= NULL;     
-	int				block			= -1;
-	int				curLevel		= -1;
-	int				follow			= -1;
-	int				i				= -1;
-	int				limit			= -1; 
-	int				numTrees		= -1;
-	int				pos				= -1;
-	int				readCnt			= 0;    
-	int				rsltCnt			= 0;	
-	int				thisLevel		= -1;
-	int				thisTreeId		= -1;
-	int				** qz			= NULL;     
+	long long				block			= -1;
+	long long				curLevel		= -1;
+	long long				follow			= -1;
+	long long				i				= -1;
+	long long				limit			= -1; 
+	long long				numTrees		= -1;
+	long long				pos				= -1;
+	long long				readCnt			= 0;    
+	long long				rsltCnt			= 0;	
+	long long				thisLevel		= -1;
+	long long				thisTreeId		= -1;
+	long long				** qz			= NULL;     
 	LSBbiPtr		* lptrs			= NULL; 
 	LSBbiPtr		* rptrs			= NULL; 
 	LSBentry		* e				= NULL;
@@ -1729,7 +1729,7 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 	else
 		numTrees = min(L, _numTrees);
 
-	if (_k > 1 || numTrees < (int) ceil( pow( (float) n*d/B, (float) 1/ratio) ))
+	if (_k > 1 || numTrees < (long long) ceil( pow( (float) n*d/B, (float) 1/ratio) ))
 		E1 = false;
 
 	lptrs = new LSBbiPtr[numTrees];
@@ -1755,11 +1755,11 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 
 	qz = new intPtr[numTrees];  	 
 	for (i = 0; i < numTrees; i ++)
-		qz[i] = new int[pz];
+		qz[i] = new long long[pz];
 
 	qe = new LSBentry();
 	qe->init(trees[0], 0);
-	memcpy(qe->pt, _q, sizeof(int) * d);
+	memcpy(qe->pt, _q, sizeof(long long) * d);
 
 	for (i = 0; i < numTrees; i ++)
 	{
@@ -1772,7 +1772,7 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 			goto recycle;
 		}
 
-		memcpy(qe->key, qz[i], sizeof(int) * pz);
+		memcpy(qe->key, qz[i], sizeof(long long) * pz);
 
 		block = trees[i]->root;
 
@@ -1855,7 +1855,7 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 			he			= new LSB_Hentry;
 
 			he->d		= d;
-			he->pt		= new int[d];
+			he->pt		= new long long[d];
 			he->treeId	= i;
 			he->lr		= 0;
 			setHe(he, e, qz[i]);
@@ -1874,7 +1874,7 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 			he  		= new LSB_Hentry;
 
 			he->d		= d;
-			he->pt		= new int[d];
+			he->pt		= new long long[d];
 			he->treeId	= i;
 			he->lr		= 1;
 			setHe(he, e, qz[i]);
@@ -1899,7 +1899,7 @@ int LSB::knn(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees)
 	if (!E1)
 		limit = n * L;
 	else
-		limit = (int) ceil ((float) 2 * B * L / d); 
+		limit = (long long) ceil ((float) 2 * B * L / d); 
 
 	again = true;
 	while (again)
@@ -2097,9 +2097,9 @@ recycle:
 auxiliary function called by LSB:knn.
 ----------------------------------------------------------------*/
 
-void LSB::setHe(LSB_Hentry *_he, B_Entry *_e, int *_qz)
+void LSB::setHe(LSB_Hentry *_he, B_Entry *_e, long long *_qz)
 {
-	memcpy(_he->pt, ((LSBentry *)_e)->pt, sizeof(int) *_he->d);
+	memcpy(_he->pt, ((LSBentry *)_e)->pt, sizeof(long long) *_he->d);
 	_he->id = _e->son;
 //	_he->lcl = getLowestCommonLevel(_qz, _e->key);
 }
@@ -2108,12 +2108,12 @@ void LSB::setHe(LSB_Hentry *_he, B_Entry *_e, int *_qz)
 auxiliary function called by LSB:knn.
 ----------------------------------------------------------------*/
 
-float LSB::updateknn(LSB_Hentry * _rslt, LSB_Hentry *_he, int _k)
+float LSB::updateknn(LSB_Hentry * _rslt, LSB_Hentry *_he, long long _k)
 {
 	float	ret			= -1;
 
-	int		i			= -1;
-	int		pos			= -1; 
+	long long		i			= -1;
+	long long		pos			= -1; 
 	bool	alreadyIn	= false;
 
 	for (i = 0; i < _k; i ++)
@@ -2155,13 +2155,13 @@ fname		path of the file
 1			failure
 *****************************************************************/
 
-int LSB::writeParaFile(char *_fname)
+long long LSB::writeParaFile(char *_fname)
 {
-	int		ret			= 0;
+	long long		ret			= 0;
 
-	int		i			= -1;
-	int		j			= -1;
-	int		u			= -1;
+	long long		i			= -1;
+	long long		j			= -1;
+	long long		u			= -1;
 	FILE	* fp		= NULL;
 	float	* aVector	= NULL;
 	float	b			= -1;
@@ -2226,12 +2226,12 @@ recycle:
 auxiliary function called by LSB:knn.
 ----------------------------------------------------------------*/
 
-int LSB_hcomp(const void *_e1, const void *_e2)
+long long LSB_hcomp(const void *_e1, const void *_e2)
 {
 	LSB_Hentry * e1 = (LSB_Hentry *) _e1;
 	LSB_Hentry * e2 = (LSB_Hentry *) _e2;
 
-	int ret = 0;
+	long long ret = 0;
 
 	if (e1->lcl < e2->lcl)
 		ret = -1;
@@ -2258,11 +2258,11 @@ void LSB_hdestroy(const void *_e)
 comparison function for qsort called by LSB::bulkload()
 ----------------------------------------------------------------*/
 
-int LSBqsortComp(const void *_e1, const void *_e2)
+long long LSBqsortComp(const void *_e1, const void *_e2)
 {
-	int ret				= 0;
+	long long ret				= 0;
 
-	int	i				= -1;
+	long long	i				= -1;
 	LSBqsortElem * e1	= (LSBqsortElem *) _e1;
 	LSBqsortElem * e2	= (LSBqsortElem *) _e2;
 

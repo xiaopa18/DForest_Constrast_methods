@@ -41,7 +41,7 @@ double gaussian (double mean, double sigma)
 
 double uniform(double _min, double _max)
 {
-	int int_r = rand();
+	long long int_r = rand();
 	long base = RAND_MAX-1;
 	double f_r  = ((double) int_r) / base;
 	return (_max - _min) * f_r + _min;
@@ -61,7 +61,7 @@ double zipf(double x1, double x2, double p)
    double x;
    double i;
    double r, HsubV, sum;
-   int V = 100;
+   long long V = 100;
 
    /* calculate the V-th harmonic number HsubV. WARNING: V>1 */ 
    HsubV = 0.0;
@@ -84,13 +84,13 @@ double zipf(double x1, double x2, double p)
    return(x);
 }
 
-double new_uniform(int _d_num)
+double new_uniform(long long _d_num)
 {
 	double base=1;
 	double sum=0; 
-	for (int i=0; i<_d_num; i++)
+	for (long long i=0; i<_d_num; i++)
 	{
-		int digit = (int) uniform(0, 10);
+		long long digit = (long long) uniform(0, 10);
 		if (digit==10) digit=9;
 		sum+=base*digit;
 		base*=10;

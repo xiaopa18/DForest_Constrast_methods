@@ -36,13 +36,13 @@ void bptree::flush() {
 }
 
 
-int bptree::getsize()
+long long bptree::getsize()
 {
-	//return size * sizeof(float) + 2 * sizeof(int);
+	//return size * sizeof(float) + 2 * sizeof(long long);
 	//outnode("test" );
-	int ii = 0;
-	ii = 3 * sizeof(int);
-	for (int i = 0; i < leafnum; i++) {
+	long long ii = 0;
+	ii = 3 * sizeof(long long);
+	for (long long i = 0; i < leafnum; i++) {
 		//		son[i]->outnode("getsize ");
 				//if (son[i]->metric < 0) outnode("!!error Mtree ");
 		ii += son[i]->getsize();
@@ -52,22 +52,22 @@ int bptree::getsize()
 }
 
 
-int bptree::read_from_buffer(char* buffer)
+long long bptree::read_from_buffer(char* buffer)
 {
-	int i;
-	memcpy(&fa, buffer, sizeof(int));
-	i = sizeof(int);
+	long long i;
+	memcpy(&fa, buffer, sizeof(long long));
+	i = sizeof(long long);
 
-	memcpy(&isleaf, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&isleaf, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 	
-	memcpy(&leafnum, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&leafnum, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 
 	
-	int pos;
+	long long pos;
 	son = new bpnode * [leafnum];
-	for (int j = 0; j < leafnum; j++) {
+	for (long long j = 0; j < leafnum; j++) {
 		son[j] = new bpnode();
 		pos = son[j]->read_from_buffer(&buffer[i]);
 		i += pos;
@@ -75,26 +75,26 @@ int bptree::read_from_buffer(char* buffer)
 	return i;
 }
 
-int bptree::write_to_buffer(char* buffer)
+long long bptree::write_to_buffer(char* buffer)
 {
 
-	int i;
+	long long i;
 
-	memcpy(buffer, &fa, sizeof(int));
-	i = sizeof(int);
+	memcpy(buffer, &fa, sizeof(long long));
+	i = sizeof(long long);
 
-	memcpy(&buffer[i], &isleaf, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &isleaf, sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&buffer[i], &leafnum, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &leafnum, sizeof(long long));
+	i += sizeof(long long);
 
 
-	int pos;
+	long long pos;
 	
 	//cout << "========= Mtree writing " << i << endl;
 	
-	for (int j = 0; j < leafnum; j++) {
+	for (long long j = 0; j < leafnum; j++) {
 		//	cout <<"======i is "<<i<< " this is son " << j << " ";
 		//	son[j]->outnode("try ");
 		//if (isleaf == 0) son[j]->len = -1; 
@@ -112,11 +112,11 @@ int bptree::write_to_buffer(char* buffer)
 void bptree::outnode(string str)
 {
 	cout << str << "Block " << block << " isleaf " << isleaf << " fa " << fa << " leafnum " << leafnum << endl;
-	for (int i = 0; i < leafnum; i++)son[i]->outnode("    " + str);
+	for (long long i = 0; i < leafnum; i++)son[i]->outnode("    " + str);
 	cout << endl;
 }
 
-void bptree::loadroot(int  page) {
+void bptree::loadroot(long long  page) {
 	//cout << "page is " << page << endl;
 	char* buf = new char[Index_f->file->get_blocklength()];
 	if (Index_c == NULL) {
@@ -135,7 +135,7 @@ void bptree::loadroot(int  page) {
 void bptree::bfs(string str) {
 
 	outnode(str);		
-	for (int i = 0; i < leafnum; i++) {
+	for (long long i = 0; i < leafnum; i++) {
 		if(isleaf==0){
 			bptree* p = new bptree();
 			p->loadroot(son[i]->son);
@@ -170,7 +170,7 @@ bptree::~bptree() {
 		//cout << "No need to write this Node" << endl;
 	}
 	//outnode("");
-	for (int i = 0; i < leafnum; i++) {
+	for (long long i = 0; i < leafnum; i++) {
 		
 		delete son[i];
 		son[i] = NULL;
@@ -184,7 +184,7 @@ bptree::~bptree() {
 void bptree::entere(bpnode* q) {
 	bpnode** tmp = new bpnode * [leafnum + 1];
 	//	cout << "======= Entere" << endl;
-	for (int i = 0; i < leafnum; i++) {
+	for (long long i = 0; i < leafnum; i++) {
 		tmp[i] = son[i];
 		//		son[i]->outnode("");
 		son[i] = NULL;
@@ -201,42 +201,51 @@ void bptree::insert(bpnode* q) {
 //	if (q->dis < disl) disl = q->dis;
 //	if (q->dis > disr) disr = q->dis;
 	if (son == NULL || isleaf == 1) {
+		//cout<<"a1"<<endl;
 		entere(q);
-		int k=leafnum;
-		for (int i = 0; i < leafnum; i++) if (son[i]->disl + eps >= q->disl) {
+		//cout<<"a2"<<endl;
+		long long k=leafnum;
+		for (long long i = 0; i < leafnum; i++) if (son[i]->disl + eps >= q->disl) {
 			k = i;
 			break;
 		}
 		//cout << "k is " << k << endl;
-		for (int i = leafnum - 1; i > k; i--) {
+		for (long long i = leafnum - 1; i > k; i--) {
 			son[i] = son[i - 1];
 		}
+		//cout<<"a3"<<endl;
 		son[k] = q;
 		if (getsize() >= Index_f->file->get_blocklength()) {
 		//	if (f == 1) { cout << "==============going split "; outnode(""); }
 			this->split(0, NULL);			
 		}
+		//cout<<"a4"<<endl;
 		//bfs("====== after inserting in leaf ");
 		
 	}
 	else {
-		int k = 0;		
+		long long k = 0;		
 		while (k < leafnum-1 && son[k]->disr < q->disl) k++;
-		
+		//cout<<"b1"<<endl;
 		if (son[k]->disl > q->dis) son[k]->disl = q->dis;
 		if (son[k]->disr < q->dis) son[k]->disr = q->dis;
+		//cout<<"b2"<<endl;
 		flush();
+		//cout<<"b3"<<endl;
+		//cout<<son[k]->son<<endl;
 		bptree* p = new bptree();
 		p->loadroot(son[k]->son);
+		//cout<<"b4"<<endl;
 		p->fa = block;
-		p->insert(q);			
+		p->insert(q);	
+		//cout<<"b5"<<endl;		
 		delete p;		
 	}
 	//if (f == 1) { cout << "==============finish inserting "<<endl;}
 }
 
 
-void bptree::split(int flag, bptree* rt) {
+void bptree::split(long long flag, bptree* rt) {
 	//cout<<"blocksize " << Index_f->file->get_blocklength()<<" real size:"<<getsize()<<" leaf: "<<leafnum << endl;
 	dirty = 1;
 	if (fa == -1) {
@@ -265,7 +274,7 @@ void bptree::split(int flag, bptree* rt) {
 		n2->leafnum = leafnum - leafnum / 2;
 		n1->son = new bpnode*[leafnum / 2];
 		n2->son = new bpnode * [leafnum-leafnum / 2];
-		for (int i = 0; i < leafnum; i++) 
+		for (long long i = 0; i < leafnum; i++) 
 		if(i<leafnum/2){
 			n1->son[i] = son[i];
 			son[i] = NULL;
@@ -326,7 +335,7 @@ void bptree::split(int flag, bptree* rt) {
 		n2->leafnum = leafnum - leafnum / 2;
 		n2->son = new bpnode * [leafnum - leafnum / 2];
 		son= new bpnode * [leafnum / 2];
-		for (int i = 0; i < leafnum; i++)
+		for (long long i = 0; i < leafnum; i++)
 			if (i < leafnum / 2) {
 				son[i] = tmp[i];
 				tmp[i] = NULL;
@@ -337,8 +346,8 @@ void bptree::split(int flag, bptree* rt) {
 			}
 		delete[]tmp;		
 		leafnum = leafnum / 2;
-		int k = -1;
-		for (int i = 0; i < root->leafnum; i++) if (root->son[i]->son == block) {
+		long long k = -1;
+		for (long long i = 0; i < root->leafnum; i++) if (root->son[i]->son == block) {
 			k = i;
 			break;
 		}
@@ -351,7 +360,7 @@ void bptree::split(int flag, bptree* rt) {
 		sonr->disr = n2->son[n2->leafnum - 1]->disr;
 
 		root->entere(sonr);
-		for (int i = root->leafnum - 1; i > k+1; i--) {
+		for (long long i = root->leafnum - 1; i > k+1; i--) {
 			root->son[i] =root->son[i - 1];
 		}
 		root->son[k+1] = sonr;
@@ -385,14 +394,14 @@ void bptree::split(int flag, bptree* rt) {
 }
 
 
-bptree* bptree::prenode(int loc) {
+bptree* bptree::prenode(long long loc) {
 	//outnode("prenode ");
 	if (son[0]->objloc == loc) {
 		//cout << "this is prenode 1 "<<loc << endl;
 		if (fa == -1) return NULL;
 		bptree* pe = new bptree();
 		pe->loadroot(fa);
-		int temp = block;
+		long long temp = block;
 		while (pe->fa != -1 && pe->son[0]->son == temp) {
 			//pe->outnode("in while fa is ");
 			//cout << "temp " << temp << endl;
@@ -402,7 +411,7 @@ bptree* bptree::prenode(int loc) {
 		//pe->outnode("fa is ");
 		//cout << "temp " << temp << endl;
 		if (pe->son[0]->son == temp) return NULL;
-		int k = 0;
+		long long k = 0;
 		while (pe->son[k + 1]->son != temp) k++;
 		bptree* ps = new bptree();
 		ps->loadroot(pe->son[k]->son);
@@ -447,11 +456,11 @@ bptree* bptree::lastnode() {
 
 
 
-void bptree::delnode(int loc) {
+void bptree::delnode(long long loc) {
 	//if (f == 1)cout<<"==============deleting "<<loc<<" isleaf "<<isleaf<<endl;
-	int k = 0;
+	long long k = 0;
 	dirty = 1;
-	for(int i=0;i<leafnum;i++) 
+	for(long long i=0;i<leafnum;i++) 
 		if (isleaf == 1) {
 			if (son[i]->objloc == loc) {
 				k = i;
@@ -469,7 +478,7 @@ void bptree::delnode(int loc) {
 		
 		bpnode** sontmp = new bpnode * [leafnum-1];
 		
-		for (int i = 0; i < leafnum; i++) 
+		for (long long i = 0; i < leafnum; i++) 
 		if(i<k){
 			sontmp[i] = son[i];
 			son[i] = NULL;
@@ -513,9 +522,9 @@ void bptree::update() {
 	//outnode("update this ");
 	//pe->outnode("update fa ");
 
-	int k = 0;	
-	int flg = 0;
-	for (int i = 0; i < leafnum; i++)
+	long long k = 0;	
+	long long flg = 0;
+	for (long long i = 0; i < leafnum; i++)
 		if (pe->son[i]->son == block) {
 			k = i;
 			break;

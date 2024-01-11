@@ -17,9 +17,9 @@ RTNode::RTNode(RTree *rt)
   //use this ructor to create a new node on disk.
 {
     char *b;
-    int header_size;
+    long long header_size;
     Entry * d;
-    int i;
+    long long i;
 
     my_tree = rt;
     dimension = rt->dimension;
@@ -28,7 +28,7 @@ RTNode::RTNode(RTree *rt)
 
     d = new Entry();
 	d -> init_entry(dimension, NULL);
-    header_size = sizeof(char) + sizeof(int);  // level + num_entries
+    header_size = sizeof(char) + sizeof(long long);  // level + num_entries
     capacity = (rt -> file -> get_blocklength() - header_size) / d -> get_size();
     delete d;
 
@@ -42,13 +42,13 @@ RTNode::RTNode(RTree *rt)
     delete [] b;
 }
 //------------------------------------------------------------
-RTNode::RTNode(RTree *rt, int _block)
+RTNode::RTNode(RTree *rt, long long _block)
   //use this ructor to restore a node from the disk.
 {
     char *b;
-    int header_size;
+    long long header_size;
     Entry * d;
-    int i;
+    long long i;
 
     my_tree = rt;
     dimension = rt->dimension;
@@ -57,7 +57,7 @@ RTNode::RTNode(RTree *rt, int _block)
 
     d = new Entry();
 	d -> init_entry(dimension, NULL);
-    header_size = sizeof(char) + sizeof(int);
+    header_size = sizeof(char) + sizeof(long long);
     capacity = (rt -> file -> get_blocklength() - header_size) / d -> get_size();
     delete d;
 
@@ -96,15 +96,15 @@ RTNode::~RTNode()
     delete [] entries;
 }
 //------------------------------------------------------------
-int RTNode::choose_subtree(float *mbr)
+long long RTNode::choose_subtree(float *mbr)
 {
-    int i, j, follow, minindex, *inside, inside_count, *over;
+    long long i, j, follow, minindex, *inside, inside_count, *over;
     float *bmbr, old_o, o, omin, a, amin, f, fmin;
 
 	minindex = 0;
     inside_count = 0;
-    inside = new int[num_entries];
-    over = new int[num_entries];
+    inside = new long long[num_entries];
+    over = new long long[num_entries];
     for (i = 0; i < num_entries; i++)
     {
     	switch (entries[i].section(mbr))
@@ -224,7 +224,7 @@ R_DELETE RTNode::delete_entry(Entry *e)
 		if (this == my_tree->root_ptr)
 			//i.e. this is the root
 		{
-			for (int i = 0; i < num_entries; i++)
+			for (long long i = 0; i < num_entries; i++)
 			{
 				tmp = overlapRect(dimension, entries[i].bounces, e -> bounces);
 				if (tmp != NULL)
@@ -255,7 +255,7 @@ R_DELETE RTNode::delete_entry(Entry *e)
 							delete entries[i].son_ptr;
 							entries[i].son_ptr = NULL;
 
-							int j;
+							long long j;
 							for (j = i; j < num_entries - 1; j++)
 								entries[j] = entries[j+1];
 							for (j = num_entries - 1; j < capacity; j++)
@@ -275,7 +275,7 @@ R_DELETE RTNode::delete_entry(Entry *e)
 		}
 		else//is not root and not leaf
 		{
-			for (int i = 0; i < num_entries; i++)
+			for (long long i = 0; i < num_entries; i++)
 			{
 				tmp = overlapRect(dimension, entries[i].bounces, e -> bounces);
 				if (tmp != NULL)
@@ -305,7 +305,7 @@ R_DELETE RTNode::delete_entry(Entry *e)
 
 							entries[i].del_son();
 
-							int j;
+							long long j;
 							for (j = i; j < num_entries - 1; j++)
 								entries[j] = entries[j+1];
 							for (j = num_entries - 1; j < capacity; j++)
@@ -316,9 +316,9 @@ R_DELETE RTNode::delete_entry(Entry *e)
 							dirty = true;
 							delete succ;
 
-							if (num_entries < (int)ceil(0.4 * capacity))
+							if (num_entries < (long long)ceil(0.4 * capacity))
 							{
-								for (int j = 0; j < num_entries; j++)
+								for (long long j = 0; j < num_entries; j++)
 								{
 									Linkable *e;
 									e = entries[j].gen_Linkable();
@@ -339,21 +339,21 @@ R_DELETE RTNode::delete_entry(Entry *e)
 	}
 	else//it's a leaf
 	{
-		for (int i = 0; i < num_entries; i++)
+		for (long long i = 0; i < num_entries; i++)
 		{
 			if (entries[i] == (*e))
 			{
 				my_tree -> num_of_data --;
 
-				for (int j = i; j < num_entries-1; j++)
+				for (long long j = i; j < num_entries-1; j++)
 					entries[j] = entries[j+1];
 
 				num_entries--;
 				dirty = true;
 
-				if (this != my_tree -> root_ptr && num_entries < (int)ceil(0.4 * capacity))
+				if (this != my_tree -> root_ptr && num_entries < (long long)ceil(0.4 * capacity))
 				{
-					for (int k = 0; k < num_entries; k++)
+					for (long long k = 0; k < num_entries; k++)
 					{
 						Linkable *en;
 					    en = entries[k].gen_Linkable();
@@ -393,7 +393,7 @@ bool RTNode::FindLeaf(Entry *e)
 	RTNode *succ;
 	if (level > 0)
 	{
-		for (int i = 0; i < num_entries; i++)
+		for (long long i = 0; i < num_entries; i++)
 		{
 			float *f;
 			f = overlapRect(my_tree -> dimension,
@@ -413,7 +413,7 @@ bool RTNode::FindLeaf(Entry *e)
 	}
 	else
 	{
-		for (int i = 0; i < num_entries; i++)
+		for (long long i = 0; i < num_entries; i++)
 		{
 			if (entries[i] == (*e))
 				return true;
@@ -425,7 +425,7 @@ bool RTNode::FindLeaf(Entry *e)
 //------------------------------------------------------------
 float* RTNode::get_mbr()
 {
-    int i, j;
+    long long i, j;
     float *mbr;
 
     mbr = new float[2*dimension];
@@ -444,9 +444,9 @@ float* RTNode::get_mbr()
     return mbr;
 }
 //------------------------------------------------------------
-int RTNode::get_num_of_data()
+long long RTNode::get_num_of_data()
 {
-    int i, sum;
+    long long i, sum;
     RTNode* succ;
 
     if (level == 0)
@@ -465,14 +465,14 @@ int RTNode::get_num_of_data()
 //------------------------------------------------------------
 R_OVERFLOW RTNode::insert(Entry *d, RTNode **sn)
 {
-    int follow;
+    long long follow;
     RTNode *succ, *new_succ;
     RTNode *brother;
     Entry *de;
     R_OVERFLOW ret;
     float *mbr,*nmbr;
 
-    int i, last_cand;
+    long long i, last_cand;
     float *center;
     SortMbr *sm;
     Entry *new_entries;
@@ -590,7 +590,7 @@ R_OVERFLOW RTNode::insert(Entry *d, RTNode **sn)
 
                 qsort(sm, num_entries, sizeof(SortMbr), sort_center_mbr);
 
-                last_cand = (int) ((float)num_entries * 0.30);
+                last_cand = (long long) ((float)num_entries * 0.30);
 
                 // copy the nearest candidates to new array
                 for (i = 0; i < num_entries - last_cand; i++)
@@ -635,13 +635,13 @@ R_OVERFLOW RTNode::insert(Entry *d, RTNode **sn)
 }
 
 void RTNode::NNSearch(float *QueryPoint,
-	SortedLinList *res, float *nearest_distanz, int k)
+	SortedLinList *res, float *nearest_distanz, long long k)
 {
 	if (level > 0)
 	{
 		float *minmax_distanz;		// Array fuer MINMAXDIST aller Eintr"age
-		int *indexliste;		// Liste (for Sorting and Prunching)
-		int i, j, last, n;
+		long long *indexliste;		// Liste (for Sorting and Prunching)
+		long long i, j, last, n;
 		float akt_min_dist;		// minimal distanz computed upto now
 		float minmaxdist, mindist;
 
@@ -675,7 +675,7 @@ void RTNode::NNSearch(float *QueryPoint,
 	}
 	else
 	{
-		int i, j;
+		long long i, j;
 		float nearest_dist, distanz;
 		bool t;
 		Linkable *element;
@@ -705,13 +705,13 @@ void RTNode::NNSearch(float *QueryPoint,
 //------------------------------------------------------------
 void RTNode::NNSearch(float *QueryPoint,
 					  SortedLinList *res,
-				      float *nearest_distanz,string query,map<int,string> *keywords,int k)
+				      float *nearest_distanz,string query,map<long long,string> *keywords,long long k)
 {
 	if (level > 0)
 	{
 		float *minmax_distanz;		// Array fuer MINMAXDIST aller Eintr"age
-		int *indexliste;		// Liste (for Sorting and Prunching)
-		int i,j,last,n;
+		long long *indexliste;		// Liste (for Sorting and Prunching)
+		long long i,j,last,n;
 		float akt_min_dist;		// minimal distanz computed upto now
 		float minmaxdist,mindist;
 
@@ -744,7 +744,7 @@ void RTNode::NNSearch(float *QueryPoint,
 	}
 	else
 	{
-		int i,j;
+		long long i,j;
 		float nearest_dist,distanz;
 		bool t;
 		Linkable *element;
@@ -777,9 +777,9 @@ void RTNode::NNSearch(float *QueryPoint,
 //------------------------------------------------------------
 void RTNode::print()
 {
-    int i;
+    long long i;
 
-	printf("level %d  Block: %d\n", level, block);
+	printf("level %lld  Block: %lld\n", level, block);
 
     for (i = 0; i < num_entries ; i++)
     {
@@ -793,7 +793,7 @@ void RTNode::print()
 //------------------------------------------------------------
 void RTNode::rangeQuery(float *mbr, SortedLinList *res)
 {
-    int i, n;
+    long long i, n;
     SECTION s;
     RTNode *succ;
 
@@ -821,15 +821,15 @@ void RTNode::rangeQuery(float *mbr, SortedLinList *res)
 //------------------------------------------------------------
 void RTNode::read_from_buffer(char *buffer)
 {
-    int i, j, s;
+    long long i, j, s;
 
     // Level
     memcpy(&level, buffer, sizeof(char));
     j = sizeof(char);
 
     // num_entries
-    memcpy(&num_entries, &(buffer[j]), sizeof(int));
-    j += sizeof(int);
+    memcpy(&num_entries, &(buffer[j]), sizeof(long long));
+    j += sizeof(long long);
 
     s = entries[0].get_size();
     for (i = 0; i < num_entries; i++)
@@ -839,16 +839,16 @@ void RTNode::read_from_buffer(char *buffer)
     }
 }
 //------------------------------------------------------------
-int RTNode::split(float **mbr, int **distribution)
+long long RTNode::split(float **mbr, long long **distribution)
 {
     bool lu;
-    int i, j, k, l, s, n, m1, dist, split_axis;
+    long long i, j, k, l, s, n, m1, dist, split_axis;
     SortMbr *sml, *smu;
     float minmarg, marg, minover, mindead, dead, over, *rxmbr, *rymbr;
 
     n = num_entries;
 
-    m1 = (int) ceil((float)n * 0.40);
+    m1 = (long long) ceil((float)n * 0.40);
 
     sml = new SortMbr[n];
     smu = new SortMbr[n];
@@ -1065,7 +1065,7 @@ int RTNode::split(float **mbr, int **distribution)
 
     // calculate best distribution
 	// the array distribution is deleted in split(rtnode *sn);
-    *distribution = new int[n];
+    *distribution = new long long[n];
     for (i = 0; i < n; i++)
     {
         if (lu)
@@ -1084,7 +1084,7 @@ int RTNode::split(float **mbr, int **distribution)
 //------------------------------------------------------------
 void RTNode::split(RTNode *sn)
 {
-    int i, *distribution, dist, n;
+    long long i, *distribution, dist, n;
     float **mbr_array;
     Entry *new_entries1, *new_entries2;
 
@@ -1131,15 +1131,15 @@ void RTNode::split(RTNode *sn)
 //------------------------------------------------------------
 void RTNode::write_to_buffer(char *buffer)
 {
-    int i, j, s;
+    long long i, j, s;
 
     // Level
     memcpy(buffer, &level, sizeof(char));
     j = sizeof(char);
 
     // num_entries
-    memcpy(&buffer[j], &num_entries, sizeof(int));
-    j += sizeof(int);
+    memcpy(&buffer[j], &num_entries, sizeof(long long));
+    j += sizeof(long long);
 
     s = entries[0].get_size();
     for (i = 0; i < num_entries; i++)

@@ -14,6 +14,9 @@
 #include "sf.h"
 #include "bpnode.h"
 #include "bptree.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 Treearr::Treearr()
 {
@@ -25,7 +28,7 @@ Treearr::Treearr()
 	datad = NULL;
 }
 
-Treearr::Treearr(Object* o, int m) {
+Treearr::Treearr(Object* o, long long m) {
 	//o->outnode();
 	len = 0;
 	tree = -1;
@@ -44,17 +47,17 @@ Treearr::Treearr(Object* o, int m) {
 		datad = new float[o->size[m * 2 + 1] - o->size[m * 2]];
 		len = o->size[m * 2 + 1] - o->size[m * 2];
 		//cout << "Creating Mnode 0/1 " << sizeof(datad[0]) << " " << sizeof(float)  << endl;
-		for (int i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datad[i - o->size[m * 2]] = o->datad[i];
+		for (long long i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datad[i - o->size[m * 2]] = o->datad[i];
 		//cout << "Creating Mnode 0/1 " << sizeof(datad) << " " << sizeof(float) << " " << datad[0] << endl;
 		break;
 	case 6:
 		datas = new char[o->size[m * 2 + 1] - o->size[m * 2]];
 
 		len = o->size[m * 2 + 1] - o->size[m * 2];
-		for (int i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datas[i - o->size[m * 2]] = o->datas[i];
+		for (long long i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datas[i - o->size[m * 2]] = o->datas[i];
 
 		break;
-	}	
+	}
 }
 
 void Treearr::outnode()
@@ -67,7 +70,7 @@ void Treearr::outnode()
 	case 3:
 	case 4:
 	case 5:
-		for (int k = 0; k < len; k++) cout<<datad[k]<<"*";
+		for (long long k = 0; k < len; k++) cout<<datad[k]<<"*";
 		break;
 	case 6:
 		cout << datas << "*";
@@ -100,13 +103,13 @@ Treearr::~Treearr() {
 void SF::readfrom(string s)
 {
 	IOread++;
-	IOtime -= clock();
+	auto tst=steady_clock::now();
 	ifstream in1;
 	in1.open(s);
-	int k;
+	long long k;
 	in1 >> k;
 	getline(in1, s);
-	for (int i = 0; i < k; i++) {
+	for (long long i = 0; i < k; i++) {
 		Treearr* tmp = new Treearr();
 		in1 >> tmp->tot;
 		in1 >> tmp->tree;
@@ -120,28 +123,29 @@ void SF::readfrom(string s)
 		case 4:
 		case 5:
 			tmp->datad = new float[tmp->len];
-			for (int k = 0; k < tmp->len; k++) in1 >>tmp->datad[k];
+			for (long long k = 0; k < tmp->len; k++) in1 >>tmp->datad[k];
 			break;
-		case 6:			
+		case 6:
 			tmp->datas = new char[tmp->len];
 			//in1 >> tmp->datas[0];
-			for (int k = 0; k < tmp->len; k++) in1>> tmp->datas[k];
+			for (long long k = 0; k < tmp->len; k++) in1>> tmp->datas[k];
 			break;
 		}
 		arr.push_back(tmp);
 	}
 	in1.close();
-	IOtime += clock();
+	auto ted=steady_clock::now();
+    IOtime += duration_cast<microseconds>(ted - tst).count()/1000.0;
 }
 
 void SF::writeto(string s)
 {
 	IOwrite++;
-	IOtime -= clock();
+	auto tst=steady_clock::now();
 	ofstream ou1;
 	ou1.open(s);
 	ou1 << arr.size()<<endl;
-	for (int j = 0; j < arr.size(); j++) {
+	for (long long j = 0; j < arr.size(); j++) {
 		ou1 << arr[j]->tot << " ";
 		ou1 << arr[j]->tree << " ";
 		ou1 << arr[j]->metric << " ";
@@ -153,41 +157,45 @@ void SF::writeto(string s)
 		case 3:
 		case 4:
 		case 5:
-			for (int k = 0; k < arr[j]->len; k++) ou1 <<" "<< arr[j]->datad[k];			
+			for (long long k = 0; k < arr[j]->len; k++) ou1 <<" "<< arr[j]->datad[k];
 			break;
 		case 6:
 			ou1 << " ";
-			for (int k = 0; k < arr[j]->len; k++) ou1 << arr[j]->datas[k];		
+			for (long long k = 0; k < arr[j]->len; k++) ou1 << arr[j]->datas[k];
 			break;
 		}
 		ou1 << endl;
 	}
 	ou1.close();
-	IOtime += clock();
+	auto ted=steady_clock::now();
+   IOtime += duration_cast<microseconds>(ted - tst).count()/1000.0;
 }
 SF::SF() {
 
 }
 
 SF::~SF() {
-	for (int i = 0; i < arr.size(); i++) delete arr[i];
+	for (long long i = 0; i < arr.size(); i++) delete arr[i];
 	arr.clear();
 }
 
-vector<AnsLeaf*> SF::rnn(Object* que, int metric, float r,int fgg) {
+vector<AnsLeaf*> SF::rnn(Object* que, long long metric, float r,long long fgg) {
+	//cout<<"start rnn"<<endl;
 	vector<AnsLeaf*> tmp;
-	int m = arr.size();
+	long long m = arr.size();
 	bpnode* q = new bpnode(metric, que);
 	//cout << "============================ Range " << r << " metric " << metric << " query : " ;
 //	que->outnode();
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		vector <bptree*> queue;
 		bptree* pt = new bptree();
+		//cout<<"load root begin"<<endl;
 		pt->loadroot(arr[i]->tree);
+		//cout<<"load root end"<<endl;
 		queue.push_back(pt);
 		//pt->outnode("new ");
 	//	cout << "size " << m << endl; //============================================================
-		float dis = baseme(q->datad, arr[i]->datad, q->datas, arr[i]->datas,metric, q->len);		
+		float dis = baseme(q->datad, arr[i]->datad, q->datas, arr[i]->datas,metric, q->len);
 		//cout << "dis " << metric << " " << dis << endl;
 		while (queue.size() > 0) {
 			pt = queue[queue.size() - 1];
@@ -196,7 +204,7 @@ vector<AnsLeaf*> SF::rnn(Object* que, int metric, float r,int fgg) {
 			//pt->outnode("this");
 			//	cout << "delpiv 1" << endl;
 			//cout << "leafs " << pt->leafnum << endl; //============================================================
-			for (int i = 0; i < pt->leafnum; i++) {
+			for (long long i = 0; i < pt->leafnum; i++) {
 				bpnode* pson = pt->son[i];
 				if (pson->disl > dis + r || pson->disr < dis - r) continue;
 				//cout<<r<<'\t'<<dis<<'\t'<<pson->disl<<'\t'<<pson->disr<< endl; //============================================================
@@ -228,14 +236,14 @@ vector<AnsLeaf*> SF::rnn(Object* que, int metric, float r,int fgg) {
 				}
 			}
 			delete pt;
-		}		
+		}
 	}
 	delete q;
 //	cout << "======== RNN range = "<< r <<" size = " << tmp.size() << endl;
 	return tmp;
 }
 
-AnsLeaf::AnsLeaf(int i, int j, float k) {
+AnsLeaf::AnsLeaf(long long i, long long j, float k) {
 	metric = j;
 	obj = i;
 	dis = k;
@@ -245,13 +253,13 @@ AnsLeaf::~AnsLeaf() {
 }
 float disref(float disl,float disr,float dis) {
 	float aa = disl - dis;
-	float ab = disr - dis;	
+	float ab = disr - dis;
 	if (aa * ab <= 0) return 0;
 	else return min(abs(aa), abs(ab));
 }
 
-vector<AnsLeaf*> SF::knn(Object* que, int metric, int k) {
-	int m = arr.size();
+vector<AnsLeaf*> SF::knn(Object* que, long long metric, long long k) {
+	long long m = arr.size();
 	vector<AnsLeaf*> tmp;
 	tmp.clear();
 	vector<AnsLeaf*> res;
@@ -272,11 +280,11 @@ vector<AnsLeaf*> SF::knn(Object* que, int metric, int k) {
 
 	priority_queue<bptree*, vector<bptree*>, cmp> candlist;
 	priority_queue<float, vector<float>, cmp1> reslist;
-	
-	for (int i = 0; i < m; i++) {		
+
+	for (long long i = 0; i < m; i++) {
 		bptree* pt = new bptree();
-		pt->loadroot(arr[i]->tree);		
-		float tmpdis = baseme(q->datad, arr[i]->datad, q->datas, arr[i]->datas,metric, q->len);		
+		pt->loadroot(arr[i]->tree);
+		float tmpdis = baseme(q->datad, arr[i]->datad, q->datas, arr[i]->datas,metric, q->len);
 		float disl = pt->son[0]->disl;
 		float disr = pt->son[pt->leafnum-1]->disr;
 		pt->tmpdis = tmpdis;
@@ -296,18 +304,18 @@ vector<AnsLeaf*> SF::knn(Object* que, int metric, int k) {
 				continue;
 			}
 		}
-		for (int i = 0; i < p->leafnum; i++) {
+		for (long long i = 0; i < p->leafnum; i++) {
 			bpnode* pson = p->son[i];
 			float dis= disref(pson->disl, pson->disr, p->tmpdis);
 			if (reslist.size() >= k) {
 				if (dis > reslist.top()) continue;
 			}
-			if (p->isleaf == 1) {				
+			if (p->isleaf == 1) {
 				float dis1 = baseme(q->datad, pson->datad, q->datas, pson->datas, metric, q->len);
 				AnsLeaf* qq = new AnsLeaf(pson->objloc, q->metric, dis1);
 				qq->loc = p->block;
 				tmp.push_back(qq);
-				reslist.push(dis1);				
+				reslist.push(dis1);
 			}
 			else {
 				bptree* p1 = new bptree();
@@ -315,22 +323,22 @@ vector<AnsLeaf*> SF::knn(Object* que, int metric, int k) {
 				p1->loadroot(p->son[i]->son);
 				p1->tmpdis = p->tmpdis;
 				p1->dis = dis;
-				candlist.push(p1);				
+				candlist.push(p1);
 			}
 		}
-		delete p;			
+		delete p;
 	}
 	delete q;
 
 	while (reslist.size() > k) reslist.pop();
 	float dis = reslist.top();
-	for (int i = 0; i < tmp.size(); i++) {
+	for (long long i = 0; i < tmp.size(); i++) {
 		AnsLeaf* p = tmp[i];
 		if (p->dis <= dis) {
 			res.push_back(p);
 			  /*
 			Object* q = Obj_f->get_object(p->obj);
-			
+
 			q->outnode();
 			delete q;
 			  */

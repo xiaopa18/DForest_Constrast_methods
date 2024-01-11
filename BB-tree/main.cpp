@@ -66,8 +66,8 @@ int main(int argc, char **argv)
     string queryid=string(argv[2]);
     int querycount=atoi(argv[3]);
     auto tst=steady_clock::now(),ted=steady_clock::now();
-    vector<vector<float>> dataset=read("../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
-    vector<vector<float>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    vector<vector<float>> dataset=read("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
+    vector<vector<float>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
     int threads=1,m=dataset[0].size();
     int current_pid=GetCurrentPid();
     auto mem_use=-GetMemoryUsage(current_pid);
@@ -92,10 +92,10 @@ int main(int argc, char **argv)
             }
         }
         tim+=clock();
-        ouf<<dataid<<","<<queryid<<",BB-tree,null,"<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<sum<<","
-                <<compDists<<","<<tim/queryset.size()<<"ms"<<endl;
-        cout<<dataid<<","<<queryid<<",BB-tree,null,"<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<sum<<","
-                <<compDists<<","<<tim/queryset.size()<<"ms"<<endl;
+        ouf<<dataid<<","<<queryid<<",BB-tree,null,"<<buildEnd/1000<<"s,"<<mem_use<<"MB,"<<r<<","<<sum<<","
+                <<compDists<<","<<tim/queryset.size()/1000<<"ms"<<endl;
+        cout<<dataid<<","<<queryid<<",BB-tree,null,"<<buildEnd/1000<<"s,"<<mem_use<<"MB,"<<r<<","<<sum<<","
+                <<compDists<<","<<tim/queryset.size()/1000<<"ms"<<endl;
     }
     return 0;
 }

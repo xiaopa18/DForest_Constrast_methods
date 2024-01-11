@@ -11,10 +11,10 @@
 extern double compdists;
 using namespace std;
 float trans(float ddd1, float ddd2) {
-	int dd1 = (int)ddd1;
-	int dd2 = (int)ddd2;
-	int y2, m2, d2;
-	int y1, m1, d1;
+	long long dd1 = (long long)ddd1;
+	long long dd2 = (long long)ddd2;
+	long long y2, m2, d2;
+	long long y1, m1, d1;
 
 	m1 = ((dd1 % 10000) / 100 + 9) % 12;
 	y1 = dd1 / 10000 - m1 / 10;
@@ -27,14 +27,14 @@ float trans(float ddd1, float ddd2) {
 	return d1 - d2;
 }
 float trans2(float ddd1, float ddd2) {
-	int dd1 = (int)ddd1;
-	int dd2 = (int)ddd2;
-	int y1 = dd1 / 10000, m1 = (dd1 / 100) % 100, d1 = dd1 % 100;
-	int y2 = dd2 / 10000, m2 = (dd2 / 100) % 100, d2 = dd2 % 100;
+	long long dd1 = (long long)ddd1;
+	long long dd2 = (long long)ddd2;
+	long long y1 = dd1 / 10000, m1 = (dd1 / 100) % 100, d1 = dd1 % 100;
+	long long y2 = dd2 / 10000, m2 = (dd2 / 100) % 100, d2 = dd2 % 100;
 	return ((y1 - y2) * 60 + m1 - m2) * 60 + d1 - d2;
 }
 
-float baseme(float* a1, float* a2, char* s1, char* s2, int m,int size) {
+float baseme(float* a1, float* a2, char* s1, char* s2, long long m,long long size) {
 	float sum = 0;
 	compdists++;
 	switch (metricm[m]) {
@@ -42,13 +42,13 @@ float baseme(float* a1, float* a2, char* s1, char* s2, int m,int size) {
 	case 0:
 	case 1:
 	case 4: {
-		for (int i = 0; i < size; i++)
+		for (long long i = 0; i < size; i++)
 			sum += abs(a1[i] - a2[i]);
 		break;
 		break; }
 	case 5: {
 		float sa1 = 0, sa2 = 0, sa3 = 0;
-		for (int i = 0; i < size; i++) {
+		for (long long i = 0; i < size; i++) {
 			sa1 += a1[i] * a1[i];
 			sa2 += a2[i] * a2[i];
 			sa3 += a1[i] * a2[i];
@@ -64,7 +64,7 @@ float baseme(float* a1, float* a2, char* s1, char* s2, int m,int size) {
 		//cout << "dis " << dis << endl;
 		break; }
 	case 2:
-		for (int i = 0; i < size; i++)
+		for (long long i = 0; i < size; i++)
 			sum += abs(a1[i] - a2[i])* abs(a1[i] - a2[i]);
 		sum = pow(sum, 0.5);
 		break;
@@ -75,26 +75,26 @@ float baseme(float* a1, float* a2, char* s1, char* s2, int m,int size) {
 		break;
 	case 6:
 	{
-		int n = 0;
-		int m = 0;
-		for (int i = 0; s1[i]; i++) n++;
-		for (int i = 0; s2[i]; i++) m++;
+		long long n = 0;
+		long long m = 0;
+		for (long long i = 0; s1[i]; i++) n++;
+		for (long long i = 0; s2[i]; i++) m++;
 		if (n == 0) return m;
 		if (m == 0) return n;
-		int** table1 = new int* [n + 1];
-		for (int i = 0; i < n + 1; i++)
-			table1[i] = new int[m + 1];
-		for (int i = 0; i <= n; i++) table1[i][0] = i;
-		for (int j = 0; j <= m; j++) table1[0][j] = j;
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= m; j++) {
-				int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;	// ith character of s, jth character of t
+		long long** table1 = new long long* [n + 1];
+		for (long long i = 0; i < n + 1; i++)
+			table1[i] = new long long[m + 1];
+		for (long long i = 0; i <= n; i++) table1[i][0] = i;
+		for (long long j = 0; j <= m; j++) table1[0][j] = j;
+		for (long long i = 1; i <= n; i++) {
+			for (long long j = 1; j <= m; j++) {
+				long long cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;	// ith character of s, jth character of t
 				table1[i][j] = 1 + MIN(table1[i - 1][j], table1[i][j - 1]);
 				table1[i][j] = MIN(table1[i - 1][j - 1] + cost, table1[i][j]);
 			}
 		}
 		sum = table1[n][m];
-		for (int i = 0; i < n + 1; i++)
+		for (long long i = 0; i < n + 1; i++)
 			delete[] table1[i];
 		delete[]table1;
 		table1 = NULL;

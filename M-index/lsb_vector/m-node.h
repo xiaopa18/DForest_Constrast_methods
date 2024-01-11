@@ -11,13 +11,13 @@ class M_Node
 {
 public:
 		//--==disk residential variables==--
-	int level;
-	int num_entries;
+	long long level;
+	long long num_entries;
 	M_Entry **entries;
 
 	//--==others==--
 	bool dirty;
-	int block;
+	long long block;
 
 
 	//--==functions==--
@@ -33,7 +33,7 @@ public:
 	{
 		if (entries != NULL)
 		{
-			for (int i = 0; i < num_entries; i++)
+			for (long long i = 0; i < num_entries; i++)
 			{
 				delete entries[i];
 				entries[i] = NULL;
@@ -48,20 +48,20 @@ public:
 		num_entries = m.num_entries;
 		dirty = m.dirty;
 		entries = new M_Entry *[num_entries];
-		for (int i = 0; i < m.num_entries; i++)
+		for (long long i = 0; i < m.num_entries; i++)
 		{
 			entries[i] = new M_Entry((*m.entries[i]));
 		}
 	}
-	int get_header_size()
+	long long get_header_size()
 	{
-		return sizeof(int) * 2;
+		return sizeof(long long) * 2;
 	}
 
 
 	void read_from_buffer(char *_buf)
 	{
-		int i;
+		long long i;
 		memcpy(&level, _buf, sizeof(level));
 		i = sizeof(level);
 
@@ -70,7 +70,7 @@ public:
 		i += sizeof(num_entries);
 
 		entries = new M_Entry * [num_entries];
-		for (int j = 0; j < num_entries; j++)
+		for (long long j = 0; j < num_entries; j++)
 		{
 			entries[j] = new M_Entry();
 			entries[j]->read_from_buffer(&_buf[i]);
@@ -80,24 +80,24 @@ public:
 
 	void write_to_buffer(char *_buf)
 	{
-		int i;
+		long long i;
 		memcpy(_buf, &level, sizeof(level));
 		i = sizeof(level);
 		memcpy(&_buf[i], &num_entries, sizeof(num_entries));
 		i += sizeof(num_entries);
 
-		for (int j = 0; j < num_entries; j++)
+		for (long long j = 0; j < num_entries; j++)
 		{
 			entries[j]->write_to_buffer(&_buf[i]);
 			i += entries[j]->get_size();
 		}
 	}	
 
-	void init(BlockFile *_M_Tree, int _block)
+	void init(BlockFile *_M_Tree, long long _block)
 	{
 		dirty = false;
 		
-		int b_len = _M_Tree->get_blocklength();
+		long long b_len = _M_Tree->get_blocklength();
 
 		block = _block;
 		char *blk = new char[b_len];

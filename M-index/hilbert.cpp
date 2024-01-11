@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include "hilbert.h"
 
-unsigned* ENCODE ( unsigned* hcode, const unsigned* const point, int DIMS ) {
+unsigned* ENCODE ( unsigned* hcode, const unsigned* const point, long long DIMS ) {
     unsigned mask = ( unsigned ) 1 << WORDBITS - 1, element, temp1, temp2,
              A, W = 0, S, tS, T, tT, J, P = 0, xJ;
-    int	i = NUMBITS * DIMS - DIMS, j;
+    long long	i = NUMBITS * DIMS - DIMS, j;
 
     memset ( hcode, 0, sizeof ( unsigned ) * DIMS );
 

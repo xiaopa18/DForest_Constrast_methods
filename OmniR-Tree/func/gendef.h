@@ -7,7 +7,7 @@
 #include <algorithm>
 using namespace std;
 //----BlockFile, CachedBlockFile, Cache---------------------
-#define BFHEAD_LENGTH (sizeof(int)*2)    //file header size
+#define BFHEAD_LENGTH (sizeof(long long)*2)    //file header size
 
 #define TRUE 1
 #define FALSE 0
@@ -22,7 +22,7 @@ typedef char Block[];
 #define FLOATZERO       1e-20
 #define MAX_DIMENSION   256
 
-int DIMENSION;
+long long DIMENSION;
 
 #define TRUE 1
 #define FALSE 0
@@ -41,7 +41,7 @@ class CmdIntrpr  //this is the class of command interpretor.  for a new rtree de
                   //inherit this class to obtain tailored command interpretor
 {
 public:
-	int cnfrm_cmd(char *_msg)
+	long long cnfrm_cmd(char *_msg)
 	{ char c = ' ';
 	  while (c != 'N' && c != 'Y')
 	  { printf("%s (y/n)?", _msg);
@@ -58,9 +58,9 @@ public:
 	    c++;
 	  *c = '\0'; }
 
-	virtual bool build_tree(char *_tree_fname, char *_data_fname, int _b_len, int _dim, int _csize) = 0;
+	virtual bool build_tree(char *_tree_fname, char *_data_fname, long long _b_len, long long _dim, long long _csize) = 0;
 	virtual void free_tree() = 0;
-	virtual int qry_sngle(float *_mbr, int *_io_count) = 0;
+	virtual long long qry_sngle(float *_mbr, long long *_io_count) = 0;
 	virtual void run() = 0;
 	virtual void version() = 0;
 };
@@ -72,15 +72,15 @@ typedef float *floatptr;
   //==========================================================
 struct SortMbr
 {
-    int dimension;
+    long long dimension;
     float *mbr;
     float *center;
-    int index;
+    long long index;
 };
 
 struct BranchList
 {
-    int entry_number;
+    long long entry_number;
     float mindist;
     float minmaxdist;
     bool section;
@@ -89,24 +89,24 @@ struct BranchList
 //-----Global Functions--------------------------------------
 void error(char *_errmsg, bool _terminate);
 
-float area(int dimension, float *mbr);
-float margin(int dimension, float *mbr);
-float overlap(int dimension, float *r1, float *r2);
-float* overlapRect(int dimension, float *r1, float *r2);
+float area(long long dimension, float *mbr);
+float margin(long long dimension, float *mbr);
+float overlap(long long dimension, float *r1, float *r2);
+float* overlapRect(long long dimension, float *r1, float *r2);
 float objectDIST(float *p1, float *p2);
 float MINMAXDIST(float *Point, float *bounces);
 float MINDIST(float *Point, float *bounces);
-float MAXDIST(float *p, float *bounces, int dim);
-float MbrMINDIST(float *_m1, float *_m2, int _dim);
-float MbrMAXDIST(float *_m1, float *_m2, int _dim);
+float MAXDIST(float *p, float *bounces, long long dim);
+float MbrMINDIST(float *_m1, float *_m2, long long _dim);
+float MbrMAXDIST(float *_m1, float *_m2, long long _dim);
 
 bool inside(float &p, float &lb, float &ub);
-void enlarge(int dimension, float **mbr, float *r1, float *r2);
-bool is_inside(int dimension, float *p, float *mbr);
-int pruneBrunchList(float *nearest_distanz, const void *activebrunchList,
-		    int n);
-bool section(int dimension, float *mbr1, float *mbr2);
-bool section_c(int dimension, float *mbr1, float *center, float radius);
+void enlarge(long long dimension, float **mbr, float *r1, float *r2);
+bool is_inside(long long dimension, float *p, float *mbr);
+long long pruneBrunchList(float *nearest_distanz, const void *activebrunchList,
+		    long long n);
+bool section(long long dimension, float *mbr1, float *mbr2);
+bool section_c(long long dimension, float *mbr1, float *center, float radius);
 
 int sort_lower_mbr(const void *d1, const void *d2);
 int sort_upper_mbr(const void *d1, const void *d2);
@@ -124,7 +124,7 @@ void strupr(char *_msg);
 #ifdef UNIX
 void strupr(char *_msg)
 {
-	int dist = 'A' - 'a';
+	long long dist = 'A' - 'a';
 	char *c_ptr = _msg;
 
 	while (*c_ptr)
@@ -143,10 +143,10 @@ void error(char *t, bool ex)
         exit(0);
 }
 
-float area(int dimension, float *mbr)
+float area(long long dimension, float *mbr)
 // berechnet Flaeche (Volumen) eines mbr der Dimension dimension
 {
-    int i;
+    long long i;
     float sum;
 
     sum = 1.0;
@@ -156,7 +156,7 @@ float area(int dimension, float *mbr)
     return sum;
 }
 
-float margin(int dimension, float *mbr)
+float margin(long long dimension, float *mbr)
 // berechnet Umfang eines mbr der Dimension dimension
 {
     float *ml, *mu, *m_last, sum;
@@ -181,10 +181,10 @@ bool inside(float &p, float &lb, float &ub)
     return (p >= lb && p <= ub);
 }
 
-bool inside(float *v, float *mbr, int dimension)
+bool inside(float *v, float *mbr, long long dimension)
 // ist ein Vektor in einer Box ?
 {
-    int i;
+    long long i;
 
     for (i = 0; i < dimension; i++)
 	if (!inside(v[i], mbr[2*i], mbr[2*i+1]))
@@ -195,10 +195,10 @@ bool inside(float *v, float *mbr, int dimension)
 
 // calcutales the overlapping rectangle between r1 and r2
 // if rects do not overlap returns null
-float* overlapRect(int dimension, float *r1, float *r2)
+float* overlapRect(long long dimension, float *r1, float *r2)
 {
         float *overlap = new float[2*dimension];
-        for (int i=0; i<dimension; i++)
+        for (long long i=0; i<dimension; i++)
         {
             if ((r1[i*2]>r2[i*2+1]) || (r1[i*2+1]<r2[i*2])) // non overlapping
 	    {
@@ -212,7 +212,7 @@ float* overlapRect(int dimension, float *r1, float *r2)
         return overlap;
 }
 
-float overlap(int dimension, float *r1, float *r2)
+float overlap(long long dimension, float *r1, float *r2)
 // calcutales the overlapping area of r1 and r2
 // calculate overlap in every dimension and multiplicate the values
 {
@@ -262,10 +262,10 @@ float overlap(int dimension, float *r1, float *r2)
     return sum;
 }
 
-void enlarge(int dimension, float **mbr, float *r1, float *r2)
+void enlarge(long long dimension, float **mbr, float *r1, float *r2)
 // enlarge r in a way that it contains s
 {
-    int i;
+    long long i;
 
     *mbr = new float[2*dimension];
     for (i = 0; i < 2*dimension; i += 2)
@@ -276,9 +276,9 @@ void enlarge(int dimension, float **mbr, float *r1, float *r2)
     }
 }
 
-bool section(int dimension, float *mbr1, float *mbr2)
+bool section(long long dimension, float *mbr1, float *mbr2)
 {
-    int i;
+    long long i;
 
     for (i = 0; i < dimension; i++)
     {
@@ -289,7 +289,7 @@ bool section(int dimension, float *mbr1, float *mbr2)
     return TRUE;
 }
 
-bool section_c(int dimension, float *mbr1, float *center, float radius)
+bool section_c(long long dimension, float *mbr1, float *center, float radius)
 {
 	float r2;
 
@@ -308,7 +308,7 @@ int sort_lower_mbr(const void *d1, const void *d2)
 {
     SortMbr *s1, *s2;
     float erg;
-    int dimension;
+    long long dimension;
 
     s1 = (SortMbr *) d1;
     s2 = (SortMbr *) d2;
@@ -328,7 +328,7 @@ int sort_upper_mbr(const void *d1, const void *d2)
 {
     SortMbr *s1, *s2;
     float erg;
-    int dimension;
+    long long dimension;
 
     s1 = (SortMbr *) d1;
     s2 = (SortMbr *) d2;
@@ -346,7 +346,7 @@ int sort_center_mbr(const void *d1, const void *d2)
 // Vergleichsfunktion fuer qsort, sortiert nach center of mbr
 {
     SortMbr *s1, *s2;
-    int i, dimension;
+    long long i, dimension;
     float d, e1, e2;
 
     s1 = (SortMbr *) d1;
@@ -394,8 +394,8 @@ int sortmindist(const void *element1, const void *element2)
 
 }
 
-int pruneBrunchList(float *nearest_distanz, const void *activebrunchList,
-		    int n)
+long long pruneBrunchList(float *nearest_distanz, const void *activebrunchList,
+		    long long n)
 {
 
     // Schneidet im Array BranchList alle Eintraege ab, deren Distanz groesser
@@ -404,7 +404,7 @@ int pruneBrunchList(float *nearest_distanz, const void *activebrunchList,
 
     BranchList *bl;
 
-    int i,j,k, aktlast;
+    long long i,j,k, aktlast;
 
     bl = (BranchList *) activebrunchList;
 
@@ -438,7 +438,7 @@ float objectDIST(float *p1, float *p2)
     //
 
     float summe = 0;
-    int i;
+    long long i;
 
     for( i = 0; i < DIMENSION; i++)
 	summe += pow(p1[i] - p2[i], 2 );
@@ -455,10 +455,10 @@ m2: the bounces of the 2nd mbr
 dim: dimensionality
 *****************************************************************/
 
-float MbrMAXDIST(float *_m1, float *_m2, int _dim)
+float MbrMAXDIST(float *_m1, float *_m2, long long _dim)
 {
 	float dist=0;
-	for (int i=0; i<_dim; i++)
+	for (long long i=0; i<_dim; i++)
 	{
 		float d1=fabs(_m1[2*i]-_m2[2*i+1]);
 		float d2=fabs(_m1[2*i+1]-_m2[2*i]);
@@ -476,10 +476,10 @@ m2: the bounces of the 2nd mbr
 dim: dimensionality
 *****************************************************************/
 
-float MbrMINDIST(float *_m1, float *_m2, int _dim)
+float MbrMINDIST(float *_m1, float *_m2, long long _dim)
 {
 	float dist=0;
-	for (int i=0; i<_dim; i++)
+	for (long long i=0; i<_dim; i++)
 	{
 		if (_m1[2*i]>_m2[2*i+1])
 			dist+=pow(_m1[2*i]-_m2[2*i+1], 2);
@@ -498,7 +498,7 @@ float MINDIST(float *p, float *bounces)
 
     float summe = 0.0;
     float r;
-    int i;
+    long long i;
 
     for(i = 0; i < DIMENSION; i++)
     {
@@ -517,11 +517,11 @@ float MINDIST(float *p, float *bounces)
     return(summe);
 }
 
-float MAXDIST(float *p, float *bounces, int dim)
+float MAXDIST(float *p, float *bounces, long long dim)
 {
     float summe = 0.0;
     float r;
-    int i;
+    long long i;
 
     for(i = 0; i < dim; i++)
     {
@@ -562,7 +562,7 @@ float MINMAXDIST(float *p, float *bounces)
     float S = 0;
 
     float rmk, rMi;
-    int k,i;
+    long long k,i;
 
     for( i = 0; i < DIMENSION; i++)
     {

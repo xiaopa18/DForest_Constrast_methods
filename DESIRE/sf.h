@@ -1,6 +1,6 @@
 #ifndef __sforest
 #define __sforest
-#include "Object.h"
+#include "object.h"
 #include <string>
 #include <cstring>
 #include <fstream>
@@ -14,21 +14,21 @@
 
 
 using namespace std;
-extern int f;
+extern long long f;
 extern double IOread;
 extern double IOwrite;
-extern clock_t IOtime;
+extern double IOtime;
 class Treearr
 {
 public:
-	int tree;
-	int metric;
-	int len;
-	int tot;
+	long long tree;
+	long long metric;
+	long long len;
+	long long tot;
 	char* datas;
 	float* datad;
 	Treearr();
-	Treearr(Object* o, int m);	
+	Treearr(Object* o, long long m);
 	void outnode();
 	~Treearr();
 };
@@ -36,22 +36,22 @@ public:
 class AnsLeaf
 {
 public:
-	int metric;
-	int obj;
+	long long metric;
+	long long obj;
 	float dis;
 	float radi;
-	int loc;
+	long long loc;
 	Object* o;
-	AnsLeaf(int i, int j, float k);
+	AnsLeaf(long long i, long long j, float k);
 	~AnsLeaf();
 };
 
 class SF
 {
-public:	
+public:
 	vector<Treearr*> arr;
-	vector<AnsLeaf*> knn(Object* que, int metric, int k);
-	vector<AnsLeaf*> rnn(Object* que, int metric, float r,int fgg);
+	vector<AnsLeaf*> knn(Object* que, long long metric, long long k);
+	vector<AnsLeaf*> rnn(Object* que, long long metric, float r,long long fgg);
 	//float dis;
 	//float maxdis;
 	SF();

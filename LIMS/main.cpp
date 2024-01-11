@@ -1,4 +1,4 @@
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "fileIO/FileIO.h"
 #include "caculateRef/ChooseRef.h"
 #include "caculateRef/CaculateIValue.h"
@@ -443,7 +443,7 @@ int main(int argc, const char* argv[]){
         return 0;
     }
     double mem_use=0;
-    struct _stat info;
+    struct stat info;
     // Pretreatment : clustering and cluster evaluation
     auto tst=steady_clock::now(),ted=steady_clock::now();
     {
@@ -453,9 +453,9 @@ int main(int argc, const char* argv[]){
             // cout << "k is : " << i << endl;
 
             pnum = i;
-            readm("../data_set/"+dataid+"/"+dataid+"_afterpca.csv", dim, 0);
+            readm("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv", dim, 0);
             int num_alldata = num;
-            cout << num_alldata << endl;
+            cout << "asd" << num_alldata << endl;
             for(int k=0;k<=num;k++)fgg[k]=0;
             work(dim);
 
@@ -472,7 +472,7 @@ int main(int argc, const char* argv[]){
                 work(dim);
                 op(clu_data_path+"/ref_"+to_string(j)+".txt",dim);
             }
-
+            cout<<"asd"<<endl;
             // reread cluster result data file and caculate average err and silhouette coefficient
             vector<Clu_Point> data;
             data.reserve(i);
@@ -660,7 +660,7 @@ int main(int argc, const char* argv[]){
     ouf.setf(ios::fixed);
 
     // range query
-    string rangeQuery_filename = "../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv";
+    string rangeQuery_filename = "../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv";
     vector<Point> list_rangeQry = LoadPointForQuery(rangeQuery_filename);
     int r_num=stoi(string(argv[6]));
     int k_num=stoi(string(argv[7+r_num]));
@@ -749,7 +749,6 @@ int main(int argc, const char* argv[]){
         }
         time /= list_rangeQry.size();
         io_time /= list_rangeQry.size();
-        queryPt_num /= list_rangeQry.size();
         //page /= list_rangeQry.size();
 		cout << "radius: " << r << endl;
         cout << "range query LIMS index time is : " << time << " [µs]" <<  endl;
@@ -772,7 +771,7 @@ int main(int argc, const char* argv[]){
     }
     ouf.setf(ios::fixed);
 
-    filename = "../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv";
+    filename = "../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv";
     vector<Point> list_KNN = LoadPointForQuery(filename);
     for(int ki=1;ki<k_num+1;ki++)
     {

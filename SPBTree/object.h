@@ -9,19 +9,19 @@ using namespace std;
 class Object
 {
 public:
-	int id;
+	long long id;
 	float * data;
-	int size;
-	unsigned* key;
-	int keysize;
+	long long size;
+	unsigned long long* key;
+	long long keysize;
 	string keycomp;
 	void compress();
 	Object();
 	Object(const Object & o);
 	~Object();
-	int write_to_buffer(char* buffer);
-	int read_from_buffer(char* buffer);
-	int getsize();
+	long long write_to_buffer(char* buffer);
+	long long read_from_buffer(char* buffer);
+	long long getsize();
 	double distance(const Object& other) const;
 
     bool operator < (const Object &a) const ;

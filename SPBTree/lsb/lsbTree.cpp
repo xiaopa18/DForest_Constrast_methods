@@ -4,9 +4,9 @@
 #include <memory.h>
 #include <fstream>
 #include "lsb.h"
-#include "lsbentry.h"
-#include "lsbnode.h"
-#include "lsbtree.h"
+#include "lsbEntry.h"
+#include "lsbNode.h"
+#include "lsbTree.h"
 #include "../btree/b-tree.h"
 #include "../blockfile/blk_file.h"
 #include "../gadget/gadget.h"
@@ -32,9 +32,9 @@ buf		starting address of the buffer
 number of bytes read
 *****************************************************************/
 
-int LSBtree::read_header(char *_buf)
+long long LSBtree::read_header(char *_buf)
 {
-	int	ret = 0;
+	long long	ret = 0;
 
 	ret = B_Tree::read_header(_buf);
 
@@ -54,9 +54,9 @@ buf		starting address of the buffer
 number of bytes written
 *****************************************************************/
 
-int LSBtree::write_header(char *_buf)
+long long LSBtree::write_header(char *_buf)
 {
-	int ret = 0;
+	long long ret = 0;
 	
 	ret = B_Tree::write_header(_buf);
 
@@ -78,10 +78,10 @@ void LSBtree::fread_next_entry(FILE *_fp, B_Entry *_d)
 {
 	fscanf(_fp, "%d ", &(_d->son));
 
-	for (int i = 0; i < keysize; i ++)
+	for (long long i = 0; i < keysize; i ++)
 		fscanf(_fp, "%d", &(_d->key[i]));
 
-	for (int i = 0; i < dim; i ++)
+	for (long long i = 0; i < dim; i ++)
 		fscanf(_fp, "%d", &((LSBentry *) _d)->pt[i]);
 	
 	fscanf(_fp, "\n");
@@ -126,9 +126,9 @@ keysize		number of integers needed to represent a z-value
 1			failure
 *****************************************************************/
 
-int LSBtree::init(char *_fname, int _blen, int _dim, int _keysize)
+long long LSBtree::init(char *_fname, long long _blen, long long _dim, long long _keysize)
 {
-	int		ret		= 0; 
+	long long		ret		= 0; 
 
 	char	*fname	= NULL;
 
@@ -188,20 +188,20 @@ e			(out) the entry read.
 1			failure
 *****************************************************************/
 
-int LSBtree::read_next_entry(void **_ptr, B_Entry *_e)
+long long LSBtree::read_next_entry(void **_ptr, B_Entry *_e)
 {
-	int				ret		= 0;
+	long long				ret		= 0;
 
-	int				pos		= -1;
+	long long				pos		= -1;
 	LSBqsortElem	* ptr	= (LSBqsortElem *) (*_ptr);
 
 	pos = ptr->pos;
 
 	_e->son = ptr->ds[pos * (dim + 1)];
 
-	memcpy(_e->key, ptr->z, sizeof(int) * ptr->pz);
+	memcpy(_e->key, ptr->z, sizeof(long long) * ptr->pz);
 
-	memcpy(((LSBentry *) _e)->pt, &(ptr->ds[pos * (dim + 1) + 1]), sizeof(int) * dim);
+	memcpy(((LSBentry *) _e)->pt, &(ptr->ds[pos * (dim + 1) + 1]), sizeof(long long) * dim);
 
 	_e->leafson = _e->son;
 

@@ -123,11 +123,11 @@ bool LinList::erase()
 }
 
 
-Linkable* LinList::get(int i)
+Linkable* LinList::get(long long i)
 // liefert das i-te Element in der Liste
 {
     bool ahead;   // wenn ahead TRUE ist, wird in next-Richtung gesucht
-    int j;
+    long long j;
 
     // liegt das i-te Element ueberhaupt in der Liste?
     if (i >= anz)
@@ -270,11 +270,11 @@ Linkable* LinList::get_prev()
     }
 }
 
-void LinList::print(int k)
+void LinList::print(long long k)
 {
     SLink *cur = first;
 
-	int count = 0;
+	long long count = 0;
     while (cur != NULL&&count<k)
     {
 	  printf("%f %f \n",cur->d->bounces[0],cur->d->bounces[2]);
@@ -286,7 +286,7 @@ void LinList::print(int k)
 void LinList::check()
 {
     SLink *f, *old_f;
-    int myanz;
+    long long myanz;
     char buffer[255];
 
     old_f = first;
@@ -324,7 +324,7 @@ void LinList::check()
 	myanz ++;
 	if (myanz > anz)
 	{
-	    sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
+	    sprintf(buffer, "LinList::check: anz (%lld != %lld) passt nicht", myanz, anz);
 	    error(buffer, FALSE);
 	    return;
 	}
@@ -344,7 +344,7 @@ void LinList::check()
 
     if (myanz != anz)
     {
-	sprintf(buffer, "LinList::check: anz (%d != %d) passt nicht", myanz, anz);
+	sprintf(buffer, "LinList::check: anz (%lld != %lld) passt nicht", myanz, anz);
 	error(buffer, FALSE);
     }
 }

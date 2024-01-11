@@ -15,7 +15,7 @@ HeapEntry::~HeapEntry()
 {
 }
 //------------------------------------------
-void HeapEntry::init_HeapEntry(int _dim)
+void HeapEntry::init_HeapEntry(long long _dim)
 {
 	dim = _dim;
 }
@@ -40,7 +40,7 @@ Heap::~Heap()
 	
 	if (cont)
 	{
-		for (int i = 0; i < hsize + 1; i ++)
+		for (long long i = 0; i < hsize + 1; i ++)
 			delete cont[i];
 		delete [] cont;
 	}
@@ -48,11 +48,11 @@ Heap::~Heap()
 	cont = NULL;
 }
 //------------------------------------------
-void Heap::enter(HeapEntry *_he, int _pos)
+void Heap::enter(HeapEntry *_he, long long _pos)
 //this function enters a new entry into the heap at position _pos
 {
 
-	for (int i = used - 1; i >= _pos; i --)
+	for (long long i = used - 1; i >= _pos; i --)
 	{
 		cont[i + 1]->copy(cont[i]);
 	}
@@ -74,15 +74,15 @@ Output:
 
 void Heap::insert(HeapEntry *_he)
 {
-	int pos = used;  //pos is the position _he will be inserted
+	long long pos = used;  //pos is the position _he will be inserted
 
 	enter(_he, pos);
 	// now perform swapping
 	pos++;
-	int parent = pos;
+	long long parent = pos;
 	while (parent != 1)
 	{
-		int child = parent;
+		long long child = parent;
 		parent /= 2;
 		if (cont[parent - 1]->key > cont[child - 1]->key)
 		{
@@ -115,10 +115,10 @@ bool Heap::remove(HeapEntry *_he)
 	_he -> copy(cont[0]);
 	used--;
 	cont[0]->copy(cont[used]);
-	int parent = 1;
+	long long parent = 1;
 	while (2 * parent <= used)
 	{
-		int child = 2 * parent;
+		long long child = 2 * parent;
 		if (2 * parent + 1 > used)
 			child = 2 * parent;
 		else
@@ -144,17 +144,17 @@ bool Heap::remove(HeapEntry *_he)
 	return true;
 };
 //------------------------------------------
-void Heap::init(int _dim, int _hsize)
+void Heap::init(long long _dim, long long _hsize)
 {
 	if (cont)
 	{
-		for (int i = 0; i < hsize + 1; i ++)
+		for (long long i = 0; i < hsize + 1; i ++)
 			delete cont[i];
 		delete [] cont;
 	}
 	hsize = _hsize;
 	cont = new HeapEntryptr [hsize + 1];
-	for (int i = 0; i < hsize + 1; i ++)
+	for (long long i = 0; i < hsize + 1; i ++)
 	{
 		cont[i] = new_one_HeapEntry();
 		cont[i]->init_HeapEntry(_dim);
@@ -170,7 +170,7 @@ function for debugging
 
 bool Heap::check()
 {
-	for (int i = 0; i < used; i ++)
+	for (long long i = 0; i < used; i ++)
 	{
 		if (cont[i]->son < 0)
 			return false;

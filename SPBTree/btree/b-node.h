@@ -18,19 +18,19 @@ class B_Node
 public:
 	//--==disk residential variables==--
 	char level;
-	int num_entries;
-	int left_sibling;
-	int right_sibling;
+	long long num_entries;
+	long long left_sibling;
+	long long right_sibling;
 	B_Entry **entries;
 
 
-	int* min;
-	int* max;
+	long long* min;
+	long long* max;
 
 	//--==others==--
 	bool dirty;
-	int block;
-	int capacity;
+	long long block;
+	long long capacity;
 	B_Tree *my_tree;
 
 	//--==functions==--
@@ -40,32 +40,32 @@ public:
 	virtual void add_new_child(B_Node *_cnd);
 	virtual bool chk_undrflw();
 	virtual bool chk_ovrflw();
-	virtual int choose_subtree(B_Entry *_new_e);
+	virtual long long choose_subtree(B_Entry *_new_e);
 	virtual BDEL delete_entry(B_Entry * _del_e);
 	virtual void enter(B_Entry *_new_e);
-	virtual int get_header_size();
-	virtual B_Entry ** get_entries(int _cap);
+	virtual long long get_header_size();
+	virtual B_Entry ** get_entries(long long _cap);
 	virtual B_Node* get_left_sibling();
 	virtual B_Node* get_right_sibling();
-	virtual void init(int _level, B_Tree *_B_Tree);
-	virtual void init(B_Tree *_B_Tree, int _block);
+	virtual void init(long long _level, B_Tree *_B_Tree);
+	virtual void init(B_Tree *_B_Tree, long long _block);
 	virtual BINSRT insert(B_Entry *_new_e, B_Node **_new_nd);
-	virtual int max_lesseq_key_pos(unsigned* _key);
-	virtual int max_lesseq_key_pos(B_Entry *_e);
+	virtual long long max_lesseq_key_pos(unsigned long long* _key);
+	virtual long long max_lesseq_key_pos(B_Entry *_e);
 	virtual B_Entry *new_one_entry();
 	virtual B_Node *new_one_node();
-	int ptqry_next_follow(B_Entry *_e);
+	long long ptqry_next_follow(B_Entry *_e);
 	virtual void read_from_buffer(char *_buf);
-	virtual void rmv_entry(int _pos);
-	virtual void rmv_entry_in_memory(int _pos); 
-	virtual int traverse(double *_info);
+	virtual void rmv_entry(long long _pos);
+	virtual void rmv_entry_in_memory(long long _pos); 
+	virtual long long traverse(double *_info);
 	virtual void trt_ovrflw(B_Node **_new_nd);
-	virtual void trt_undrflw(int _follow);
+	virtual void trt_undrflw(long long _follow);
 	virtual void write_to_buffer(char *_buf);
 	virtual bool find_key(B_Entry* _k);
-	virtual int find_key(unsigned * key, unsigned* next_key, vector<int> * v);
+	virtual long long find_key(unsigned long long * key, unsigned long long* next_key, vector<long long> * v);
 	virtual void print();
-	virtual int compareint(unsigned * a, unsigned *b,int s);
+	virtual long long compareint(unsigned long long * a, unsigned long long *b,long long s);
 	
 };
 

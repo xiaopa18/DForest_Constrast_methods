@@ -15,27 +15,27 @@ class Entry
 {
 public:
 //--===on disk===--
-	int son;
+	long long son;
 	float *bounces; 
 
 //--===others===--
-	int dimension;                      
-	int level;
-	int ptr;
+	long long dimension;                      
+	long long level;
+	long long ptr;
     RTree *my_tree;                     
     RTNode *son_ptr;                    
    
 
 //--===functions===--
 	Entry();
-	Entry(int dimension, RTree *rt);
+	Entry(long long dimension, RTree *rt);
     ~Entry();
 
 	void del_son();
 	Linkable *gen_Linkable();
-	int get_size(); 
+	long long get_size(); 
 	RTNode *get_son();
-	void init_entry(int _dimension, RTree *_rt);
+	void init_entry(long long _dimension, RTree *_rt);
 	void read_from_buffer(char *buffer);// reads data from buffer
     SECTION section(float *mbr);        // tests, if mbr intersects the box
 	bool section_circle(float *center, float radius);

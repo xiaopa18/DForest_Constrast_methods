@@ -8,7 +8,7 @@ using namespace std;
 class SortEntry
 {
 public:
-	int id;
+	long long id;
 	double key;
 
 	SortEntry()
@@ -31,7 +31,7 @@ public:
 class TEntry
 {
 public:
- int id;
+ long long id;
  string key;
 
 TEntry()
@@ -59,10 +59,10 @@ id =-1;
 class HEntry
 {
 public:
-	unsigned * key;
-	int keysize;
-	int id;
-	HEntry(unsigned * a, int s, int i)
+	unsigned long long * key;
+	long long keysize;
+	long long id;
+	HEntry(unsigned long long * a, long long s, long long i)
 	{
 		key = a;
 		keysize = s;
@@ -89,7 +89,7 @@ public:
 	bool operator < (const HEntry &a) const 
 	{
 		bool flag = true;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -107,7 +107,7 @@ public:
 	bool operator > (const HEntry &a) const 
 	{
 		bool flag = false;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -124,7 +124,7 @@ public:
 
 	void print()
 	{
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			cout<<key[i]<<" ";
 		}
@@ -134,11 +134,11 @@ public:
 class IntArray
 {
 public:
-	unsigned * key;
-	int keysize;
-	int edist;
+	unsigned long long * key;
+	long long keysize;
+	long long edist;
 	bool f;
-	IntArray(unsigned * a, int s)
+	IntArray(unsigned long long * a, long long s)
 	{
 		key = a;
 		a = NULL;
@@ -167,7 +167,7 @@ public:
 	bool operator < (const IntArray &a) const 
 	{
 		bool flag = true;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -185,7 +185,7 @@ public:
 	bool operator > (const IntArray &a) const 
 	{
 		bool flag = false;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -202,7 +202,7 @@ public:
 
 	void print()
 	{
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			cout<<key[i]<<" ";
 		}

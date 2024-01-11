@@ -254,7 +254,7 @@ int main(int argc, char** argv){
 	char* fname;
     string dataid=string(argv[1]);
 	string filnn;
-	string finame = ("../data_set/"+dataid+"/"+dataid+"_afterpca.csv").c_str();
+	string finame = ("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv").c_str();
 
 	int pn=stoi(argv[2]);
 

@@ -29,7 +29,7 @@ para:
 - tar_fname: target file name
 *****************************************************************/
 
-void ExtSort::init(int _n, char *_src_fname, char *_tar_fname)
+void ExtSort::init(long long _n, char *_src_fname, char *_tar_fname)
 {
 	n = _n;
 	if (n < 2)
@@ -38,12 +38,12 @@ void ExtSort::init(int _n, char *_src_fname, char *_tar_fname)
 	src_fname = _src_fname;
 	tar_fname = _tar_fname;
 
-	int len = strlen(_tar_fname);
+	long long len = strlen(_tar_fname);
 	working_folder = new char[len + 1];
 	strcpy(working_folder, _tar_fname);
 
-	int pos = -1;
-	for (int i = len - 1; i >= 0; i --)
+	long long pos = -1;
+	for (long long i = len - 1; i >= 0; i --)
 		if (working_folder[i] == '/')
 		{
 			pos = i;
@@ -62,15 +62,17 @@ para:
 - (out) fname: the constructed file name
 *****************************************************************/
 
-void ExtSort::get_run_fname(int _step, int _run, char *_fname)
+void ExtSort::get_run_fname(long long _step, long long _run, char *_fname)
 {
 	char *step_name = new char[100];
 	char *run_name = new char[100];
-
+    cout<<"asd"<<endl;
 //	sprintf(step_name,"%d",_step);
 //	sprintf(run_name,"%d",_run);
-	itoa(_step, step_name, 10);
-	itoa(_run, run_name, 10);
+//	itoa(_step, step_name, 10);
+//	itoa(_run, run_name, 10);
+	snprintf(step_name, 10, "%d", _step);
+	snprintf(run_name, 10, "%d", _run);
 	cout<<step_name<<" "<<run_name<<endl;
 	strcpy(_fname, working_folder);
 	strcat(_fname, step_name);
@@ -93,23 +95,23 @@ return value:
 - the number of runs produced in this pass
 *****************************************************************/
 
-int ExtSort::merge_runs(int _pass, int _run_num)
+long long ExtSort::merge_runs(long long _pass, long long _run_num)
 {
-	int ret = 0;
-	int num_completed_runs = 0;
+	long long ret = 0;
+	long long num_completed_runs = 0;
 
 	char fname[100];
 	FILE **files = new FILEptr[n];
 
 	voidptr *mem = new voidptr[n];
-	for (int i = 0; i < n; i ++)
+	for (long long i = 0; i < n; i ++)
 		mem[i] = new_elem();
 
 	while (num_completed_runs < _run_num)
 	{
-		int num_act_runs = min(n, _run_num - num_completed_runs);
+		long long num_act_runs = min(n, _run_num - num_completed_runs);
 
-		for (int i = 0; i < num_act_runs; i ++)
+		for (long long i = 0; i < num_act_runs; i ++)
 		{
 			get_run_fname(_pass, num_completed_runs + i + 1, fname);
 
@@ -139,13 +141,13 @@ int ExtSort::merge_runs(int _pass, int _run_num)
 			exit(1);
 		}
 
-		int num_still_active = num_act_runs;
+		long long num_still_active = num_act_runs;
 
 		ExtSortBinHeap *hp = new ExtSortBinHeap();
 		hp->ext_sort_comp_func = compare_func;
 
 		//----- get the first record from each file -----
-		for (int i = 0; i < num_act_runs; i ++)
+		for (long long i = 0; i < num_act_runs; i ++)
 		{
 			ExtSort_heap_entry_data *item = new ExtSort_heap_entry_data;
 			item->file_id = i;
@@ -192,14 +194,14 @@ int ExtSort::merge_runs(int _pass, int _run_num)
 		num_completed_runs += num_act_runs;
 	}
 
-	for (int i = 0; i < n; i ++)
+	for (long long i = 0; i < n; i ++)
 		destroy_elem(&mem[i]);
 	delete [] mem;
 
 	delete [] files;
 
 	//----- remove the run files of the previous pass -----
-	for (int i = 0; i < _run_num; i ++)
+	for (long long i = 0; i < _run_num; i ++)
 	{
 		get_run_fname(_pass, i + 1, fname);
 		remove(fname);
@@ -226,7 +228,7 @@ bool exExtSort::read_elem(FILE *_fp, void *_elem)
 	{
 		fscanf(_fp, "%lf", v);
 
-		for (int i = 1; i < keysize; i ++)
+		for (long long i = 1; i < keysize; i ++)
 		{
 			fscanf(_fp, " %lf", &v[i]);
 		}
@@ -252,10 +254,10 @@ void exExtSort::write_elem(FILE *_fp, void *_elem)
 {
 	double *v = (double *) _elem;
 
-	fprintf(_fp, "%d", (int) v[0]);
+	fprintf(_fp, "%d", (long long) v[0]);
 
-	for (int i = 1; i < keysize; i ++)
-		fprintf(_fp, " %d", (int) v[i]);
+	for (long long i = 1; i < keysize; i ++)
+		fprintf(_fp, " %d", (long long) v[i]);
 
 	fprintf(_fp, "\n");
 }
@@ -301,17 +303,17 @@ return value:
 - the number of runs produced
 *****************************************************************/
 
-int ExtSort::get_initial_runs()
+long long ExtSort::get_initial_runs()
 {
 	FILE * src_fp = fopen(src_fname, "r");
 
 	char fname[100];
 	voidptr *mem = new voidptr[n];
-	for (int i = 0; i < n; i ++)
+	for (long long i = 0; i < n; i ++)
 		mem[i] = new_elem();
 
-	int run = 0;												//the label of the current run
-	int r_cnt =	0;												//counts how many records read
+	long long run = 0;												//the label of the current run
+	long long r_cnt =	0;												//counts how many records read
 
 	bool again = true;
 	while (again)
@@ -336,7 +338,7 @@ int ExtSort::get_initial_runs()
 				exit(1);
 			}
 
-			for (int i = 0; i < r_cnt; i ++)
+			for (long long i = 0; i < r_cnt; i ++)
 			{
 				write_elem(ofp, mem[i]);
 			}
@@ -352,7 +354,7 @@ int ExtSort::get_initial_runs()
 		}
 	}
 
-	for (int i = 0; i < n; i ++)
+	for (long long i = 0; i < n; i ++)
 		destroy_elem(&mem[i]);
 	delete [] mem;
 
@@ -385,10 +387,10 @@ void ExtSort::esort()
 	remove(tar_fname);
 	//----------------------------------
 
-	int pass = 0;
+	long long pass = 0;
 
 	//----- initial runs -----
-	int run_num = get_initial_runs();
+	long long run_num = get_initial_runs();
 	//------------------------
 
 	//----- merging -----
@@ -441,9 +443,9 @@ return:
   1: v2 smaller
 *****************************************************************/
 
-int compfloats(double _v1, double _v2)
+long long compfloats(double _v1, double _v2)
 {
-	int ret = 0;
+	long long ret = 0;
 
 	if (_v1 - _v2 < -FLOATZERO)
 		ret = -1;
@@ -464,10 +466,10 @@ return:
 - true or false
 *****************************************************************/
 
-bool is_pow_of_2(int _v)
+bool is_pow_of_2(long long _v)
 {
-	int x = (int) (log( (double) _v) / log(2.0));
-	int y = (int) pow(2.0, x);
+	long long x = (long long) (log( (double) _v) / log(2.0));
+	long long y = (long long) pow(2.0, x);
 
 	return (_v == y);
 }
@@ -484,9 +486,9 @@ para
 
 void getFNameFromPath(char *_path, char *_fname)
 {
-	int i;
-	int len = strlen(_path);
-	int pos = -1;
+	long long i;
+	long long len = strlen(_path);
+	long long pos = -1;
 
 	for (i = len - 1; i >= 0; i --)
 	{
@@ -518,10 +520,10 @@ para:
 
 void get_leading_folder(char *_path, char *_folder)
 {
-	int len = strlen(_path);
-	int pos = -1;
+	long long len = strlen(_path);
+	long long pos = -1;
 
-	for (int i = len - 1; i >= 0; i --)
+	for (long long i = len - 1; i >= 0; i --)
 	{
 		if (_path[i] == '/')
 		{
@@ -530,8 +532,8 @@ void get_leading_folder(char *_path, char *_folder)
 		}
 	}
 
-	int i;
-	for (int i = 0; i <= pos; i ++)
+	long long i;
+	for (long long i = 0; i <= pos; i ++)
 	{
 		_folder[i] = _path[i];
 	}
@@ -546,16 +548,16 @@ para:
 - n
 *****************************************************************/
 
-void blank_print(int _n)
+void blank_print(long long _n)
 {
-	for (int i = 0; i < _n; i ++)
+	for (long long i = 0; i < _n; i ++)
 		printf("   ");
 }
 
-double l2_dist_int(int *_p1, int *_p2, int _dim)
+double l2_dist_int(long long *_p1, long long *_p2, long long _dim)
 {
 	double ret = 0;
-	for (int i = 0; i < _dim; i ++)
+	for (long long i = 0; i < _dim; i ++)
 	{
 		double dif = (double) (_p1[i] - _p2[i]);
 		ret += dif * dif;
@@ -631,11 +633,11 @@ n
 m
 *****************************************************************/
 
-void printINT_in_BIN(int _n, int _m)
+void printINT_in_BIN(long long _n, long long _m)
 {
-	int		i		= -1;
-	int		mask	= -1;
-	int		n		= -1;
+	long long		i		= -1;
+	long long		mask	= -1;
+	long long		n		= -1;
 
 	mask = 1 << _m;
 	mask --;

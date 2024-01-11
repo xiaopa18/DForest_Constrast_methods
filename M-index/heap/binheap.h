@@ -4,8 +4,8 @@
 class BinHeapEntry
 {
 public:
-	int leftcnt;										//how many nodes in total in the left subtree
-	int rightcnt;										//in the right
+	long long leftcnt;										//how many nodes in total in the left subtree
+	long long rightcnt;										//in the right
 	BinHeapEntry *leftchild;								
 	BinHeapEntry *rightchild;	
 	BinHeapEntry *parent;	

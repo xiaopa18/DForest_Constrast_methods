@@ -39,9 +39,9 @@ return:
 Coded by Yufei Tao, 31 july 08
 *****************************************************************/
 
-int compfloats(float _v1, float _v2)
+long long compfloats(float _v1, float _v2)
 {
-	int ret = 0; 
+	long long ret = 0; 
 
 	if (_v1 - _v2 < -FLOATZERO)
 		ret = -1;
@@ -64,10 +64,10 @@ return:
 Coded by Yufei Tao, 31 july 08
 *****************************************************************/
 
-bool is_pow_of_2(int _v)
+bool is_pow_of_2(long long _v)
 {
-	int x = (int) (log( (float) _v) / log(2.0));
-	int y = (int) pow(2.0, x);
+	long long x = (long long) (log( (float) _v) / log(2.0));
+	long long y = (long long) pow(2.0, x);
 
 	return (_v == y);
 }
@@ -86,9 +86,9 @@ Coded by Yufei Tao, 4 aug 08
 
 void getFNameFromPath(char *_path, char *_fname)
 {
-	int i;
-	int len = strlen(_path);
-	int pos = -1;
+	long long i;
+	long long len = strlen(_path);
+	long long pos = -1;
 
 	for (i = len - 1; i >= 0; i --)
 	{
@@ -122,10 +122,10 @@ Coded by Yufei Tao, 7 aug 08
 
 void get_leading_folder(char *_path, char *_folder)
 {
-	int len = strlen(_path);
-	int pos = -1;
+	long long len = strlen(_path);
+	long long pos = -1;
 
-	for (int i = len - 1; i >= 0; i --)
+	for (long long i = len - 1; i >= 0; i --)
 	{
 		if (_path[i] == '/')
 		{
@@ -134,8 +134,8 @@ void get_leading_folder(char *_path, char *_folder)
 		}
 	}
 
-	int i=0;
-	for (int i = 0; i <= pos; i ++)
+	long long i=0;
+	for (long long i = 0; i <= pos; i ++)
 	{
 		_folder[i] = _path[i];
 	}
@@ -152,9 +152,9 @@ para:
 Coded by Yufei Tao, 7 aug 08
 *****************************************************************/
 
-void blank_print(int _n)
+void blank_print(long long _n)
 {
-	for (int i = 0; i < _n; i ++)
+	for (long long i = 0; i < _n; i ++)
 		printf("   ");
 }
 
@@ -162,10 +162,10 @@ void blank_print(int _n)
 Coded by Yufei Tao, 7 aug 08
 *****************************************************************/
 
-float l2_dist_int(int *_p1, int *_p2, int _dim)
+float l2_dist_int(long long *_p1, long long *_p2, long long _dim)
 {
 	float ret = 0;
-	for (int i = 0; i < _dim; i ++)
+	for (long long i = 0; i < _dim; i ++)
 	{
 		float dif = (float) (_p1[i] - _p2[i]);
 		ret += dif * dif;
@@ -265,11 +265,11 @@ yf tao
 19 aug 09
 *****************************************************************/
 
-void printINT_in_BIN(int _n, int _m)
+void printINT_in_BIN(long long _n, long long _m)
 {
-	int		i		= -1;
-	int		mask	= -1;
-	int		n		= -1;
+	long long		i		= -1;
+	long long		mask	= -1;
+	long long		n		= -1;
 
 	mask = 1 << _m;
 	mask --;

@@ -10,9 +10,9 @@
 #include "./monitoring.hpp"
 #define MAX(x, y) ((x>y)? (x): (y))
 #include <iostream>
-
+#include<chrono>
 using namespace std;
-
+using namespace std::chrono;
 // parse raw data
 Interpreter* pi;
 // each line pivId sequence
@@ -746,7 +746,7 @@ bool readIndex(Tuple* t, char* fname)
 
 int main(int argc, char **argv)
 {
-	clock_t begin, buildEnd, queryEnd;
+	double begin, buildEnd, queryEnd;
 	double buildComp, queryComp;
     int current_pid = GetCurrentPid();
 
@@ -759,7 +759,7 @@ int main(int argc, char **argv)
 	//parse raw data into structural data
 
     vector<vector<double>> queryset;
-    ifstream inf("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
+    ifstream inf("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
     if(!inf.is_open())
     {
         cout<<"open "<<"../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv"<<" failed"<<endl;
@@ -784,17 +784,19 @@ int main(int argc, char **argv)
     inf.close();
     cout<<"read queryset over"<<endl;
 	{
+	    auto tist=steady_clock::now(),tied=steady_clock::now();
 	    auto mem_use=-GetMemoryUsage(current_pid);
 	    pi = new Interpreter();
-		string fn=("../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
+		string fn=("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
         pi->parseRawData(fn.c_str());
         cout<<"read dataset over"<<endl;
 		LGroup = pn;
-		begin = clock();
+		tist=steady_clock::now();
 		compDists = 0;
 		// build EPT
 		algorithm3();
-		buildEnd = clock() - begin;
+		tied=steady_clock::now();
+		buildEnd=duration_cast<milliseconds>(tied - tist).count();
 		cout<<"builde EPT over"<<endl;
         mem_use+=GetMemoryUsage(current_pid);
 		buildComp = compDists;
@@ -816,7 +818,7 @@ int main(int argc, char **argv)
             double r=stod(string(argv[5+k]));
 			compDists = 0;
 			rad = 0;
-			clock_t start = clock();
+			tist=steady_clock::now();
 			for (int j = 0; j < queryset.size();j++) {
 				for (int x = 0; x < pi->dim; x++)
                 {
@@ -826,11 +828,11 @@ int main(int argc, char **argv)
 				int temp = rangeQuery(obj, r, j);
 				rad += temp;
 			}
-			clock_t times = clock() - start;
+			tied=steady_clock::now();
 			ouf<<dataid<<","<<queryid<<",EPT,"<<"pn:"<<LGroup<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<1.0*duration_cast<milliseconds>(tied - tist).count()/queryset.size()<<"ms"<<endl;
             cout<<dataid<<","<<queryid<<",EPT,"<<"pn:"<<LGroup<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<1.0*duration_cast<milliseconds>(tied - tist).count()/queryset.size()<<"ms"<<endl;
 		}
         ouf.close();
 
@@ -846,7 +848,7 @@ int main(int argc, char **argv)
             int k=stoi(argv[6+querycount+i]);
             compDists = 0;
 			rad=0;
-            clock_t start = clock();
+            tist=steady_clock::now();
 			for (int j = 0; j < queryset.size();j++) {
 				for (int x = 0; x < pi->dim; x++)
                 {
@@ -855,11 +857,11 @@ int main(int argc, char **argv)
                 }
                 rad+=KNNQuery(obj,k);
 			}
-			clock_t times = clock() - start;
+			tied=steady_clock::now();
 			ouf<<dataid<<","<<queryid<<",EPT,"<<"pn:"<<LGroup<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<1.0*duration_cast<milliseconds>(tied - tist).count()/queryset.size()<<"ms"<<endl;
             cout<<dataid<<","<<queryid<<",EPT,"<<"pn:"<<LGroup<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<1.0*duration_cast<milliseconds>(tied - tist).count()/queryset.size()<<"ms"<<endl;
         }
         ouf.close();
 		//free(g);

@@ -13,26 +13,26 @@
 #include "object.h"
 using namespace std;
 extern RAF* Obj_f;
-extern int* metricm;
+extern long long* metricm;
 class bpnode
 {
 public:	
-	int metric;
-	int objloc;
-	int len;
-	int son;
+	long long metric;
+	long long objloc;
+	long long len;
+	long long son;
 	char* datas;
 	float* datad;
 	float disl,disr;
 	float dis;
 	void outnode(string str);
-	int getsize();
-	int write_to_buffer(char* buffer);
-	int read_from_buffer(char* buffer);
+	long long getsize();
+	long long write_to_buffer(char* buffer);
+	long long read_from_buffer(char* buffer);
 	bpnode();
 	void copy(bpnode* m);
 	float distance(bpnode* m);
-	bpnode(int m, Object* o);
+	bpnode(long long m, Object* o);
 	~bpnode();
 };
 

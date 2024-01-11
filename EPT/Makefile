@@ -7,7 +7,7 @@ TARGET=main
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LINK.cpp) $^ -lpsapi $(LOADLIBES) $(LDLIBS) -o $@
+	$(LINK.cpp) $^  $(LOADLIBES) $(LDLIBS) -o $@
 
 .PHONY: clean
 clean:

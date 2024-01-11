@@ -3,7 +3,7 @@
 #include <chrono>
 #include <string.h>
 
-#define WIN //Please comment if you use linux
+//#define WIN //Please comment if you use linux
 
 #ifdef WIN
 #include <windows.h>

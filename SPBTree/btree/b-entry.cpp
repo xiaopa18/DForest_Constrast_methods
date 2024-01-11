@@ -107,14 +107,14 @@ B_Entry::~B_Entry()
 
 //-----------------------------------------------
 
-int B_Entry::get_size(int _level)
+long long B_Entry::get_size(long long _level)
 { 
-	int size;
+	long long size;
 	
 	if (_level == 0) 
-		size = sizeof(son) + sizeof(unsigned int) * my_tree->keysize + sizeof(ptr); 
+		size = sizeof(son) + sizeof(unsigned long long) * my_tree->keysize + sizeof(ptr); 
 	else
-		size = sizeof(son) + sizeof(leafson) + 3*sizeof(unsigned int) * my_tree->keysize; 
+		size = sizeof(son) + sizeof(leafson) + 3*sizeof(unsigned long long) * my_tree->keysize; 
 
 	return size;
 }
@@ -145,22 +145,22 @@ void B_Entry::del_son()
 
 //-----------------------------------------------
 
-int B_Entry::read_from_buffer(char *_buf)
+long long B_Entry::read_from_buffer(char *_buf)
 {
-	int i;
-	memcpy(key, _buf, my_tree->keysize * sizeof(unsigned int));
-	i = my_tree->keysize * sizeof(unsigned int);
+	long long i;
+	memcpy(key, _buf, my_tree->keysize * sizeof(unsigned long long));
+	i = my_tree->keysize * sizeof(unsigned long long);
 
 	memcpy(&son, &_buf[i], sizeof(son));
 	i += sizeof(son);
 
 	if(level >0)
 	{
-	memcpy(min, &_buf[i], my_tree->keysize * sizeof(unsigned int));
-	i+=my_tree->keysize * sizeof(unsigned int);
+	memcpy(min, &_buf[i], my_tree->keysize * sizeof(unsigned long long));
+	i+=my_tree->keysize * sizeof(unsigned long long);
 
-	memcpy(max, &_buf[i], my_tree->keysize * sizeof(unsigned int));
-	i+=my_tree->keysize * sizeof(unsigned int);
+	memcpy(max, &_buf[i], my_tree->keysize * sizeof(unsigned long long));
+	i+=my_tree->keysize * sizeof(unsigned long long);
 	}
 
 	if (level > 0)
@@ -183,17 +183,17 @@ int B_Entry::read_from_buffer(char *_buf)
 
 //-----------------------------------------------
 
-void B_Entry::init(B_Tree *_B_Tree, int _level)
+void B_Entry::init(B_Tree *_B_Tree, long long _level)
 { 
 	my_tree = _B_Tree; 
 	level = _level;
-	key = new unsigned[my_tree->keysize];
+	key = new unsigned long long[my_tree->keysize];
 	mi = NULL;
 	ma = NULL;
 	if(_level > 0)
 	{
-		min =  new unsigned[my_tree->keysize];
-		max = new unsigned[my_tree->keysize];
+		min =  new unsigned long long[my_tree->keysize];
+		max = new unsigned long long[my_tree->keysize];
 	}
 	else
 	{
@@ -204,22 +204,22 @@ void B_Entry::init(B_Tree *_B_Tree, int _level)
 
 //-----------------------------------------------
 
-int B_Entry::write_to_buffer(char *_buf)
+long long B_Entry::write_to_buffer(char *_buf)
 {
-	int i;
-	memcpy(_buf, key, my_tree->keysize * sizeof(unsigned int));
-	i = my_tree->keysize * sizeof(unsigned int);
+	long long i;
+	memcpy(_buf, key, my_tree->keysize * sizeof(unsigned long long));
+	i = my_tree->keysize * sizeof(unsigned long long);
 
 	memcpy(&_buf[i], &son, sizeof(son));
 	i += sizeof(son);
 
 	if(level >0)
 	{
-		memcpy(&_buf[i], min, my_tree->keysize * sizeof(unsigned int));
-		i += my_tree->keysize * sizeof(unsigned int);
+		memcpy(&_buf[i], min, my_tree->keysize * sizeof(unsigned long long));
+		i += my_tree->keysize * sizeof(unsigned long long);
 
-		memcpy(&_buf[i], max, my_tree->keysize * sizeof(unsigned int));
-		i += my_tree->keysize * sizeof(unsigned int);
+		memcpy(&_buf[i], max, my_tree->keysize * sizeof(unsigned long long));
+		i += my_tree->keysize * sizeof(unsigned long long);
 	}
 	
 	if (level > 0)
@@ -244,12 +244,12 @@ void B_Entry::set_from(B_Entry *_e)
 	if (level != _e->level)
 		error("Error in B_Entry::set_from -- different levels",	true);
 
-	memcpy(key, _e->key, _e->my_tree->keysize * sizeof(unsigned int));
+	memcpy(key, _e->key, _e->my_tree->keysize * sizeof(unsigned long long));
 
 	if(level>0)
 	{
-		memcpy(min, _e->min, _e->my_tree->keysize * sizeof(unsigned int));
-		memcpy(max, _e->max, _e->my_tree->keysize * sizeof(unsigned int));
+		memcpy(min, _e->min, _e->my_tree->keysize * sizeof(unsigned long long));
+		memcpy(max, _e->max, _e->my_tree->keysize * sizeof(unsigned long long));
 	}
 	my_tree = _e->my_tree;
 	son = _e->son;
@@ -278,7 +278,7 @@ bool B_Entry::equal_to(B_Entry *_e)
 
 	if (ret)
 	{
-		for (int i = 0; i < my_tree->keysize; i ++)
+		for (long long i = 0; i < my_tree->keysize; i ++)
 		{
 			if (key[i] != _e->key[i])
 			{
@@ -300,7 +300,7 @@ para:
 void B_Entry::set_from_child(B_Node *_nd)
 {
 	son = _nd->block;
-	memcpy(key, _nd->entries[0]->key, my_tree->keysize * sizeof(unsigned int)); 
+	memcpy(key, _nd->entries[0]->key, my_tree->keysize * sizeof(unsigned long long)); 
 	leafson = _nd->entries[0]->leafson;
 }
 
@@ -323,11 +323,11 @@ return
   1: the host entry comes later
 *****************************************************************/
 
-int B_Entry::compare_key(B_Entry *_e)
+long long B_Entry::compare_key(B_Entry *_e)
 {
-	int ret = 0; 
+	long long ret = 0; 
 
-	for (int i = 0; i < my_tree->keysize; i++)
+	for (long long i = 0; i < my_tree->keysize; i++)
 	{
 		if (key[i] < _e->key[i])
 		{
@@ -355,9 +355,9 @@ return
   1: the host entry comes later
 *****************************************************************/
 
-int B_Entry::compare(B_Entry *_e)
+long long B_Entry::compare(B_Entry *_e)
 {
-	int ret = compare_key(_e);
+	long long ret = compare_key(_e);
 
 	if (ret == 0)
 	{

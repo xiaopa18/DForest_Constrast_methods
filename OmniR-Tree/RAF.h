@@ -3,17 +3,17 @@
 class BlockFile;
 class Cache;
 class Object;
-#include "blockfile\cache.h"
+#include "blockfile/cache.h"
 
 class RAF: public Cacheable
 {
 public:
-	int num_obj; // the total number of objects
+	long long num_obj; // the total number of objects
 
-	void init(char *_fname, int _b_length, Cache *_c);
+	void init(char *_fname, long long _b_length, Cache *_c);
 	void init_restore(char *_fname, Cache *_c);
 
-	int* buid_from_array(Object** objset, int * order);
+	long long* buid_from_array(Object** objset, long long * order);
 };
 
 #endif

@@ -25,12 +25,12 @@ void bpnode::copy(bpnode* m) {
 	case 4:
 	case 5:
 		datad = new float[len];
-		for (int i = 0; i < len; i++)
+		for (long long i = 0; i < len; i++)
 			datad[i] = m->datad[i];
 		break;
 	case 6:
 		datas = new char[len];
-		for (int i = 0; i < len; i++)
+		for (long long i = 0; i < len; i++)
 			datas[i] = m->datas[i];
 		break;
 	}
@@ -42,7 +42,7 @@ float bpnode::distance(bpnode* m)
 	return baseme(datad, m->datad, datas, m->datas, metric, len);
 }
 
-bpnode::bpnode(int m, Object* o) {
+bpnode::bpnode(long long m, Object* o) {
 	
 	disl = 0;
 	disr = 0;
@@ -62,14 +62,14 @@ bpnode::bpnode(int m, Object* o) {
 		datad = new float[o->size[m * 2 + 1] - o->size[m * 2]];
 		len = o->size[m * 2 + 1] - o->size[m * 2];
 		//cout << "Creating Mnode 0/1 " << sizeof(datad[0]) << " " << sizeof(float)  << endl;
-		for (int i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datad[i - o->size[m * 2]] = o->datad[i];
+		for (long long i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datad[i - o->size[m * 2]] = o->datad[i];
 		//cout << "Creating Mnode 0/1 " << sizeof(datad) << " " << sizeof(float) << " " << datad[0] << endl;
 		break;
 	case 6:
 		datas = new char[o->size[m * 2 + 1] - o->size[m * 2]];
 
 		len = o->size[m * 2 + 1] - o->size[m * 2];
-		for (int i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datas[i - o->size[m * 2]] = o->datas[i];
+		for (long long i = o->size[m * 2]; i < o->size[m * 2 + 1]; i++)datas[i - o->size[m * 2]] = o->datas[i];
 
 		break;
 	}
@@ -100,14 +100,14 @@ bpnode::~bpnode() {
 	}
 }
 
-int bpnode::getsize()
+long long bpnode::getsize()
 {
-	//return size * sizeof(float) + 2 * sizeof(int);
+	//return size * sizeof(float) + 2 * sizeof(long long);
 	if (metric < -1 || metric>m) {
 		outnode("error ");
 	}
-	int i = 0;
-	i = 4 * sizeof(int) + 2 * sizeof(float);
+	long long i = 0;
+	i = 4 * sizeof(long long) + 2 * sizeof(float);
 	if (metric < 0||len<0) return i;
 	switch (metricm[metric]) {
 	case 0:
@@ -126,20 +126,20 @@ int bpnode::getsize()
 }
 
 
-int bpnode::read_from_buffer(char* buffer)
+long long bpnode::read_from_buffer(char* buffer)
 {
-	int i = 0;
-	memcpy(&len, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	long long i = 0;
+	memcpy(&len, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&objloc, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&objloc, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&son, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&son, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&metric, &buffer[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&metric, &buffer[i], sizeof(long long));
+	i += sizeof(long long);
 	//cout << "node total size " << i << endl;
 	memcpy(&disl, &buffer[i], sizeof(float));
 	i += sizeof(float);
@@ -170,21 +170,21 @@ int bpnode::read_from_buffer(char* buffer)
 	return i;
 }
 
-int bpnode::write_to_buffer(char* buffer)
+long long bpnode::write_to_buffer(char* buffer)
 {
-	int i = 0;
+	long long i = 0;
 
-	memcpy(&buffer[i], &len, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &len, sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&buffer[i], &objloc, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &objloc, sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&buffer[i], &son, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &son, sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&buffer[i], &metric, sizeof(int));
-	i += sizeof(int);
+	memcpy(&buffer[i], &metric, sizeof(long long));
+	i += sizeof(long long);
 
 	memcpy(&buffer[i], &disl, sizeof(float));
 	i += sizeof(float);
@@ -240,11 +240,11 @@ void bpnode::outnode(string str)
 	case 3:
 	case 4:
 	case 5:
-		for (int j = 0; j < len; j++)
+		for (long long j = 0; j < len; j++)
 			cout << " " << datad[j];
 		break;
 	case 6:
-		for (int j = 0; j < len; j++)
+		for (long long j = 0; j < len; j++)
 			cout << datas[j];
 		break;
 	}

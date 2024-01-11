@@ -5,7 +5,7 @@
 #include<string>
 #include<time.h>
 #include<vector>
-#include"./SAT.hpp"
+#include"./sat.hpp"
 #include"./monitoring.hpp"
 #include<chrono>
 using namespace std;
@@ -46,8 +46,8 @@ int main(int argc, char **argv)
     string queryid=string(argv[2]);
     int querycount=atoi(argv[3]);
     int knncount=atoi(argv[4+querycount]);
-    vector<vector<float>> dataset=read("../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
-    vector<vector<float>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    vector<vector<float>> dataset=read("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
+    vector<vector<float>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
     printf("read dataset queryset over\n");
     auto tst=steady_clock::now(),ted=steady_clock::now();
     int current_pid=GetCurrentPid();

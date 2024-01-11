@@ -17,7 +17,7 @@
 #include <stack>
 #include <vector>
 #include<queue>
-#include "heap\heap.h"
+#include "heap/heap.h"
 
 #include "./rtree/rtree.cpp"
 #include "./rtree/rtnode.cpp"
@@ -30,16 +30,16 @@
 #include "heap/heap.cpp"
 using namespace std;
 
-int dimension;
-extern int DIMENSION;
-int DataNum;
-int func;
-int pn;
+long long dimension;
+extern long long DIMENSION;
+long long DataNum;
+long long func;
+long long pn;
 double IOread;
 double IOwrite;
 double IOtime;
 double compdists;
-int BLOCK_SIZE = 4096;
+long long BLOCK_SIZE = 4096;
 
 Object * ptable;
 Object * cand;
@@ -78,9 +78,9 @@ vector<vector<double>> read(string name)
 // Note that the id of data in the file should begin with 0
 Object ** readobjects(string filename)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	Object ** objset = new Object*[DataNum];
-	for (int i = 0;i<DataNum;i++)
+	for (long long i = 0;i<DataNum;i++)
 	{
 		objset[i] = new Object();
 	}
@@ -93,7 +93,7 @@ Object ** readobjects(string filename)
 			objset[record_count]->id = record_count;
 			objset[record_count]->size = dimension;
 			objset[record_count]->x = new float[objset[record_count]->size];
-			for (int i = 0; i < objset[record_count]->size; i++)
+			for (long long i = 0; i < objset[record_count]->size; i++)
 			{
 				objset[record_count]->x[i] = dataset[record_count][i];
 			}
@@ -106,7 +106,7 @@ Object ** readobjects(string filename)
 
 Object * readobjects2(string filename)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	{
 	    vector<vector<double>> dataset=read(filename);
 	    DataNum=dataset.size(),dimension=dataset[0].size();
@@ -118,7 +118,7 @@ Object * readobjects2(string filename)
 			objset[record_count].id = record_count;
 			objset[record_count].size = dimension;
 			objset[record_count].x = new float[dimension];
-			for (int i = 0; i < dimension; i++)
+			for (long long i = 0; i < dimension; i++)
 			{
 				objset[record_count].x[i] = dataset[record_count][i];
 			}
@@ -130,31 +130,31 @@ Object * readobjects2(string filename)
 }
 
 
-double** MaxPrunning(Object * O, int num)
+double** MaxPrunning(Object * O, long long num)
 {
-	int num_cand = 40;
+	long long num_cand = 40;
 	cand = new Object[num_cand];
 	bool * indicator = new bool[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 		indicator[i] = true;
-	int * idset = new int[num_cand];
+	long long * idset = new long long[num_cand];
 
 	double d = 0.0;
 	double t;
-	int choose = 0;
+	long long choose = 0;
 
 	double** distmatrix = new double*[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		distmatrix[i] = new double[num_cand];
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 			distmatrix[i][j] = 0;
 	}
 
 	if (num_cand > 0)
 	{
 
-		for (int i = 1; i < num; i++)
+		for (long long i = 1; i < num; i++)
 		{
 			t = O[i].distance(O[0]);
 			if (t > d)
@@ -173,7 +173,7 @@ double** MaxPrunning(Object * O, int num)
 	if (num_cand > 1)
 	{
 		d = 0;
-		for (int i = 0; i < num; i++)
+		for (long long i = 0; i < num; i++)
 		{
 			if (indicator[i])
 			{
@@ -195,15 +195,15 @@ double** MaxPrunning(Object * O, int num)
 
 	double edge = d;
 	d = MAXREAL;
-	for (int i = 2; i < num_cand; i++)
+	for (long long i = 2; i < num_cand; i++)
 	{
 		d = MAXREAL;
-		for (int j = 0; j < num; j++)
+		for (long long j = 0; j < num; j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int k = 0; k < i - 1; k++)
+				for (long long k = 0; k < i - 1; k++)
 				{
 					t += fabs(edge - distmatrix[j][k]);
 				}
@@ -226,7 +226,7 @@ double** MaxPrunning(Object * O, int num)
 
 	//print distance matrix
 
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		if (indicator[i])
 		{
@@ -234,8 +234,8 @@ double** MaxPrunning(Object * O, int num)
 		}
 	}
 
-	for (int i = 0; i < num_cand; i++)
-		for (int j = i + 1; j < num_cand; j++)
+	for (long long i = 0; i < num_cand; i++)
+		for (long long j = i + 1; j < num_cand; j++)
 			distmatrix[idset[i]][j] = O[idset[i]].distance(cand[j]);
 
 	delete[] indicator;
@@ -248,13 +248,13 @@ void readptable(char *pname)
 {
 	ifstream in1(pname,ios::in);
 	ptable = new Object[pn];
-	for (int i = 0; i < pn; i++)
+	for (long long i = 0; i < pn; i++)
 	{
 		in1 >> ptable[i].id;
 		in1 >> dimension;
 		ptable[i].size = dimension;
 		ptable[i].x = new float[dimension];
-		for (int j = 0; j < dimension; j++)
+		for (long long j = 0; j < dimension; j++)
 		{
 			in1 >> ptable[i].x[j];
 		}
@@ -262,32 +262,32 @@ void readptable(char *pname)
 	in1.close();
 }
 
-void PivotSelect(Object * O, Object * Q, int o_num, int q_num)
+void PivotSelect(Object * O, Object * Q, long long o_num, long long q_num)
 {
-	int num_cand = 40;
+	long long num_cand = 40;
 	double ** O_P_matrix = MaxPrunning(O, o_num);
 
 	double ** Q_O_matrix = new double *[q_num];
 	double ** Q_P_matrix = new double*[q_num];
 	double ** esti = new double*[q_num];
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
 		Q_O_matrix[i] = new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
 		esti[i] = new double[o_num];
 	}
 	bool* indicator = new bool[num_cand];
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 		indicator[i] = true;
 
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
-		for (int j = 0; j < o_num; j++)
+		for (long long j = 0; j < o_num; j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j] = 0;
 		}
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -296,20 +296,20 @@ void PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	double d = 0;
 	double t = 0;
-	int choose;
+	long long choose;
 	ptable = new Object[pn];
-	int i;
+	long long i;
 	for (i = 0; i < pn; i++)
 	{
 		choose = -1;
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int m = 0; m < q_num; m++)
+				for (long long m = 0; m < q_num; m++)
 				{
-					for (int n = 0; n < o_num; n++)
+					for (long long n = 0; n < o_num; n++)
 					{
 						if (Q_O_matrix[m][n] != 0)
 						{
@@ -325,13 +325,13 @@ void PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 				}
 			}
 		}
-		printf("%d %f\n", choose, d);
+		printf("%lld %f\n", choose, d);
 		if (choose == -1)
 			break;
 		indicator[choose] = false;
 		ptable[i] = cand[choose];
-		for (int m = 0; m < q_num; m++)
-			for (int n = 0; n < o_num; n++)
+		for (long long m = 0; m < q_num; m++)
+			for (long long n = 0; n < o_num; n++)
 				esti[m][n] = MAX(fabs(Q_P_matrix[m][choose] - O_P_matrix[n][choose]), esti[m][n]);
 	}
 
@@ -351,7 +351,7 @@ void PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		delete[] O_P_matrix[i];
 }
 
-clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
+clock_t bulidIndex(char* index_name, string filename,char *pname, long long n_p)
 {
 	/*******
 	index_name -- the path of the index to be stored
@@ -373,10 +373,10 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	FILE* f = fopen(bl, "w+");
 	if (f != NULL)
 	{
-		for (int i = 0; i < DataNum; i++)
+		for (long long i = 0; i < DataNum; i++)
 		{
-			fprintf(f, "%d ", os[i].id);
-			for (int j = 0; j < pn; j++)
+			fprintf(f, "%lld ", os[i].id);
+			for (long long j = 0; j < pn; j++)
 			{
 				fprintf(f, "%f ", os[i].distance(ptable[j]));
 			}
@@ -394,15 +394,15 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	rt->load_root();
 	s.push(rt->root_ptr);
 	RTNode * node;
-	int * obj_order = new int[DataNum];
-	int k = 0;
+	long long * obj_order = new long long[DataNum];
+	long long k = 0;
 	while (!s.empty())
 	{
 		node = s.top();
 		s.pop();
 		if (node->level != 0)
 		{
-			for (int i = node->num_entries - 1; i >= 0; i--)
+			for (long long i = node->num_entries - 1; i >= 0; i--)
 			{
 				s.push(node->entries[i].get_son());
 				node->entries[i].son_ptr = NULL;
@@ -410,7 +410,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 		}
 		else
 		{
-			for (int i = 0; i < node->num_entries; i++)
+			for (long long i = 0; i < node->num_entries; i++)
 			{
 				obj_order[k] = node->entries[i].son;
 				k++;
@@ -426,10 +426,10 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	draf->init(index_name, BLOCK_SIZE, NULL);
 
 	Object ** objS = readobjects(filename);
-	int * result = draf->buid_from_array(objS, obj_order);
+	long long * result = draf->buid_from_array(objS, obj_order);
 
 	//delete object sets
-	for (int i = 0; i < DataNum; i++)
+	for (long long i = 0; i < DataNum; i++)
 		delete objS[i];
 	delete[] obj_order;
 
@@ -442,7 +442,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 		s.pop();
 		if (node->level != 0)
 		{
-			for (int i = node->num_entries - 1; i >= 0; i--)
+			for (long long i = node->num_entries - 1; i >= 0; i--)
 			{
 				s.push(node->entries[i].get_son());
 				node->entries[i].son_ptr = NULL;
@@ -450,7 +450,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 		}
 		else
 		{
-			for (int i = 0; i < node->num_entries; i++)
+			for (long long i = 0; i < node->num_entries; i++)
 			{
 				node->entries[i].ptr = result[k];
 				k++;
@@ -468,11 +468,11 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 }
 
 
-float MINDIST(float *p, float *bounces, int dim)
+float MINDIST(float *p, float *bounces, long long dim)
 {
 	float summe = 0.0;
 	float r;
-	int i;
+	long long i;
 
 	for (i = 0; i < dim; i++)
 	{
@@ -492,9 +492,9 @@ float MINDIST(float *p, float *bounces, int dim)
 	return(summe);
 }
 
-Object* getobject(int ptr)
+Object* getobject(long long ptr)
 {
-	int i = ptr / draf->file->blocklength;
+	long long i = ptr / draf->file->blocklength;
 	char * buffer = new char[draf->file->blocklength];
 
 	if (c == NULL)
@@ -506,7 +506,7 @@ Object* getobject(int ptr)
 		c->read_block(buffer, i, draf);
 	}
 
-	int j = ptr - i*draf->file->blocklength;
+	long long j = ptr - i*draf->file->blocklength;
 	Object* o = new Object();
 	o->read_from_buffer(&buffer[j]);
 
@@ -515,10 +515,10 @@ Object* getobject(int ptr)
 	return o;
 }
 
-bool intersect(float *p, float *bounces, int dim, double rad)
+bool intersect(float *p, float *bounces, long long dim, double rad)
 {
 	float r;
-	int i;
+	long long i;
 	for (i = 0; i < dim; i++)
 	{
 		if (p[i] < bounces[2 * i])
@@ -537,9 +537,9 @@ bool intersect(float *p, float *bounces, int dim, double rad)
 }
 
 
-bool prune(double *ldist, double* udist, float *bounces, int dim)
+bool prune(double *ldist, double* udist, float *bounces, long long dim)
 {
-	for (int i = 0; i < dim; i++)
+	for (long long i = 0; i < dim; i++)
 	{
 		if (udist[i] < bounces[2 * i])
 			return true;
@@ -552,10 +552,10 @@ bool prune(double *ldist, double* udist, float *bounces, int dim)
 }
 
 
-int contain(double* ldist, double* udist, float *bounces, int dim)
+long long contain(double* ldist, double* udist, float *bounces, long long dim)
 {
-	int d = 0;
-	for (int i = 0; i < dim; i++)
+	long long d = 0;
+	for (long long i = 0; i < dim; i++)
 	{
 		if (udist[i] < bounces[2 * i])
 			return -1;
@@ -576,11 +576,11 @@ int contain(double* ldist, double* udist, float *bounces, int dim)
 
 double rangequery(Object* q, double radius)
 {
-	vector<int> result;
+	vector<long long> result;
 	double* point = new double[pn];
 	double * ldist = new double[pn];
 	double * udist = new double[pn];
-	for (int i = 0; i < pn; i++)
+	for (long long i = 0; i < pn; i++)
 	{
 		point[i] = q->distance(ptable[i]);
 		ldist[i] = point[i] - radius;
@@ -594,7 +594,7 @@ double rangequery(Object* q, double radius)
 	n.node = rt->root_ptr;
 	n.flag = false;
 	v.push_back(n);
-	int d;
+	long long d;
 	while (!v.empty())
 	{
 		n = v.back();
@@ -604,7 +604,7 @@ double rangequery(Object* q, double radius)
 		{
 			if (n.flag)
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					NEntry ne;
 					ne.node = node->entries[i].get_son();
@@ -615,7 +615,7 @@ double rangequery(Object* q, double radius)
 			}
 			else
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					d = contain(ldist, udist, node->entries[i].bounces, pn);
 					if (d>0)
@@ -641,7 +641,7 @@ double rangequery(Object* q, double radius)
 		{
 			if (n.flag)
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					Object* o = getobject(node->entries[i].ptr);
 					if ( (o->distance(*q) <= radius)) ///0.00001
@@ -653,7 +653,7 @@ double rangequery(Object* q, double radius)
 			}
 			else
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					if (!prune(ldist, udist, node->entries[i].bounces, pn))
 					{
@@ -676,13 +676,13 @@ double rangequery(Object* q, double radius)
 	return result.size();
 }
 
-double kNNquery(Object* q, int k)
+double kNNquery(Object* q, long long k)
 {
 	vector<TEntry> answer;
 	double kdist = MAXREAL;
 
 	float* point = new float[pn];
-	for (int i = 0; i < pn; i++)
+	for (long long i = 0; i < pn; i++)
 	{
 		point[i] = q->distance(ptable[i]);
 	}
@@ -694,7 +694,7 @@ double kNNquery(Object* q, int k)
 	ke.key = 0;
 	queue.push(ke);
 	RTNode* node;
-	int ptr;
+	long long ptr;
 	while (!queue.empty())
 	{
 		ke = queue.top();
@@ -727,7 +727,7 @@ double kNNquery(Object* q, int k)
 			node = new RTNode(rt, ke.id);
 			if (node->level != 0)
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					temp = MINDIST(point, node->entries[i].bounces, pn);
 					if (temp <= kdist)
@@ -742,7 +742,7 @@ double kNNquery(Object* q, int k)
 			}
 			else
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					temp = MINDIST(point, node->entries[i].bounces, pn);
 					if (temp <= kdist)
@@ -763,21 +763,21 @@ double kNNquery(Object* q, int k)
 	return kdist;
 }
 
-int main(int argc, char** argv)
+signed main(long long argc, char** argv)
 {
 	clock_t begin, buildEnd, queryEnd;
 	double buildComp, queryComp;
     string dataid=string(argv[1]);
     string queryid=string(argv[2]);
-	string datafile="../data_set/"+dataid+"/"+dataid+"_afterpca.csv"; // the path of input data file
+	string datafile="../../data_set/"+dataid+"/"+dataid+"_afterpca.csv"; // the path of input data file
 	char * pname = "./pivot.txt"; // the path of input pivots
 	char * indexfile = "./index"; // the path to store the built index
 	char* querydata = "./audio/audio_uniform1000_afterpca.txt";// the path of input query data
 	pn = stoi(argv[3]);// the number of pivot
     BLOCK_SIZE=stoi(argv[4]);
-    vector<vector<double>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
-    int qcount=stoi(argv[5]);
-    int kcount=stoi(argv[6+qcount]);
+    vector<vector<double>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    long long qcount=stoi(argv[5]);
+    long long kcount=stoi(argv[6+qcount]);
 //***********************************************build the index****************************************
 	cout<<"start build"<<"\n";
 	begin = bulidIndex(indexfile, datafile, pname,pn);
@@ -805,7 +805,7 @@ int main(int argc, char** argv)
     ouf.setf(ios::fixed);
 
 	cout << "start rangeSearching......" << endl;
-	for (int k = 0; k < qcount; k++) {
+	for (long long k = 0; k < qcount; k++) {
 		begin = clock();
 		double r=stod(argv[6+k]);
 		dists = 0;
@@ -813,13 +813,13 @@ int main(int argc, char** argv)
 		rad = 0;
 		IOread = 0;
 		IOtime=0;
-		for (int j = 0; j < queryset.size(); j++)
+		for (long long j = 0; j < queryset.size(); j++)
 		{
 			c->clear();
 			compdists = 0;
 			float temp;
 
-			for (int i = 0; i < q->size; i++)
+			for (long long i = 0; i < q->size; i++)
 			{
 				q->x[i] = queryset[j][i];
 			}
@@ -829,11 +829,11 @@ int main(int argc, char** argv)
 		queryEnd = clock() - begin;
 		queryComp = dists;
         cout<<dataid<<","<<queryid<<",OmniR-Tree,"<<"pn:"<<pn<<" blocksize:"<<BLOCK_SIZE<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000<<"ms,"<<IOtime/queryset.size()/1000<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000<<"ms"<<endl;
         ouf<<dataid<<","<<queryid<<",OmniR-Tree,"<<"pn:"<<pn<<" blocksize:"<<BLOCK_SIZE<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000<<"ms,"<<IOtime/queryset.size()/1000<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000<<"ms"<<endl;
 	}
     ouf.close();
 
@@ -844,21 +844,21 @@ int main(int argc, char** argv)
         exit(-1);
     }
     ouf.setf(ios::fixed);
-    for(int ki=1;ki<=kcount;ki++)
+    for(long long ki=1;ki<=kcount;ki++)
     {
-        int k=stoi(argv[6+qcount+ki]);
+        long long k=stoi(argv[6+qcount+ki]);
         dists = 0;
 		pf = 0;
 		rad = 0;
 		IOread = 0;
 		IOtime=0;
-		for (int j = 0; j < queryset.size(); j++)
+		for (long long j = 0; j < queryset.size(); j++)
 		{
 			c->clear();
 			compdists = 0;
 			float temp;
 
-			for (int i = 0; i < q->size; i++)
+			for (long long i = 0; i < q->size; i++)
 			{
 				q->x[i] = queryset[j][i];
 			}
@@ -868,11 +868,11 @@ int main(int argc, char** argv)
 		queryEnd = clock() - begin;
 		queryComp = dists;
         cout<<dataid<<","<<queryid<<",OmniR-Tree,"<<"pn:"<<pn<<" blocksize:"<<BLOCK_SIZE<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000<<"ms,"<<IOtime/queryset.size()/1000<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000<<"ms"<<endl;
         ouf<<dataid<<","<<queryid<<",OmniR-Tree,"<<"pn:"<<pn<<" blocksize:"<<BLOCK_SIZE<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+                <<queryComp/queryset.size()<<","<<IOread/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000<<"ms,"<<IOtime/queryset.size()/1000<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000<<"ms"<<endl;
     }
 
     ouf.close();

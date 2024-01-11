@@ -7,7 +7,7 @@
 
 //----------------------------------------------------------
 
-#define BFHEAD_LENGTH (sizeof(int)*2)    //file header size
+#define BFHEAD_LENGTH (sizeof(long long)*2)    //file header size
 
 #define TRUE 1
 #define FALSE 0

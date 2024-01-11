@@ -2,33 +2,33 @@
 #define __LSB
 
 #include <memory.h>
-#include "lsbentry.h"
-#include "lsbnode.h"
-#include "lsbtree.h"
+#include "lsbEntry.h"
+#include "lsbNode.h"
+#include "lsbTree.h"
 #include "../blockfile/cache.h"
 #include "../gadget/gadget.h"
 
 typedef char * charPtr;
-typedef int * intPtr;
+typedef long long * intPtr;
 typedef LSBtree * LSBtreePtr;
 
 struct LSB_Hentry
 {
-	int		d;
-	int		id;								/* id of the point */
-	int		lcl;							/* lowest common level with the query lcl = u - floor(llcp / m) */
-	int		lr;								/* moving left or right */
-	int		* pt;							/* coordinates */
-	int		treeId;
+	long long		d;
+	long long		id;								/* id of the point */
+	long long		lcl;							/* lowest common level with the query lcl = u - floor(llcp / m) */
+	long long		lr;								/* moving left or right */
+	long long		* pt;							/* coordinates */
+	long long		treeId;
 	double	dist;							/* distance to query */
 
 	void setto(LSB_Hentry * _e)
 	{
 		d = _e->d;
-		id = _e->id;		
+		id = _e->id;
 		lr = _e->lr;
 		lcl = _e->lcl;
-		memcpy(pt, _e->pt, sizeof(int) * d);
+		memcpy(pt, _e->pt, sizeof(long long) * d);
 		treeId = _e->treeId;
 		dist = _e->dist;
 	}
@@ -38,37 +38,37 @@ class LSB
 {
 public:
 	//--=== on disk ===--
-	int			t;								/* largest coordinate of a dimension */
-	int			d;								/* dimensionality */
-	int			n;								/* cardinality */
-	int			B;								/* page size in words */
-	int			ratio;							/* approximation ratio */
+	long long			t;								/* largest coordinate of a dimension */
+	long long			d;								/* dimensionality */
+	long long			n;								/* cardinality */
+	long long			B;								/* page size in words */
+	long long			ratio;							/* approximation ratio */
 
 	//--=== debug ==--
-	int			quiet;
+	long long			quiet;
 	bool		emergency;
 
 	//--=== others ===--
-	
+
 	char		dsPath[100];					/* folder containing the dataset file */
 	char		dsName[100];					/* dataset file name */
 	char		forestPath[100];				/* folder containing the forest */
 
-	int			f;
-	int			pz;								/* number of pages to store the Z-value of a point */
-	int			L;								/* number of lsb-trees */
-	int			m;								/* dimensionality of the hash space */
-	int			qNumTrees;						/* number of lsb-trees used to answer a query */
-	int			u;								/* log_2 (U/w) */
+	long long			f;
+	long long			pz;								/* number of pages to store the Z-value of a point */
+	long long			L;								/* number of lsb-trees */
+	long long			m;								/* dimensionality of the hash space */
+	long long			qNumTrees;						/* number of lsb-trees used to answer a query */
+	long long			u;								/* log_2 (U/w) */
 
-	double		* a_array;												
+	double		* a_array;
 	double		* b_array;						/* each lsb-tree requires m hash functions, and each has function
-												   requires a d-dimensional vector a and a 1d value b. so a_array contains 
+												   requires a d-dimensional vector a and a 1d value b. so a_array contains
 												   l * m * d values totally and b_array contains l *m values */
 
 	double		U;								/* each dimension of the hash space has domain [-U/2, U/2] */
 	double		w;
-		
+
 	LSBtreePtr *trees;							/* lsbtrees */
 
 	//--=== Functions ===--
@@ -76,50 +76,50 @@ public:
 	~LSB();
 
 	//--=== internal ===--
-	virtual	int		cpFind_r			(int * _r);
-	virtual void	freadNextEntry		(FILE *_fp, int * _son, int * _key);		
-	virtual void	gen_vectors			();									
-	virtual void	getTreeFname		(int _i, char *_fname);			
-	virtual void	getHashVector		(int _tableID, int *_key, double *_g);
-	virtual void	getHashPara			(int _u, int _v, double **_a_vector, double *_b);
-	virtual double	get1HashV			(int _u, int _v, int *_key);		
-	virtual	int		getLowestCommonLevel(int *_z1, int *_z2);
-	virtual int		get_m				(int _r, double _w, int _n, int _B, int _d);
-	virtual double	get_rho				(int _r, double _w);					
-	virtual int		get_obj_size		(int _dim);							
-	virtual int		get_u				();										
-	virtual int		getZ				(double *_g, int *_z);				
-	virtual int		insert				(int _treeID, int _son, int * _key);	
-	virtual int		readParaFile		(char *_fname);
-	virtual	void	setHe				(LSB_Hentry *_he, B_Entry *_e, int *_qz);
-	virtual	double	updateknn			(LSB_Hentry * _rslt, LSB_Hentry *_he, int _k);
-	virtual int		writeParaFile		(char *_fname);
+	virtual	long long		cpFind_r			(long long * _r);
+	virtual void	freadNextEntry		(FILE *_fp, long long * _son, long long * _key);
+	virtual void	gen_vectors			();
+	virtual void	getTreeFname		(long long _i, char *_fname);
+	virtual void	getHashVector		(long long _tableID, long long *_key, double *_g);
+	virtual void	getHashPara			(long long _u, long long _v, double **_a_vector, double *_b);
+	virtual double	get1HashV			(long long _u, long long _v, long long *_key);
+	virtual	long long		getLowestCommonLevel(long long *_z1, long long *_z2);
+	virtual long long		get_m				(long long _r, double _w, long long _n, long long _B, long long _d);
+	virtual double	get_rho				(long long _r, double _w);
+	virtual long long		get_obj_size		(long long _dim);
+	virtual long long		get_u				();
+	virtual long long		getZ				(double *_g, long long *_z);
+	virtual long long		insert				(long long _treeID, long long _son, long long * _key);
+	virtual long long		readParaFile		(char *_fname);
+	virtual	void	setHe				(LSB_Hentry *_he, B_Entry *_e, long long *_qz);
+	virtual	double	updateknn			(LSB_Hentry * _rslt, LSB_Hentry *_he, long long _k);
+	virtual long long		writeParaFile		(char *_fname);
 
 	//--=== external ===--
-	virtual int		buildFromFile		(char *_dsPath, char *_forestPath);
-	virtual int		bulkload			(char *_dspath, char *_target_folder);	
-	virtual	int		closepair			(int _r, int _k, double *_dist, int *_pairid);
-	virtual int     cpFast				(int _k, int _numTrees, double *_dist, int *_pairid);
-	virtual void	init				(int _t, int _d, int _n, int _B, int _L, int _ratio);	
-	virtual int		knn					(int *_q, int _k, LSB_Hentry *_rslt, int _numTrees);
-	virtual int		restore				(char *_paraPath);
+	virtual long long		buildFromFile		(char *_dsPath, char *_forestPath);
+	virtual long long		bulkload			(char *_dspath, char *_target_folder);
+	virtual	long long		closepair			(long long _r, long long _k, double *_dist, long long *_pairid);
+	virtual long long     cpFast				(long long _k, long long _numTrees, double *_dist, long long *_pairid);
+	virtual void	init				(long long _t, long long _d, long long _n, long long _B, long long _L, long long _ratio);
+	virtual long long		knn					(long long *_q, long long _k, LSB_Hentry *_rslt, long long _numTrees);
+	virtual long long		restore				(char *_paraPath);
 };
 
 struct LSBqsortElem
 {
-	int	* ds;
-	int	pos;		/* position of the object in array ds */
-	int	pz;			/* size of the z array below */
-	int * z;
+	long long	* ds;
+	long long	pos;		/* position of the object in array ds */
+	long long	pz;			/* size of the z array below */
+	long long * z;
 };
 
 struct LSBbiPtr
 {
 	B_Node	* nd;
-	int		entryId;
+	long long		entryId;
 };
 
-int		LSB_hcomp		(const void *_e1, const void *_e2);
+long long		LSB_hcomp		(const void *_e1, const void *_e2);
 int		LSBqsortComp	(const void *_e1, const void *_e2);
 void	LSB_hdestroy	(const void *_e);
 

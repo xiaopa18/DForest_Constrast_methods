@@ -9,8 +9,8 @@ extern double compdists;
 #define MIN(x, y) ((x<y)? (x): (y))
 #define MAX(x, y) ((x>y)? (x): (y))
 #endif
-int ** table1 = NULL;
-extern int func;
+long long ** table1 = NULL;
+extern long long func;
 
 Object::Object()
 {
@@ -26,15 +26,15 @@ Object::Object(const Object& o)
 	if(o.data!=NULL)
 	{
 		data = new float[size];
-		for(int i =0;i<size;i++)
+		for(long long i =0;i<size;i++)
 			data[i] = o.data[i];
 	}
 	else
 		data = NULL;
 	if(o.key!=NULL)
 	{
-		key = new unsigned[keysize];
-		for(int i =0;i<keysize;i++)
+		key = new unsigned long long[keysize];
+		for(long long i =0;i<keysize;i++)
 			key[i] = o.key[i];
 	}
 	else
@@ -44,7 +44,7 @@ Object::Object(const Object& o)
 
 void Object::compress()
 {	
-	for(int i=0;i<keysize;i++)
+	for(long long i=0;i<keysize;i++)
 	{
 		stringstream ss;
 		string t;
@@ -67,7 +67,7 @@ Object::~Object()
   bool  Object::operator< (const Object &a) const 
   {
 	  bool flag = true;
-	  for(int i =keysize -1;i>=0;i--)
+	  for(long long i =keysize -1;i>=0;i--)
 	  {
 		  if(key[i] < a.key[i])
 		  {
@@ -85,7 +85,7 @@ Object::~Object()
   bool  Object::operator> (const Object &a) const 
   {
 	  bool flag = false;
-	  for(int i =keysize-1;i>=0;i--)
+	  for(long long i =keysize-1;i>=0;i--)
 	  {
 		  if(key[i] < a.key[i])
 		  {
@@ -100,14 +100,14 @@ Object::~Object()
 	  return flag;
   }
 
-int Object::getsize()
+long long Object::getsize()
 {
-	return size*sizeof(float)+2*sizeof(int);
+	return size*sizeof(float)+2*sizeof(long long);
 }
 
-int Object::read_from_buffer(char * buffer)
+long long Object::read_from_buffer(char * buffer)
 {
-	int i;
+	long long i;
 	memcpy(&id, buffer, sizeof(id));
 	i = sizeof(id);
 
@@ -122,9 +122,9 @@ int Object::read_from_buffer(char * buffer)
 	return i;
 }
 
-int Object::write_to_buffer(char *buffer)
+long long Object::write_to_buffer(char *buffer)
 {
-	int i;
+	long long i;
 
 	memcpy(buffer, &id, sizeof(id));
 	i = sizeof(id);
@@ -144,18 +144,18 @@ double Object::distance(const Object& other) const
 	compdists++;
 
 	if (func == 1) {
-		for (int i = 0; i < size; i++) dist += fabs(data[i] - other.data[i]); // L1
+		for (long long i = 0; i < size; i++) dist += fabs(data[i] - other.data[i]); // L1
 	}
 	else if (func == 2) {
-		for (int i = 0; i < size; i++) dist += pow(data[i] - other.data[i], 2); // L2
+		for (long long i = 0; i < size; i++) dist += pow(data[i] - other.data[i], 2); // L2
 		dist = sqrt(dist);
 	} 
 	else if (func == 5) {
-		for (int i = 0;i < size;i++) dist += pow(fabs(data[i] - other.data[i]), 5);  // L5
+		for (long long i = 0;i < size;i++) dist += pow(fabs(data[i] - other.data[i]), 5);  // L5
 		dist = pow(dist, 1 / 5.0);
 	}
 	else {
-		for(int i=0; i<size; i++) dist=MAX(dist, fabs(data[i]-other.data[i])); // Linf
+		for(long long i=0; i<size; i++) dist=MAX(dist, fabs(data[i]-other.data[i])); // Linf
 	}
 	return dist;
 }

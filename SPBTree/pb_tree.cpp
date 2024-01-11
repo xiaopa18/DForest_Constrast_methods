@@ -1,5 +1,5 @@
 #include "pb-tree.h"
-#include ".\gadget\gadget.h"
+#include "./gadget/gadget.h"
 #include <cmath>
 #include <vector>
 #include <iostream>
@@ -12,7 +12,7 @@
 using namespace std;
 extern double cc;
 extern double IOread;
-extern int EPS, MAXINT, BITS;
+extern long long EPS, MAXINT, BITS;
 double* tpdists = NULL;
 PB_Tree::PB_Tree()
 {
@@ -37,23 +37,23 @@ PB_Tree::~PB_Tree()
 
 
 //find num_cand pivots in O using FFT
-double** PB_Tree::FFT(Object * O, int num)
+double** PB_Tree::FFT(Object * O, long long num)
 {
 	cand = new Object[num_cand];
 	bool * indicator = new bool [num];
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 		indicator[i]= true;
-	int * idset = new int[num_cand];
+	long long * idset = new long long[num_cand];
 
 	double d =0.0;
 	double t;
-	int choose =0;
+	long long choose =0;
 
 	double** distmatrix = new double*[num];
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 	{
 		distmatrix[i] = new double[num_cand];
-		for(int j =0;j<num_cand;j++)
+		for(long long j =0;j<num_cand;j++)
 			distmatrix[i][j]=0;
 	}
 
@@ -61,7 +61,7 @@ double** PB_Tree::FFT(Object * O, int num)
 	if(num_cand> 0)
 	{
 
-		for(int i  =1 ;i<num;i++)
+		for(long long i  =1 ;i<num;i++)
 		{
 			t = O[i].distance(O[0]);
 			if(t>d)
@@ -79,7 +79,7 @@ double** PB_Tree::FFT(Object * O, int num)
 	if(num_cand>1)
 	{
 		d=0;
-		for(int i =0;i<num;i++)
+		for(long long i =0;i<num;i++)
 		{
 			if(indicator[i])
 			{
@@ -98,15 +98,15 @@ double** PB_Tree::FFT(Object * O, int num)
 	}
 
 	d = 0;
-	for(int i = 2;i<num_cand;i++)
+	for(long long i = 2;i<num_cand;i++)
 	{
 		d= 0;
-		for(int j =0;j<num;j++)
+		for(long long j =0;j<num;j++)
 		{
 			if(indicator[j])
 			{
 				t =MAXREAL;
-				for(int k =0;k<i-1;k++)
+				for(long long k =0;k<i-1;k++)
 				{
 					if(distmatrix[j][k]<t)
 						t= distmatrix[j][k];
@@ -129,7 +129,7 @@ double** PB_Tree::FFT(Object * O, int num)
 
 
 	//print distance matrix
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 	{
 		if(indicator[i])
 		{
@@ -137,8 +137,8 @@ double** PB_Tree::FFT(Object * O, int num)
 		}
 	}
 
-	for(int i =0;i<num_cand;i++)
-		for(int j = i+1;j<num_cand;j++)
+	for(long long i =0;i<num_cand;i++)
+		for(long long j = i+1;j<num_cand;j++)
 			distmatrix[idset[i]][j]=O[idset[i]].distance(cand[j]);
 
 	delete[] indicator;
@@ -149,30 +149,30 @@ double** PB_Tree::FFT(Object * O, int num)
 
 
 //find num_cand pivots in O using maxpruning strategy
-double** PB_Tree::MaxPrunning(Object * O, int num)
+double** PB_Tree::MaxPrunning(Object * O, long long num)
 {
 	cand = new Object[num_cand];
 	bool * indicator = new bool [num];
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 		indicator[i]= true;
-	int * idset = new int[num_cand];
+	long long * idset = new long long[num_cand];
 
 	double d =0.0;
 	double t;
-	int choose =0;
+	long long choose =0;
 
 	double** distmatrix = new double*[num];
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 	{
 		distmatrix[i] = new double[num_cand];
-		for(int j =0;j<num_cand;j++)
+		for(long long j =0;j<num_cand;j++)
 			distmatrix[i][j]=0;
 	}
 
 	if(num_cand> 0)
 	{
 
-		for(int i  =1 ;i<num;i++)
+		for(long long i  =1 ;i<num;i++)
 		{
 			t = O[i].distance(O[0]);
 			if(t>d)
@@ -190,7 +190,7 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 	if(num_cand>1)
 	{
 		d=0;
-		for(int i =0;i<num;i++)
+		for(long long i =0;i<num;i++)
 		{
 			if(indicator[i])
 			{
@@ -210,15 +210,15 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 
 	double edge = d;
 	d= MAXREAL;
-	for(int i = 2;i<num_cand;i++)
+	for(long long i = 2;i<num_cand;i++)
 	{
 		d= MAXREAL;
-		for(int j =0;j<num;j++)
+		for(long long j =0;j<num;j++)
 		{
 			if(indicator[j])
 			{
 				t =0;
-				for(int k =0;k<i-1;k++)
+				for(long long k =0;k<i-1;k++)
 				{
 					t+=fabs(edge-distmatrix[j][k]);
 				}
@@ -239,7 +239,7 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 
 
 	//print distance matrix
-	for(int i =0;i<num;i++)
+	for(long long i =0;i<num;i++)
 	{
 		if(indicator[i])
 		{
@@ -247,8 +247,8 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 		}
 	}
 
-	for(int i =0;i<num_cand;i++)
-		for(int j = i+1;j<num_cand;j++)
+	for(long long i =0;i<num_cand;i++)
+		for(long long j = i+1;j<num_cand;j++)
 			distmatrix[idset[i]][j]=O[idset[i]].distance(cand[j]);
 
 	delete[] indicator;
@@ -257,33 +257,33 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 	return distmatrix;
 }
 
-void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double thred)
+void PB_Tree::PivotSelect(Object * O, Object * Q, long long o_num, long long q_num, double thred)
 {
 	double ** O_P_matrix = MaxPrunning(O, o_num);
-	vector<int> pivots;
+	vector<long long> pivots;
 
 	double ** Q_O_matrix = new double *[q_num];
 	double ** Q_P_matrix = new double*[q_num];
 	double ** esti = new double* [q_num];
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
 		Q_O_matrix[i]= new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
 		esti[i] = new double[o_num];
 	}
 	bool* indicator = new bool[num_cand];
-	for(int i =0 ;i<num_cand;i++)
+	for(long long i =0 ;i<num_cand;i++)
 		indicator[i] = true;
 
 
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
-		for(int j =0;j<o_num;j++)
+		for(long long j =0;j<o_num;j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j]=0;
 		}
-		for(int j=0;j<num_cand;j++)
+		for(long long j=0;j<num_cand;j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -292,20 +292,20 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 	double d =0;
 	double t =0;
 	double last =0;
-	int choose;
+	long long choose;
 	ptable = new Object[num_piv];
-	int i;
+	long long i;
 	while(true)
 	{
 		choose = -1;
-		for(int j =0;j<num_cand;j++)
+		for(long long j =0;j<num_cand;j++)
 		{
 			if(indicator[j])
 			{
 				t= 0;
-				for(int m = 0;m < q_num;m++)
+				for(long long m = 0;m < q_num;m++)
 				{
-					for(int n =0;n <o_num;n++)
+					for(long long n =0;n <o_num;n++)
 					{
 						if(Q_O_matrix[m][n] != 0)
 						{
@@ -328,39 +328,39 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 		last = d;
 		indicator[choose]= false;
 		pivots.push_back(choose);
-		for(int m =0;m< q_num;m++)
-			for(int n=0;n<o_num;n++)
+		for(long long m =0;m< q_num;m++)
+			for(long long n=0;n<o_num;n++)
 				esti[m][n]=MAX(fabs(Q_P_matrix[m][choose]-O_P_matrix[n][choose]),esti[m][n]);
 	}
 
 
-	int victim;
-	int iter=0;
+	long long victim;
+	long long iter=0;
 	while(true)
 	{
 		d=1;
 		iter++;
 		victim= -1;
-		for(int i =0;i<pivots.size();i++)
+		for(long long i =0;i<pivots.size();i++)
 		{
-			for(int m =0;m<q_num;m++)
-				for(int n=0;n<o_num;n++)
+			for(long long m =0;m<q_num;m++)
+				for(long long n=0;n<o_num;n++)
 					esti[m][n]=0;
 
-			for(int j=0;j<pivots.size();j++)
+			for(long long j=0;j<pivots.size();j++)
 			{
 				if(j!=i)
 				{
-					for(int m =0;m<q_num;m++)
-						for(int n =0;n<o_num;n++)
+					for(long long m =0;m<q_num;m++)
+						for(long long n =0;n<o_num;n++)
 							esti[m][n]=MAX(fabs(Q_P_matrix[m][pivots[j]]-O_P_matrix[n][pivots[j]]),esti[m][n]);
 				}
 			}
 
 			t=0;
-			for(int m=0;m<q_num;m++)
+			for(long long m=0;m<q_num;m++)
 			{
-				for(int n=0;n<o_num;n++)
+				for(long long n=0;n<o_num;n++)
 				{
 					if(Q_O_matrix[m][n]!=0)
 						t+=esti[m][n]/Q_O_matrix[m][n];
@@ -376,16 +376,16 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 			}
 		}
 
-		for(int m =0;m<q_num;m++)
-				for(int n=0;n<o_num;n++)
+		for(long long m =0;m<q_num;m++)
+				for(long long n=0;n<o_num;n++)
 					esti[m][n]=0;
 
-		for(int j=0;j<pivots.size();j++)
+		for(long long j=0;j<pivots.size();j++)
 		{
 			if(j!=victim)
 			{
-				for(int m =0;m<q_num;m++)
-					for(int n =0;n<o_num;n++)
+				for(long long m =0;m<q_num;m++)
+					for(long long n =0;n<o_num;n++)
 						esti[m][n]=MAX(fabs(Q_P_matrix[m][pivots[j]]-O_P_matrix[n][pivots[j]]),esti[m][n]);
 			}
 		}
@@ -394,14 +394,14 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 
 		choose = -1;
 		d= last;
-		for(int j =0;j<num_cand;j++)
+		for(long long j =0;j<num_cand;j++)
 		{
 			if(indicator[j])
 			{
 				t= 0;
-				for(int m = 0;m < q_num;m++)
+				for(long long m = 0;m < q_num;m++)
 				{
-					for(int n =0;n <o_num;n++)
+					for(long long n =0;n <o_num;n++)
 					{
 						if(Q_O_matrix[m][n] != 0)
 						{
@@ -430,7 +430,7 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 
 	num_piv = pivots.size();
 	ptable = new Object [num_piv];
-	for(int i =0;i<num_piv;i++)
+	for(long long i =0;i<num_piv;i++)
 		ptable[i]= cand[pivots[i]];
 
 	for(i=0;i<q_num;i++)
@@ -444,12 +444,12 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 		delete[] O_P_matrix[i];
 }
 
-void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
+void PB_Tree::PivotSelect(Object * O, Object * Q, long long o_num, long long q_num)
 {
 	double ** O_P_matrix = MaxPrunning(O, o_num);
 
 	FILE *ft = fopen("cand.txt", "w");
-	for (int i = 0; i < num_cand; ++i) {
+	for (long long i = 0; i < num_cand; ++i) {
 		fprintf(ft, "%d ", cand[i].id);
 	}
 	fclose(ft);
@@ -457,25 +457,25 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	double ** Q_O_matrix = new double *[q_num];
 	double ** Q_P_matrix = new double*[q_num];
 	double ** esti = new double* [q_num];
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
 		Q_O_matrix[i]= new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
 		esti[i] = new double[o_num];
 	}
 	bool* indicator = new bool[num_cand];
-	for(int i =0 ;i<num_cand;i++)
+	for(long long i =0 ;i<num_cand;i++)
 		indicator[i] = true;
 
 
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
-		for(int j =0;j<o_num;j++)
+		for(long long j =0;j<o_num;j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j]=0;
 		}
-		for(int j=0;j<num_cand;j++)
+		for(long long j=0;j<num_cand;j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -484,20 +484,20 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	double d =0;
 	double t =0;
-	int choose;
+	long long choose;
 	ptable = new Object[num_piv];
-	int i;
+	long long i;
 	for(i =0;i<num_piv;i++)
 	{
 		choose = -1;
-		for(int j =0;j<num_cand;j++)
+		for(long long j =0;j<num_cand;j++)
 		{
 			if(indicator[j])
 			{
 				t= 0;
-				for(int m = 0;m < q_num;m++)
+				for(long long m = 0;m < q_num;m++)
 				{
-					for(int n =0;n <o_num;n++)
+					for(long long n =0;n <o_num;n++)
 					{
 						if(Q_O_matrix[m][n] != 0)
 						{
@@ -518,8 +518,8 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 			break;
 		indicator[choose]= false;
 		ptable[i]=cand[choose];
-		for(int m =0;m<q_num;m++)
-			for(int n=0;n<o_num;n++)
+		for(long long m =0;m<q_num;m++)
+			for(long long n=0;n<o_num;n++)
 				esti[m][n]=MAX(fabs(Q_P_matrix[m][choose]-O_P_matrix[n][choose]),esti[m][n]);
 	}
 
@@ -540,7 +540,7 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 }
 
-void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
+void PB_Tree::RPivotSelect(Object * O, Object * Q, long long o_num, long long q_num)
 {
 	ptable = new Object[num_piv];
 	double ** O_P_matrix = MaxPrunning(O,o_num);
@@ -548,7 +548,7 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	double ** Q_P_matrix = new double*[q_num];
 
 	double ** esti = new double* [q_num];
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
 		Q_O_matrix[i]= new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
@@ -556,21 +556,21 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	}
 
 	double *** esti_temp = new double **[num_cand];
-	for(int i =0;i<num_cand;i++)
+	for(long long i =0;i<num_cand;i++)
 	{
 		esti_temp[i]= new double*[q_num];
-		for(int j =0;j<q_num;j++)
+		for(long long j =0;j<q_num;j++)
 			esti_temp[i][j]= new double[o_num];
 	}
 
-	for(int i =0;i<q_num;i++)
+	for(long long i =0;i<q_num;i++)
 	{
-		for(int j =0;j<o_num;j++)
+		for(long long j =0;j<o_num;j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j]=0;
 		}
-		for(int j=0;j<num_cand;j++)
+		for(long long j=0;j<num_cand;j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -578,11 +578,11 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	double score =0;
 
-	for(int i=0;i<q_num;i++)
+	for(long long i=0;i<q_num;i++)
 	{
-		for(int j=0;j<o_num;j++)
+		for(long long j=0;j<o_num;j++)
 		{
-			for(int k =0;k<num_cand;k++)
+			for(long long k =0;k<num_cand;k++)
 			{
 				esti_temp[k][i][j]=fabs(Q_P_matrix[i][k]-O_P_matrix[j][k]);
 				if(esti[i][j]<esti_temp[k][i][j])
@@ -597,31 +597,31 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	bool * flag_c = new bool[num_cand];
 
-	for(int i=0;i<num_cand;i++)
+	for(long long i=0;i<num_cand;i++)
 	{
 		flag_c[i]=true;
 	}
 
 	double * contribution = new double[num_cand];
 	double temp = MAXREAL;
-	int choose;
+	long long choose;
 	double t;
-	for(int i=0;i<num_cand-num_piv;i++)
+	for(long long i=0;i<num_cand-num_piv;i++)
 	{
 		temp = MAXREAL;
-		for(int j=0;j<num_cand;j++)
+		for(long long j=0;j<num_cand;j++)
 		{
 			if(flag_c[j])
 			{
 				contribution[j]=0;
-				for(int m =0;m<q_num; m++)
+				for(long long m =0;m<q_num; m++)
 				{
-					for(int n=0;n<o_num; n++)
+					for(long long n=0;n<o_num; n++)
 					{
 						if(esti[m][n]==esti_temp[j][m][n])
 						{
 							t=0;
-							for(int k =0;k<num_cand;k++)
+							for(long long k =0;k<num_cand;k++)
 							{
 								if(flag_c[k] && k!=j && esti_temp[k][m][n] >t)
 									t = esti_temp[k][m][n];
@@ -641,14 +641,14 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		}
 		flag_c[choose]=false;
 		cout<<choose<<" "<<contribution[choose]<<endl;
-		for(int m =0;m<q_num; m++)
+		for(long long m =0;m<q_num; m++)
 		{
-			for(int n=0;n<o_num; n++)
+			for(long long n=0;n<o_num; n++)
 			{
 				if(esti[m][n]==esti_temp[choose][m][n])
 				{
 					t=0;
-					for(int k =0;k<num_cand;k++)
+					for(long long k =0;k<num_cand;k++)
 					{
 						if(flag_c[k])
 							if(esti_temp[k][m][n] >t)
@@ -660,8 +660,8 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		}
 	}
 	score =0;
-	for(int i=0;i<q_num;i++)
-		for(int j=0;j<o_num;j++)
+	for(long long i=0;i<q_num;i++)
+		for(long long j=0;j<o_num;j++)
 		{
 			if(Q_O_matrix[i][j]!=0)
 				score += esti[i][j]/Q_O_matrix[i][j];
@@ -669,7 +669,7 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	cout<<score/(q_num*o_num)<<endl;
 
 	choose =0;
-	for(int i=0;i<num_cand;i++)
+	for(long long i=0;i<num_cand;i++)
 		if(flag_c[i])
 		{
 			ptable[choose]= cand[i];
@@ -679,17 +679,17 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	delete[] flag_c;
 	delete[] contribution;
 
-	for(int i=0;i<q_num;i++)
+	for(long long i=0;i<q_num;i++)
 	{
 		delete[] esti[i];
 		delete[] Q_P_matrix[i];
 		delete[] Q_O_matrix[i];
 	}
-	for(int i =0;i<o_num;i++)
+	for(long long i =0;i<o_num;i++)
 		delete[] O_P_matrix[i];
-	for(int i=0;i<num_cand;i++)
+	for(long long i=0;i<num_cand;i++)
 	{
-		for(int j =0;j<q_num;j++)
+		for(long long j =0;j<q_num;j++)
 			delete[] esti_temp[i][j];
 		delete [] esti_temp[i];
 	}
@@ -700,26 +700,26 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 //******need to set bits and eps values******
 //bits: the number bits to represent the distance
 //eps: to partion the domain of the distance
-unsigned * PB_Tree:: Zconvert(int * dist)
+unsigned long long * PB_Tree:: Zconvert(long long * dist)
 {
-	int keysize = (num_piv * bits)/32;
+	long long keysize = (num_piv * bits)/32;
 	if((num_piv * bits)%32!=0)
 		keysize = keysize +1;
-	unsigned * zvalue = new unsigned[keysize];
-	int temp = 32*keysize;
-	int* zbits = new int[temp];
-    memset(zbits, 0, sizeof(int) * temp);
-	for(int i = 0;i<num_piv;i++)
+	unsigned long long * zvalue = new unsigned long long[keysize];
+	long long temp = 32*keysize;
+	long long* zbits = new long long[temp];
+    memset(zbits, 0, sizeof(long long) * temp);
+	for(long long i = 0;i<num_piv;i++)
 	{
 		bitset<32> bs(dist[i]);
-		for(int j = 1;j<=bits;j++)
+		for(long long j = 1;j<=bits;j++)
 			zbits[j*num_piv-i-1]=bs.test(j-1);
 	}
-	for(int i =0;i<keysize;i++)
+	for(long long i =0;i<keysize;i++)
 	{
 		temp-=32;
 		bitset<32> key;
-		for(int j =0;j<32;j++)
+		for(long long j =0;j<32;j++)
 			if(zbits[temp+j])
 				key.set(j);
 		zvalue[i]= key.to_ulong();
@@ -730,29 +730,29 @@ unsigned * PB_Tree:: Zconvert(int * dist)
 
 void PB_Tree::Zconvert(Object *o)
 {
-	int keysize = (num_piv * bits)/32;
+	long long keysize = (num_piv * bits)/32;
 	if((num_piv * bits)%32!=0)
 		keysize = keysize +1;
 	o->keysize = keysize;
-	o->key = new unsigned [keysize];
+	o->key = new unsigned long long [keysize];
 
-	int * dists = new int[num_piv];
-	int temp = 32*keysize;
-	int* zbits = new int[temp];
-	memset(zbits, 0, sizeof(int) * temp);
-	for(int i =0;i<num_piv;i++)
+	long long * dists = new long long[num_piv];
+	long long temp = 32*keysize;
+	long long* zbits = new long long[temp];
+	memset(zbits, 0, sizeof(long long) * temp);
+	for(long long i =0;i<num_piv;i++)
 	{
 		if(eps >0)
-			dists[i] = (int) floor(o->distance(ptable[i])/eps);
+			dists[i] = (long long) floor(o->distance(ptable[i])/eps);
 		else
-			dists[i]= (int) o->distance(ptable[i]);
+			dists[i]= (long long) o->distance(ptable[i]);
 		bitset<32> bs(dists[i]);
-		for(int j = 1;j<=bits;j++)
+		for(long long j = 1;j<=bits;j++)
 		{
 			zbits[j*num_piv-i-1]=bs.test(j-1);
 		}
 	}
-	for(int i =temp-1;i>=0;i--)
+	for(long long i =temp-1;i>=0;i--)
 	{
 		if(zbits[i]==0)
 		{
@@ -764,11 +764,11 @@ void PB_Tree::Zconvert(Object *o)
 		}
 	}
 
-	for(int i =0;i<keysize;i++)
+	for(long long i =0;i<keysize;i++)
 	{
 		temp -=32;
 		bitset<32> key;
-		for(int j =0;j<32;j++)
+		for(long long j =0;j<32;j++)
 		{
 			if(zbits[temp+j])
 				key.set(j);
@@ -779,34 +779,34 @@ void PB_Tree::Zconvert(Object *o)
 	delete[] zbits;
 }
 
-int* PB_Tree::R_Zconvert(unsigned * okey)
+long long* PB_Tree::R_Zconvert(unsigned long long * okey)
 {
-	int keysize = (num_piv * bits)/32;
+	long long keysize = (num_piv * bits)/32;
 	if((num_piv * bits)%32!=0)
 		keysize = keysize +1;
-	unsigned * key = new unsigned [keysize];
-	memcpy(key, okey, keysize*sizeof(unsigned));
-	int temp = 32*keysize;
-	int * zbits = new int[temp];
-	memset(zbits, 0, sizeof(int) * temp);
-	for(int i =0;i<keysize;i++)
+	unsigned long long * key = new unsigned long long [keysize];
+	memcpy(key, okey, keysize*sizeof(unsigned long long));
+	long long temp = 32*keysize;
+	long long * zbits = new long long[temp];
+	memset(zbits, 0, sizeof(long long) * temp);
+	for(long long i =0;i<keysize;i++)
 	{
-		int tt = (keysize-1-i)*32;
-		for(int j = 0;j<32 && key[i]!=0;key[i]>>=1,j++)
+		long long tt = (keysize-1-i)*32;
+		for(long long j = 0;j<32 && key[i]!=0;key[i]>>=1,j++)
 		{
 			if(key[i]&1)
 				zbits[tt+j]=1;
 		}
 	}
 
-	int* d = new int[num_piv];
-	for(int i=0;i<num_piv;i++)
+	long long* d = new long long[num_piv];
+	for(long long i=0;i<num_piv;i++)
 		d[i]=0;
 
-	for(int j =0;j<num_piv;j++)
+	for(long long j =0;j<num_piv;j++)
 	{
 		bitset<32> data;
-		for(int i=0;i<bits;i++)
+		for(long long i=0;i<bits;i++)
 		{
 			if(zbits[i*num_piv+num_piv-1-j])
 				data.set(i);
@@ -822,26 +822,26 @@ int* PB_Tree::R_Zconvert(unsigned * okey)
 
 void PB_Tree::Hconvert(Object *o)
 {
-	int keysize = (num_piv * bits)/32;
+	long long keysize = (num_piv * bits)/32;
 	if((num_piv * bits)%32!=0)
 		keysize = keysize +1;
 	o->keysize = keysize;
-	o->key = new unsigned [keysize];
+	o->key = new unsigned long long [keysize];
 
-	unsigned  * dists = new unsigned[num_piv];
-	unsigned * key = new unsigned[num_piv];
-	for(int i =0;i<num_piv;i++)
+	unsigned long long  * dists = new unsigned long long[num_piv];
+	unsigned long long * key = new unsigned long long[num_piv];
+	for(long long i =0;i<num_piv;i++)
 	{
 		key[i] =0;
 		if(eps >0)
-			dists[i] = (int) floor(o->distance(ptable[i])/eps);
+			dists[i] = (long long) floor(o->distance(ptable[i])/eps);
 		else
-			dists[i]= (int) o->distance(ptable[i]);
+			dists[i]= (long long) o->distance(ptable[i]);
 	}
 
 	Hconvert(key, dists, num_piv);
 
-	for(int i =0;i<keysize;i++)
+	for(long long i =0;i<keysize;i++)
 	{
 		o->key[i]=key[num_piv-keysize+i];
 	}
@@ -850,13 +850,13 @@ void PB_Tree::Hconvert(Object *o)
 	delete[] key;
 }
 
-unsigned * PB_Tree:: Hconvert ( unsigned* hcode,  unsigned* point, int DIMS ) {
-    unsigned mask = ( unsigned ) 1 << WORDBITS - 1, element, temp1, temp2,
+unsigned long long * PB_Tree:: Hconvert ( unsigned long long* hcode,  unsigned long long* point, long long DIMS ) {
+    unsigned long long mask = ( unsigned long long ) 1 << WORDBITS - 1, element, temp1, temp2,
              A, W = 0, S, tS, T, tT, J, P = 0, xJ;
-    int	i = NUMBITS * DIMS - DIMS, j;
+    long long	i = NUMBITS * DIMS - DIMS, j;
 
     // initialise hcode
-    memset ( hcode, 0, sizeof ( unsigned ) * DIMS );
+    memset ( hcode, 0, sizeof ( unsigned long long ) * DIMS );
 
     for ( j = A = 0; j < DIMS; j++ )
         if ( point[j] & mask )
@@ -907,7 +907,7 @@ unsigned * PB_Tree:: Hconvert ( unsigned* hcode,  unsigned* point, int DIMS ) {
             temp1 = tS << xJ % DIMS;
             temp2 = tS >> DIMS - xJ % DIMS;
             S = temp1 | temp2;
-            S &= ( ( unsigned ) 1 << DIMS ) - 1;
+            S &= ( ( unsigned long long ) 1 << DIMS ) - 1;
         } else
             S = tS;
 
@@ -936,7 +936,7 @@ unsigned * PB_Tree:: Hconvert ( unsigned* hcode,  unsigned* point, int DIMS ) {
                 temp1 = T >> xJ % DIMS;
                 temp2 = T << DIMS - xJ % DIMS;
                 tT = temp1 | temp2;
-                tT &= ( ( unsigned ) 1 << DIMS ) - 1;
+                tT &= ( ( unsigned long long ) 1 << DIMS ) - 1;
             } else
                 tT = T;
 
@@ -955,14 +955,14 @@ unsigned * PB_Tree:: Hconvert ( unsigned* hcode,  unsigned* point, int DIMS ) {
 
     }
 
-	unsigned * temp = new unsigned [DIMS];
+	unsigned long long * temp = new unsigned long long [DIMS];
 
-	for(int i =0;i<DIMS;i++)
+	for(long long i =0;i<DIMS;i++)
 	{
 		temp[i]=hcode[i];
 	}
 
-	for(int i =0;i<DIMS;i++)
+	for(long long i =0;i<DIMS;i++)
 	{
 		hcode[i]=temp[DIMS-i-1];
 	}
@@ -971,16 +971,16 @@ unsigned * PB_Tree:: Hconvert ( unsigned* hcode,  unsigned* point, int DIMS ) {
     return hcode;
 }
 
-unsigned * PB_Tree:: R_Hconvert ( unsigned* point, unsigned* hc, int DIMS )
+unsigned long long * PB_Tree:: R_Hconvert ( unsigned long long* point, unsigned long long* hc, long long DIMS )
 {
 
-	unsigned * hcode = new unsigned [DIMS];
-	for(int i =0;i<DIMS;i++)
+	unsigned long long * hcode = new unsigned long long [DIMS];
+	for(long long i =0;i<DIMS;i++)
 		hcode [i] = hc[DIMS-i-1];
 
-	unsigned   mask = (unsigned)1 << WORDBITS - 1, element, temp1, temp2,
+	unsigned long long   mask = (unsigned long long)1 << WORDBITS - 1, element, temp1, temp2,
                 A, W = 0, S, tS, T, tT, J, P = 0, xJ;
-        int     i = NUMBITS * DIMS - DIMS, j;
+        long long     i = NUMBITS * DIMS - DIMS, j;
 
 
         /*--- P ---*/
@@ -1063,7 +1063,7 @@ unsigned * PB_Tree:: R_Hconvert ( unsigned* point, unsigned* hc, int DIMS )
                         temp1 = S >> xJ % DIMS;
                         temp2 = S << DIMS - xJ % DIMS;
                         tS = temp1 | temp2;
-                        tS &= ((unsigned)1 << DIMS) - 1;
+                        tS &= ((unsigned long long)1 << DIMS) - 1;
                 }
                 else
                         tS = S;
@@ -1096,7 +1096,7 @@ unsigned * PB_Tree:: R_Hconvert ( unsigned* point, unsigned* hc, int DIMS )
                                 temp1 = T >> xJ % DIMS;
                                 temp2 = T << DIMS - xJ % DIMS;
                                 tT = temp1 | temp2;
-                                tT &= ((unsigned)1 << DIMS) - 1;
+                                tT &= ((unsigned long long)1 << DIMS) - 1;
                         }
                         else
                                 tT = T;
@@ -1121,11 +1121,11 @@ void PB_Tree::readptable(char *pname)
 {
 	ifstream in1(pname,ios::in);
 	ptable = new Object[num_piv];
-	for(int i =0;i<num_piv;i++)
+	for(long long i =0;i<num_piv;i++)
 	{
 		in1>>ptable[i].id>>ptable[i].size;
 		ptable[i].data = new float[ptable[i].size];
-		for(int j =0;j<ptable[i].size;j++)
+		for(long long j =0;j<ptable[i].size;j++)
 		{
 			in1>>ptable[i].data[j];
 		}
@@ -1133,10 +1133,10 @@ void PB_Tree::readptable(char *pname)
 	in1.close();
 }
 
-void PB_Tree::H_bulkload(Object * O, int o_num)
+void PB_Tree::H_bulkload(Object * O, long long o_num)
 {
 	vector<HEntry> H;
-	for(int i =0;i<o_num;i++)
+	for(long long i =0;i<o_num;i++)
 	{
 		Hconvert(&O[i]);
 		HEntry h(O[i].key, O[i].keysize, i);
@@ -1149,12 +1149,12 @@ void PB_Tree::H_bulkload(Object * O, int o_num)
 
 	if(f!=NULL)
 	{
-		for(int i=0;i<o_num;i++)
+		for(long long i=0;i<o_num;i++)
 		{
 			if(H[i].id==0)
 				cout<<" ****************"<<endl;
 			fprintf(f, "%d ", H[i].id);
-			for(int j =0;j<H[i].keysize;j++)
+			for(long long j =0;j<H[i].keysize;j++)
 				fprintf(f, "%u ", H[i].key[j]);
 			fprintf(f,"\n");
 		}
@@ -1163,10 +1163,10 @@ void PB_Tree::H_bulkload(Object * O, int o_num)
 	H.clear();
 }
 
-void PB_Tree::bulkload(Object * O, int o_num)
+void PB_Tree::bulkload(Object * O, long long o_num)
 {
 	vector<TEntry> v;
-	for(int i =0;i<o_num;i++)
+	for(long long i =0;i<o_num;i++)
 	{
 		Zconvert(&O[i]);
 		TEntry e;
@@ -1180,10 +1180,10 @@ void PB_Tree::bulkload(Object * O, int o_num)
 
 	if(f!=NULL)
 	{
-		for(int i=0;i<o_num;i++)
+		for(long long i=0;i<o_num;i++)
 		{
 			fprintf(f, "%d ", O[v[i].id].id);
-			for(int j =0;j<O[v[i].id].keysize;j++)
+			for(long long j =0;j<O[v[i].id].keysize;j++)
 				fprintf(f, "%u ", O[v[i].id].key[j]);
 			fprintf(f,"\n");
 		}
@@ -1194,7 +1194,7 @@ void PB_Tree::bulkload(Object * O, int o_num)
 
 void clear(vector<B_Node *> * inodes)
 {
-	for(int i =0;i<inodes->size();i++)
+	for(long long i =0;i<inodes->size();i++)
 	{
 		if((*inodes)[i]->num_entries ==0)
 		{
@@ -1203,11 +1203,11 @@ void clear(vector<B_Node *> * inodes)
 		}
 	}
 };
-int PB_Tree::idist(int * q, int* mi, int* ma)
+long long PB_Tree::idist(long long * q, long long* mi, long long* ma)
 {
-	int dist =0;
-	int temp;
-	for(int i =0;i<num_piv;i++)
+	long long dist =0;
+	long long temp;
+	for(long long i =0;i<num_piv;i++)
 	{
 		if(q[i]<mi[i])
 			temp = mi[i]-q[i];
@@ -1221,18 +1221,18 @@ int PB_Tree::idist(int * q, int* mi, int* ma)
 	return dist;
 }
 
-double PB_Tree::BFkNN(Object*q, int k)
+double PB_Tree::BFkNN(Object*q, long long k)
 {
-	int * dists = new int[num_piv];
-	for(int i =0;i<num_piv;i++)
+	long long * dists = new long long[num_piv];
+	for(long long i =0;i<num_piv;i++)
 	{
 		if(eps >0)
-			dists[i] = (int) floor(q->distance(ptable[i])/eps);
+			dists[i] = (long long) floor(q->distance(ptable[i])/eps);
 		else
-			dists[i]= (int) q->distance(ptable[i]);
+			dists[i]= (long long) q->distance(ptable[i]);
 	}
-	int addition =0;
-	int temp;
+	long long addition =0;
+	long long temp;
 	if(eps>0)
 		temp = eps;
 	else
@@ -1245,30 +1245,30 @@ double PB_Tree::BFkNN(Object*q, int k)
 	priority_queue<kNNEntry> queue;
 	bplus->load_root();
 	B_Node* node = bplus->root_ptr;
-	for(int i =0;i<node->num_entries;i++)
+	for(long long i =0;i<node->num_entries;i++)
 	{
-		unsigned * key1 = new unsigned [num_piv];
-		unsigned * mm1 = new unsigned [num_piv];
-		for(int j =0;j<bplus->keysize;j++)
+		unsigned long long * key1 = new unsigned long long [num_piv];
+		unsigned long long * mm1 = new unsigned long long [num_piv];
+		for(long long j =0;j<bplus->keysize;j++)
 		{
 			mm1[j]=0;
 			key1[num_piv+j-bplus->keysize] = node->entries[i]->min[j];
 		}
-		for(int j = bplus->keysize;j<num_piv;j++)
+		for(long long j = bplus->keysize;j<num_piv;j++)
 		{
 			mm1[j]=0;
 			key1[j-bplus->keysize] = 0;
 		}
 		R_Hconvert(mm1, key1, num_piv);
 
-		unsigned * key2 = new unsigned [num_piv];
-		unsigned * mm2 = new unsigned [num_piv];
-		for(int j =0;j<bplus->keysize;j++)
+		unsigned long long * key2 = new unsigned long long [num_piv];
+		unsigned long long * mm2 = new unsigned long long [num_piv];
+		for(long long j =0;j<bplus->keysize;j++)
 		{
 			mm2[j]=0;
 			key2[num_piv+j-bplus->keysize] = node->entries[i]->max[j];
 		}
-		for(int j = bplus->keysize;j<num_piv;j++)
+		for(long long j = bplus->keysize;j<num_piv;j++)
 		{
 			mm2[j]=0;
 			key2[j-bplus->keysize] = 0;
@@ -1276,9 +1276,9 @@ double PB_Tree::BFkNN(Object*q, int k)
 		R_Hconvert(mm2, key2, num_piv);
 		delete[] key1;
 		delete[] key2;
-		int * m1 = new int [num_piv];
-		int * m2 = new int [num_piv];
-		for(int j =0;j<num_piv;j++)
+		long long * m1 = new long long [num_piv];
+		long long * m2 = new long long [num_piv];
+		for(long long j =0;j<num_piv;j++)
 		{
 			m1[j]= mm1[j];
 			m2[j] = mm2[j];
@@ -1312,30 +1312,30 @@ double PB_Tree::BFkNN(Object*q, int k)
 			node = bplus->read_node(e.ptr);
 			if(e.level>1)
 			{
-				for(int i =0;i<node->num_entries;i++)
+				for(long long i =0;i<node->num_entries;i++)
 				{
-					unsigned * key1 = new unsigned [num_piv];
-					unsigned * mm1 = new unsigned [num_piv];
-					for(int j =0;j<bplus->keysize;j++)
+					unsigned long long * key1 = new unsigned long long [num_piv];
+					unsigned long long * mm1 = new unsigned long long [num_piv];
+					for(long long j =0;j<bplus->keysize;j++)
 					{
 						mm1[j]=0;
 						key1[num_piv+j-bplus->keysize] = node->entries[i]->min[j];
 					}
-					for(int j = bplus->keysize;j<num_piv;j++)
+					for(long long j = bplus->keysize;j<num_piv;j++)
 					{
 						mm1[j]=0;
 						key1[j-bplus->keysize] = 0;
 					}
 					R_Hconvert(mm1, key1, num_piv);
 
-					unsigned * key2 = new unsigned [num_piv];
-					unsigned * mm2 = new unsigned [num_piv];
-					for(int j =0;j<bplus->keysize;j++)
+					unsigned long long * key2 = new unsigned long long [num_piv];
+					unsigned long long * mm2 = new unsigned long long [num_piv];
+					for(long long j =0;j<bplus->keysize;j++)
 					{
 						mm2[j]=0;
 						key2[num_piv+j-bplus->keysize] = node->entries[i]->max[j];
 					}
-					for(int j = bplus->keysize;j<num_piv;j++)
+					for(long long j = bplus->keysize;j<num_piv;j++)
 					{
 						mm2[j]=0;
 						key2[j-bplus->keysize] = 0;
@@ -1343,9 +1343,9 @@ double PB_Tree::BFkNN(Object*q, int k)
 					R_Hconvert(mm2, key2, num_piv);
 					delete[] key1;
 					delete[] key2;
-					int * m1 = new int [num_piv];
-					int * m2 = new int [num_piv];
-					for(int j =0;j<num_piv;j++)
+					long long * m1 = new long long [num_piv];
+					long long * m2 = new long long [num_piv];
+					for(long long j =0;j<num_piv;j++)
 					{
 						m1[j]= mm1[j];
 						m2[j] = mm2[j];
@@ -1367,16 +1367,16 @@ double PB_Tree::BFkNN(Object*q, int k)
 			}
 			else
 			{
-				for(int i =0;i<node->num_entries;i++)
+				for(long long i =0;i<node->num_entries;i++)
 				{
-					unsigned * tem = new unsigned [num_piv];
-					unsigned * key = new unsigned [num_piv];
-					for(int j =0;j<bplus->keysize;j++)
+					unsigned long long * tem = new unsigned long long [num_piv];
+					unsigned long long * key = new unsigned long long [num_piv];
+					for(long long j =0;j<bplus->keysize;j++)
 					{
 						tem[j]=0;
 						key[j+num_piv-bplus->keysize]= node->entries[i]->key[j];
 					}
-					for(int j=bplus->keysize;j<num_piv;j++)
+					for(long long j=bplus->keysize;j<num_piv;j++)
 					{
 						tem[j]=0;
 						key[j-bplus->keysize]=0;
@@ -1384,7 +1384,7 @@ double PB_Tree::BFkNN(Object*q, int k)
 					R_Hconvert(tem, key, num_piv);
 					delete[] key;
 
-					int d = edist(dists, tem);
+					long long d = edist(dists, tem);
 					delete[] tem;
 					if(d*temp<kdist+addition)
 					{
@@ -1429,9 +1429,9 @@ double PB_Tree::BFkNN(Object*q, int k)
 
 // false: point is not in region [oqmin, oqmax]
 // true: point is in region [oqmin, oqmax]
-bool PB_Tree::inregion(int* point, int* oqmin, int* oqmax)
+bool PB_Tree::inregion(long long* point, long long* oqmin, long long* oqmax)
 {
-	for(int i =0;i<num_piv;i++)
+	for(long long i =0;i<num_piv;i++)
 	{
 		if(point[i]<oqmin[i]||point[i]>oqmax[i])
 			return false;
@@ -1440,11 +1440,11 @@ bool PB_Tree::inregion(int* point, int* oqmin, int* oqmax)
 }
 
 
-int PB_Tree::edist(int * query, int* o)
+long long PB_Tree::edist(long long * query, long long* o)
 {
-	int ed = 0;
-	int temp;
-	for(int i =0;i<num_piv;i++)
+	long long ed = 0;
+	long long temp;
+	for(long long i =0;i<num_piv;i++)
 	{
 		temp= abs(query[i]-o[i]);
 		if(temp>ed)
@@ -1453,11 +1453,11 @@ int PB_Tree::edist(int * query, int* o)
 	return ed;
 }
 
-int PB_Tree::edist(int * query, unsigned * o)
+long long PB_Tree::edist(long long * query, unsigned long long * o)
 {
-	int ed = 0;
-	int temp;
-	for(int i =0;i<num_piv;i++)
+	long long ed = 0;
+	long long temp;
+	for(long long i =0;i<num_piv;i++)
 	{
 		temp = o[i];
 		temp= abs(query[i]-temp);
@@ -1469,11 +1469,11 @@ int PB_Tree::edist(int * query, unsigned * o)
 
 // to deretmin the intersection relation between two MBBs [min1, max1] and [min2, max2]
 // return 0, 1, 2 or -1
-int PB_Tree::determine(int * min1, int * max1, int* min2, int* max2)
+long long PB_Tree::determine(long long * min1, long long * max1, long long* min2, long long* max2)
 {
-	int c1, c2, c3;
+	long long c1, c2, c3;
 	c1= c2=c3=0;
-	for(int i =0;i<num_piv;i++)
+	for(long long i =0;i<num_piv;i++)
 	{
 		if (max2[i] <= tpdists[i])
 			return 2;
@@ -1489,7 +1489,7 @@ int PB_Tree::determine(int * min1, int * max1, int* min2, int* max2)
 	return 1;
 }
 
-vector<int> RQ;
+vector<long long> RQ;
 
 void RQv(B_Node*  l, B_Node*  r)
 {
@@ -1504,25 +1504,25 @@ void RQv(B_Node*  l, B_Node*  r)
 		B_Node* n = NULL;
 		do
 		{
-			for (int i = 0; i<l->num_entries; i++)
+			for (long long i = 0; i<l->num_entries; i++)
 				RQ.push_back(l->entries[i]->ptr);
 			n = l->get_right_sibling();
 			delete l;
 			l = n;
 			n = NULL;
 		} while (l->block != r->block);
-		for (int i = 0; i<r->num_entries; i++)
+		for (long long i = 0; i<r->num_entries; i++)
 			RQ.push_back(r->entries[i]->ptr);
 	}
 }
 
-void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, int* min, int *max, bool flag, bool validate, int* query, int radius)
+void PB_Tree::RRQH_new(B_Node* node, vector<long long>* result, long long* qmin, long long* qmax, long long* min, long long *max, bool flag, bool validate, long long* query, long long radius)
 {
 	if (node->level != 0)
 	{
 		if (flag)
 		{
-			for (int i = 0; i < node->num_entries; i++)
+			for (long long i = 0; i < node->num_entries; i++)
 			{
 				RRQH_new(node->entries[i]->get_son(), result, qmin, qmax, NULL, NULL, true, false, NULL, radius);
 				node->entries[i]->del_son();
@@ -1538,7 +1538,7 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 			}
 			else
 			{
-				for (int i = 0; i < node->num_entries; i++)
+				for (long long i = 0; i < node->num_entries; i++)
 				{
 					RRQH_new(node->entries[i]->get_son(), result, qmin, qmax, NULL, NULL, false, true, NULL, radius);
 					node->entries[i]->del_son();
@@ -1547,30 +1547,30 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 		}
 		else
 		{
-			for (int i = 0; i < node->num_entries; i++)
+			for (long long i = 0; i < node->num_entries; i++)
 			{
-				unsigned * key1 = new unsigned[num_piv];
-				unsigned * mm1 = new unsigned[num_piv];
-				for (int j = 0; j < bplus->keysize; j++)
+				unsigned long long * key1 = new unsigned long long[num_piv];
+				unsigned long long * mm1 = new unsigned long long[num_piv];
+				for (long long j = 0; j < bplus->keysize; j++)
 				{
 					mm1[j] = 0;
 					key1[num_piv + j - bplus->keysize] = node->entries[i]->min[j];
 				}
-				for (int j = bplus->keysize; j < num_piv; j++)
+				for (long long j = bplus->keysize; j < num_piv; j++)
 				{
 					mm1[j] = 0;
 					key1[j - bplus->keysize] = 0;
 				}
 				R_Hconvert(mm1, key1, num_piv);
 
-				unsigned * key2 = new unsigned[num_piv];
-				unsigned * mm2 = new unsigned[num_piv];
-				for (int j = 0; j < bplus->keysize; j++)
+				unsigned long long * key2 = new unsigned long long[num_piv];
+				unsigned long long * mm2 = new unsigned long long[num_piv];
+				for (long long j = 0; j < bplus->keysize; j++)
 				{
 					mm2[j] = 0;
 					key2[num_piv + j - bplus->keysize] = node->entries[i]->max[j];
 				}
-				for (int j = bplus->keysize; j < num_piv; j++)
+				for (long long j = bplus->keysize; j < num_piv; j++)
 				{
 					mm2[j] = 0;
 					key2[j - bplus->keysize] = 0;
@@ -1578,9 +1578,9 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 				R_Hconvert(mm2, key2, num_piv);
 				delete[] key1;
 				delete[] key2;
-				int * m1 = new int[num_piv];
-				int * m2 = new int[num_piv];
-				for (int j = 0; j < num_piv; j++)
+				long long * m1 = new long long[num_piv];
+				long long * m2 = new long long[num_piv];
+				for (long long j = 0; j < num_piv; j++)
 				{
 					m1[j] = mm1[j];
 					m2[j] = mm2[j];
@@ -1588,7 +1588,7 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 				delete[] mm1;
 				delete[] mm2;
 
-				int t = determine(qmin, qmax, m1, m2);
+				long long t = determine(qmin, qmax, m1, m2);
 				if (t == 0)
 				{
 					RRQH_new(node->entries[i]->get_son(), result, qmin, qmax, NULL, NULL, true, false, NULL, radius);
@@ -1617,20 +1617,20 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 
 		if(flag)
 		{
-			for(int i =0;i<node->num_entries;i++)
+			for(long long i =0;i<node->num_entries;i++)
 				result->push_back(node->entries[i]->ptr);
 		}
 		else if (validate)
 		{
-			for (int i = 0; i<node->num_entries; i++)
+			for (long long i = 0; i<node->num_entries; i++)
 				RQ.push_back(node->entries[i]->ptr);
 		}
 		else
 		{
-			int* r1 = new int[num_piv];
-			int* r2 = new int[num_piv];
+			long long* r1 = new long long[num_piv];
+			long long* r2 = new long long[num_piv];
 			double count = 1;
-			for(int i =0;i<num_piv;i++)
+			for(long long i =0;i<num_piv;i++)
 			{
 				if(qmin[i]<min[i])
 					r1[i]=min[i];
@@ -1649,32 +1649,32 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 
 			if(count<node->num_entries)
 			{
-				vector<int> S;
+				vector<long long> S;
 
-				for(int i = r1[0];i<=r2[0];i++)
+				for(long long i = r1[0];i<=r2[0];i++)
 				{
 					S.push_back(i);
 				}
 
-				vector<vector<int>> SS;
-				vector<vector<int>> SS_t;
-				int ** ss = new int* [(int)count];
-				for(int i =0;i<count;i++)
-					ss[i]= new int[num_piv];
+				vector<vector<long long>> SS;
+				vector<vector<long long>> SS_t;
+				long long ** ss = new long long* [(long long)count];
+				for(long long i =0;i<count;i++)
+					ss[i]= new long long[num_piv];
 
-				for(int i =0;i<S.size();i++)
+				for(long long i =0;i<S.size();i++)
 				{
-					vector<int> s;
+					vector<long long> s;
 					s.push_back(S[i]);
 					SS.push_back(s);
 				}
 
-				for(int k =0;k<num_piv-1;k++)
+				for(long long k =0;k<num_piv-1;k++)
 				{
-					for(int i =0;i<SS.size();i++)
+					for(long long i =0;i<SS.size();i++)
 					{
-						vector<int> s = SS[i];
-						for(int j =r1[k+1];j<=r2[k+1];j++)
+						vector<long long> s = SS[i];
+						for(long long j =r1[k+1];j<=r2[k+1];j++)
 						{
 							s.push_back(j);
 							SS_t.push_back(s);
@@ -1688,10 +1688,10 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 
 				vector<IntArray> Z;
 				bool f = true;
-				for(int i=0;i<count;i++)
+				for(long long i=0;i<count;i++)
 				{
 					f = true;
-					for(int j =0;j<num_piv;j++)
+					for(long long j =0;j<num_piv;j++)
 					{
 						ss[i][j]=SS[i][j];
 						if (ss[i][j] <= tpdists[j])
@@ -1701,10 +1701,10 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 					}
 					IntArray ia;
 					ia.f = f;
-					unsigned *key = new unsigned [num_piv];
-					Hconvert(key, (unsigned *) ss[i], num_piv);
-					ia.key = new unsigned[bplus->keysize];
-					for(int j =0;j<bplus->keysize;j++)
+					unsigned long long *key = new unsigned long long [num_piv];
+					Hconvert(key, (unsigned long long *) ss[i], num_piv);
+					ia.key = new unsigned long long[bplus->keysize];
+					for(long long j =0;j<bplus->keysize;j++)
 						ia.key[j] = key[num_piv-bplus->keysize+j];
 					ia.keysize = bplus->keysize;
 					delete[] key;
@@ -1713,10 +1713,10 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 				S.clear();
 				SS.clear();
 				sort(Z.begin(),Z.end());
-				int j =0;
-				for(int i =0;i<count&&j<node->num_entries;)
+				long long j =0;
+				for(long long i =0;i<count&&j<node->num_entries;)
 				{
-					int temp = node->compareint(Z[i].key,node->entries[j]->key,bplus->keysize);
+					long long temp = node->compareint(Z[i].key,node->entries[j]->key,bplus->keysize);
 					if(temp==0)
 					{
 						if (Z[i].f)
@@ -1735,10 +1735,10 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 					}
 				}
 
-				for(int i =0;i<Z.size();i++)
+				for(long long i =0;i<Z.size();i++)
 					delete[] Z[i].key;
 				Z.clear();
-				for(int i=0;i<count;i++)
+				for(long long i=0;i<count;i++)
 					delete[] ss[i];
 				delete[] ss;
 				delete[] r1;
@@ -1747,23 +1747,23 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 			}
 			else
 			{
-				for (int i = 0;i < node->num_entries;i++)
+				for (long long i = 0;i < node->num_entries;i++)
 				{
-					unsigned * key = new unsigned[num_piv];
-					unsigned * temp = new unsigned[num_piv];
-					for (int j = 0;j < bplus->keysize;j++)
+					unsigned long long * key = new unsigned long long[num_piv];
+					unsigned long long * temp = new unsigned long long[num_piv];
+					for (long long j = 0;j < bplus->keysize;j++)
 					{
 						temp[j] = 0;
 						key[j + num_piv - bplus->keysize] = node->entries[i]->key[j];
 					}
-					for (int j = bplus->keysize;j < num_piv;j++)
+					for (long long j = bplus->keysize;j < num_piv;j++)
 					{
 						temp[j] = 0;
 						key[j - bplus->keysize] = 0;
 					}
 					R_Hconvert(temp, key, num_piv);
 					bool flag = false;
-					for (int x = 0;x < num_piv;x++)
+					for (long long x = 0;x < num_piv;x++)
 					{
 						if (temp[x] - tpdists[x] <0.0000001)
 						{
@@ -1787,35 +1787,35 @@ void PB_Tree::RRQH_new(B_Node* node, vector<int>* result, int* qmin, int* qmax, 
 	}
 }
 
-int PB_Tree::ImprovedRQ_new(Object * q, double radius)
+long long PB_Tree::ImprovedRQ_new(Object * q, double radius)
 {
-	int * dists = new int[num_piv];
+	long long * dists = new long long[num_piv];
 	tpdists= new double[num_piv];
-	vector<int> tp;
-	for(int i =0;i<num_piv;i++)
+	vector<long long> tp;
+	for(long long i =0;i<num_piv;i++)
 	{
 		tpdists[i] = q->distance(ptable[i]);
 
 		if(eps>0)
-			dists[i] = (int) floor(tpdists[i]/eps);
+			dists[i] = (long long) floor(tpdists[i]/eps);
 		else
-			dists[i] = (int) tpdists[i];
+			dists[i] = (long long) tpdists[i];
 
 		tpdists[i] = radius - tpdists[i];
 		if (eps>0 && tpdists[i]>0)
 			tpdists[i] = floor(tpdists[i] / eps) - 1;
 	}
 
-	int t_rad;
+	long long t_rad;
 	if(eps>0)
-		t_rad = (int) ceil(radius/eps) + 1;
+		t_rad = (long long) ceil(radius/eps) + 1;
 	else
-		t_rad = (int) radius;
+		t_rad = (long long) radius;
 
-	int* qmin = new int[num_piv];
-	int* qmax = new int[num_piv];
+	long long* qmin = new long long[num_piv];
+	long long* qmax = new long long[num_piv];
 
-	for(int i =0;i<num_piv;i++)
+	for(long long i =0;i<num_piv;i++)
 	{
 		qmin[i] = dists[i] - t_rad;
 
@@ -1827,7 +1827,7 @@ int PB_Tree::ImprovedRQ_new(Object * q, double radius)
 	}
 
 	bplus->load_root();
-	vector<int> * result = new vector<int>;
+	vector<long long> * result = new vector<long long>;
 	RQ.clear();
 	//*********************************************************Space Filling curve**************************
 	RRQH_new(bplus->root_ptr,result, qmin, qmax, NULL, NULL, false, false, dists, t_rad);
@@ -1837,7 +1837,7 @@ int PB_Tree::ImprovedRQ_new(Object * q, double radius)
 
 
 	Object * o= NULL;
-	for(int j =0;j<result->size();j++)
+	for(long long j =0;j<result->size();j++)
 	{
 		o = getobject((*result)[j]);
 		if(q->distance(*o)-radius<0.000001)
@@ -1857,9 +1857,9 @@ int PB_Tree::ImprovedRQ_new(Object * q, double radius)
 }
 
 
-Object* PB_Tree::getobject(int ptr)
+Object* PB_Tree::getobject(long long ptr)
 {
-	int i = ptr/draf->file->blocklength  ;
+	long long i = ptr/draf->file->blocklength  ;
 	char * buffer = new char[draf->file->blocklength];
 
 	if(c==NULL)
@@ -1871,7 +1871,7 @@ Object* PB_Tree::getobject(int ptr)
 		c->read_block(buffer,i,draf);
 	}
 
-	int j = ptr- i*draf->file->blocklength;
+	long long j = ptr- i*draf->file->blocklength;
 	Object* o = new Object();
 	o->read_from_buffer(&buffer[j]);
 

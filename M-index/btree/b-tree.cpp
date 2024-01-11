@@ -13,7 +13,7 @@
 #include "../heap/heap.h"
 #include "../blockfile/blk_file.h"
 #include "../gadget/gadget.h"
-extern int blocksize;
+extern long long blocksize;
 
 /*****************************************************************
 Use this constructor to create an empty b-tree 
@@ -25,13 +25,13 @@ B_Tree::B_Tree()
 
 	root_ptr = NULL;
 
-	for (int i = 0; i < 100; i ++)
+	for (long long i = 0; i < 100; i ++)
 		debug_info[i] = -1;
 
 	emergency = false;
 }
 
-B_Node*  B_Tree::read_node(int ptr)
+B_Node*  B_Tree::read_node(long long ptr)
 {
 	B_Node* node = new_one_node();
 	node->init(this, ptr);
@@ -160,9 +160,9 @@ void B_Tree::load_root()
 	}
 }
 
-int B_Tree::read_header(char *_buf)
+long long B_Tree::read_header(char *_buf)
 {
-	int i = 0;
+	long long i = 0;
 	memcpy(&root, _buf, sizeof(root));
 	i += sizeof(root);
 
@@ -174,9 +174,9 @@ int B_Tree::read_header(char *_buf)
 
 //-----------------------------------------------
 
-int B_Tree::write_header(char *_buf)
+long long B_Tree::write_header(char *_buf)
 {
-	int i = 0;
+	long long i = 0;
 	memcpy(_buf, &root, sizeof(root));
 	i += sizeof(root);
 
@@ -217,17 +217,17 @@ para:
 - fname: dataset 
 *****************************************************************/
 
-void B_Tree::bulkload(char*_fname, Object * os, int num)
+void B_Tree::bulkload(char*_fname, Object * os, long long num)
 {
 
 	ifstream in1(_fname);
 	if (quiet <= 5) 
 		printf("building the leaf level...\n");
 
-	int cnt = 0;													//cardinality
+	long long cnt = 0;													//cardinality
 
-	int start_block = 0, end_block = 0;
-	int prev_block = -1;
+	long long start_block = 0, end_block = 0;
+	long long prev_block = -1;
 	bool first_node = true; 
 
 	B_Node *act_nd = NULL;
@@ -237,7 +237,7 @@ void B_Tree::bulkload(char*_fname, Object * os, int num)
 B_Entry *prev_e = NULL;
 //---------
 
-    for(int j = 0; j<num;j++)
+    for(long long j = 0; j<num;j++)
 	{
 		B_Entry *e = new_one_entry();
 		e->init(this, 0);
@@ -252,7 +252,7 @@ B_Entry *prev_e = NULL;
 		e->key = os[e->son].key;
 
 		e->pd = new double[keysize];
-		for (int i = 0; i < keysize; i++)
+		for (long long i = 0; i < keysize; i++)
 		{
 			
 			e->pd[i] = os[e->son].pd[i];
@@ -332,8 +332,8 @@ delete prev_e;
 prev_e = NULL;
 //---------
 	
-	int current_level = 1; 
-	int last_start_block = start_block, last_end_block = end_block;
+	long long current_level = 1; 
+	long long last_start_block = start_block, last_end_block = end_block;
 	first_node = true;
 	
 	while (last_end_block > last_start_block)
@@ -344,7 +344,7 @@ prev_e = NULL;
 			printf("building nodes at level %d...\n", current_level);
 		}
 
-		for (int i = last_start_block; i <= last_end_block; i ++)
+		for (long long i = last_start_block; i <= last_end_block; i ++)
 		{
 			B_Node *child = new_one_node();
 			child->init(this, i);
@@ -432,10 +432,10 @@ void B_Tree::bulkload(char* _fname)
 	if (quiet <= 5)
 		printf("building the leaf level...\n");
 
-	int cnt = 0;													//cardinality
+	long long cnt = 0;													//cardinality
 
-	int start_block = 0, end_block = 0;
-	int prev_block = -1;
+	long long start_block = 0, end_block = 0;
+	long long prev_block = -1;
 	bool first_node = true;
 
 	B_Node *act_nd = NULL;
@@ -459,7 +459,7 @@ void B_Tree::bulkload(char* _fname)
 		}
 		in1 >> e->key;
 		e->pd = new double[keysize];
-		for (int i = 0; i < keysize; i++)
+		for (long long i = 0; i < keysize; i++)
 		{
 			in1 >> e->pd[i];
 		}
@@ -538,8 +538,8 @@ void B_Tree::bulkload(char* _fname)
 	prev_e = NULL;
 	//---------
 
-	int current_level = 1;
-	int last_start_block = start_block, last_end_block = end_block;
+	long long current_level = 1;
+	long long last_start_block = start_block, last_end_block = end_block;
 	first_node = true;
 
 	while (last_end_block > last_start_block)
@@ -550,7 +550,7 @@ void B_Tree::bulkload(char* _fname)
 			printf("building nodes at level %d...\n", current_level);
 		}
 
-		for (int i = last_start_block; i <= last_end_block; i++)
+		for (long long i = last_start_block; i <= last_end_block; i++)
 		{
 			B_Node *child = new_one_node();
 			child->init(this, i);
@@ -642,23 +642,23 @@ n:		cardinality
 1		failure
 *****************************************************************/
 
-int B_Tree::bulkload2(void *_ds, int _n)
+long long B_Tree::bulkload2(void *_ds, long long _n)
 {
-	int			ret				= 0;
+	long long			ret				= 0;
 
 	B_Entry		* e				= NULL;
 	B_Node		* actNd			= NULL;
 	B_Node		* child			= NULL;
 	B_Node		* prevNd		= NULL;
 	bool		firstNode		= false;
-	int			cnt				= -1;
-	int			currentLevel	= -1; 
-	int			endBlock		= -1;
-	int			i				= -1;
-	int			lastStartBlock	= -1;
-	int			lastEndBlock	= -1;
-	int			prevBlock		= -1;
-	int			startBlock		= -1;
+	long long			cnt				= -1;
+	long long			currentLevel	= -1; 
+	long long			endBlock		= -1;
+	long long			i				= -1;
+	long long			lastStartBlock	= -1;
+	long long			lastEndBlock	= -1;
+	long long			prevBlock		= -1;
+	long long			startBlock		= -1;
 	void		* ptr			= NULL;
 
 	cnt = 0;													
@@ -844,7 +844,7 @@ void B_Tree::build_from_file(char *_dsname)
     B_Entry *d;
     FILE *fp;
     
-	int record_count = 0;
+	long long record_count = 0;
 
     if((fp = fopen(_dsname,"r")) == NULL)
     {
@@ -855,7 +855,7 @@ void B_Tree::build_from_file(char *_dsname)
     }
     else
     {
-		int id = 0;
+		long long id = 0;
 		double info[10]; 
 
 		while (!feof(fp))
@@ -902,7 +902,7 @@ void B_Tree::fread_next_entry(FILE *_fp, B_Entry *_d)
 {
 	fscanf(_fp, "%d ", &(_d->son));
 	printf("%d ",_d->son);
-	int d;
+	long long d;
 	fscanf(_fp, "%lf", &_d->key);
 	printf("\n");
 	fscanf(_fp, "\n");
@@ -933,7 +933,7 @@ Parameters:
 - keysize: key size 
 *****************************************************************/
 
-void B_Tree::init(char *_fname, int _b_length, Cache *_c, int _keysize)
+void B_Tree::init(char *_fname, long long _b_length, Cache *_c, long long _keysize)
 {
 	char *fname = new char[strlen(_fname) + 10]; //allow 9 characters for extension name
 	strcpy(fname, _fname);
@@ -980,14 +980,14 @@ RETURN
 0 -- Error found.
 *****************************************************************/
 
-int B_Tree::traverse(double *_info)
+long long B_Tree::traverse(double *_info)
 {
 	last_leaf = -1;
 	last_right_sibling = -1;
 
 	load_root();
 	_info[2] = (double) root_ptr->capacity;
-	int ret = root_ptr->traverse(_info);
+	long long ret = root_ptr->traverse(_info);
 	delroot();
 
 	return ret;

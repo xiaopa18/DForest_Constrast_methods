@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include <io.h>
+#include <sys/io.h>
 extern double PageFault;
 
 extern int BLOCK_SIZE;

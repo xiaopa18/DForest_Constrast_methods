@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include "hilbert.h"
 
-unsigned* ENCODE ( unsigned* hcode, const unsigned* const point, int DIMS ) {
-    unsigned mask = ( unsigned ) 1 << WORDBITS - 1, element, temp1, temp2,
+unsigned long long* ENCODE ( unsigned long long* hcode, const unsigned long long* const point, long long DIMS ) {
+    unsigned long long mask = ( unsigned long long ) 1 << WORDBITS - 1, element, temp1, temp2,
              A, W = 0, S, tS, T, tT, J, P = 0, xJ;
-    int	i = NUMBITS * DIMS - DIMS, j;
-    memset ( hcode, 0, sizeof ( unsigned ) * DIMS );
+    long long	i = NUMBITS * DIMS - DIMS, j;
+    memset ( hcode, 0, sizeof ( unsigned long long ) * DIMS );
 
     for ( j = A = 0; j < DIMS; j++ )
         if ( point[j] & mask )
@@ -57,7 +57,7 @@ unsigned* ENCODE ( unsigned* hcode, const unsigned* const point, int DIMS ) {
             temp1 = tS << xJ % DIMS;
             temp2 = tS >> DIMS - xJ % DIMS;
             S = temp1 | temp2;
-            S &= ( ( unsigned ) 1 << DIMS ) - 1;
+            S &= ( ( unsigned long long ) 1 << DIMS ) - 1;
         } else
             S = tS;
 
@@ -86,7 +86,7 @@ unsigned* ENCODE ( unsigned* hcode, const unsigned* const point, int DIMS ) {
                 temp1 = T >> xJ % DIMS;
                 temp2 = T << DIMS - xJ % DIMS;
                 tT = temp1 | temp2;
-                tT &= ( ( unsigned ) 1 << DIMS ) - 1;
+                tT &= ( ( unsigned long long ) 1 << DIMS ) - 1;
             } else
                 tT = T;
 

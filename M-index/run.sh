@@ -1,18 +1,55 @@
+dataid=glove
+distribut=uniform
+q_num=1000
+r=(6.039538	6.458204	6.656926	6.878966	7.135468)
+k=()
+pvnums=(15)
+bss=(4096)
+for pvnum in ${pvnums[@]}
+do
+	./hfi $dataid $pvnum
+	for bs in ${bss[@]}
+	do
+		rs="${#r[@]} ${r[@]} ${#k[@]} ${k[@]}"
+		./main $dataid $distribut$q_num $pvnum $bs $rs
+		./calc_mem
+	done
+done
+
+# dataid=sift10M
+# distribut=uniform
+# q_num=1000
+# r=(269	335	363	388.195123	412.872988)
+# k=()
+# pvnums=(5)
+# bss=(20480)
+# for pvnum in ${pvnums[@]}
+# do
+# 	./hfi $dataid $pvnum
+# 	for bs in ${bss[@]}
+# 	do
+# 		rs="${#r[@]} ${r[@]} ${#k[@]} ${k[@]}"
+# 		./main $dataid $distribut$q_num $pvnum $bs $rs
+# 		./calc_mem
+# 	done
+# done
+
 # dataid=audio
 # distribut=uniform
 # q_num=1000
 # r=(33055	39128	42210	44364	46798)
-# pvnums=(5 10 15)
+# k=(10 20 30 40 50)
+# pvnums=(2)
 # bss=(4096)
 # for pvnum in ${pvnums[@]}
 # do
-	# ./hfi.exe $dataid $pvnum
-	# for bs in ${bss[@]}
-	# do
-		# rs="${#r[@]} ${r[@]}"
-		# ./main $dataid $distribut$q_num $pvnum $bs $rs
-		# ./calc_mem.exe
-	# done
+# 	./hfi.exe $dataid $pvnum
+# 	for bs in ${bss[@]}
+# 	do
+# 		rs="${#r[@]} ${r[@]} ${#k[@]} ${k[@]}"
+# 		./main.exe $dataid $distribut$q_num $pvnum $bs $rs
+# 		./calc_mem
+# 	done
 # done
 
 # dataid=enron
@@ -100,22 +137,22 @@
 	# done
 # done
 
-dataid=deep1M
-distribut=uniform
-q_num=1000
-r=(0.564587	0.626831	0.656971	0.677176	0.69897)
-pvnums=(3)
-bss=(20480)
-for pvnum in ${pvnums[@]}
-do
-	./hfi.exe $dataid $pvnum
-	for bs in ${bss[@]}
-	do
-		rs="${#r[@]} ${r[@]}"
-		./main $dataid $distribut$q_num $pvnum $bs $rs
-		./calc_mem.exe
-	done
-done
+# dataid=deep1M
+# distribut=uniform
+# q_num=1000
+# r=(0.564587	0.626831	0.656971	0.677176	0.69897)
+# pvnums=(3)
+# bss=(20480)
+# for pvnum in ${pvnums[@]}
+# do
+# 	./hfi.exe $dataid $pvnum
+# 	for bs in ${bss[@]}
+# 	do
+# 		rs="${#r[@]} ${r[@]}"
+# 		./main $dataid $distribut$q_num $pvnum $bs $rs
+# 		./calc_mem.exe
+# 	done
+# done
 
 # dataid=notre
 # distribut=uniform

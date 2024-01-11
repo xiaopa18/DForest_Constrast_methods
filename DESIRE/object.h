@@ -26,9 +26,9 @@
 using namespace std;
 
 
-extern int n, m;
-extern int f;
-extern int* metricm;
+extern long long n, m;
+extern long long f;
+extern long long* metricm;
 extern float* metricmaxdis;
 extern float* metricmeandis;
 extern double compdists;
@@ -36,14 +36,14 @@ class Object
 {
 public:
 	//data
-	int id;		
-	int sized, sizes;
-	int* size;
+	long long id;		
+	long long sized, sizes;
+	long long* size;
 	float* datad;
 	char* datas;
 
 	//tmpsize
-	int istravel;
+	long long istravel;
 	float* ansres;
 	float dist;           
 
@@ -53,11 +53,11 @@ public:
 	Object();	
 	Object(Object* o);
 	~Object();
-	int write_to_buffer(char* buffer);
-	int read_from_buffer(char* buffer);
-	int getsize();
+	long long write_to_buffer(char* buffer);
+	long long read_from_buffer(char* buffer);
+	long long getsize();
 
-	float distance(Object* other, int m) ;
+	float distance(Object* other, long long m) ;
 
 //	bool operator < (const Object& a) const;
 //	bool operator > (const Object& a) const;

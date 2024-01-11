@@ -13,14 +13,14 @@ class RTree;
 struct Linkable
 {
 public:
-	int son;
-	int dimension;
-	int level;
-	int ptr;
+	long long son;
+	long long dimension;
+	long long level;
+	long long ptr;
 	float *bounces;
 	float distanz;
 
-	Linkable(int dim)
+	Linkable(long long dim)
 	{ dimension = dim;
 	  bounces = new float[2 * dim];
     }
@@ -51,22 +51,22 @@ class LinList
 protected:
     SLink *first;         // Rootzeiger des Datenbestands
     SLink *last;          // Zeiger auf letztes Element
-    int anz;                    // Anzahl der belegten Elemente in der Liste
+    long long anz;                    // Anzahl der belegten Elemente in der Liste
     SLink *akt;           // zeigt auf aktuelles Element
-    int akt_index;              // Index des zuletzt mit get geholten Elements
+    long long akt_index;              // Index des zuletzt mit get geholten Elements
 public:
     LinList();
     virtual ~LinList();
-    int get_num()               // gibt Anzahl der im Index belegten Elements
+    long long get_num()               // gibt Anzahl der im Index belegten Elements
         { return anz; }         // zurueck
 
     void check();               // ueberprueft Konsistenz der Liste
-    void print(int k);
+    void print(long long k);
 
     void insert(Linkable *f);       // haengt ein Element vorne an die Liste an
     bool erase();               // loescht aktuelles Element aus der Liste
 
-    Linkable * get(int i);          // liefert i-tes Element
+    Linkable * get(long long i);          // liefert i-tes Element
     Linkable * get_first();         // liefert erstes Element im Index
     Linkable * get_last();          // liefert erstes Element im Index
     Linkable * get_next();          // liefert naechstes Element im Index

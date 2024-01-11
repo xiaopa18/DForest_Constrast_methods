@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <vector>
 #include<algorithm>
@@ -26,8 +25,8 @@ float eps = 0.0000000001;
 double compdists;
 double IOread = 0;
 double IOwrite = 0;
-clock_t IOtime = 0;
-int bolcksize;
+double IOtime = 0;
+long long bolcksize;
 RAF* Obj_f;
 RAF* Index_f;
 Cache* Obj_c;
@@ -37,29 +36,29 @@ vector<SF*> sforest;
 vector<Object*> anslist;
 
 
-int f=0;
-int n, m;
-int npiv,nsf;
+long long f=0;
+long long n, m;
+long long npiv,nsf;
 Objectarr* record = new Objectarr();
 double* querym;
-int* metricm;
+long long* metricm;
 float* metricmaxdis;
 float* metricmeandis;
-int st = 0;
+long long st = 0;
 Treearr* findnear(bpnode* q);
-void update(int metric);
-void delpiv(int metric);
+void update(long long metric);
+void delpiv(long long metric);
 vector<Object*> multirange_q(Object* que, float r);
-vector<Object*> multiknn_q(Object* que, int k);
+vector<Object*> multiknn_q(Object* que, long long k);
 /*
 
 void outvec(SF* p) {
-	for (int i = 0; i < p->arr.size(); i++)
+	for (long long i = 0; i < p->arr.size(); i++)
 		if(p->arr[i]->tree!=NULL) p->arr[i]->tree->bfs("");
 }
 void delobj(Object *p) {
-	for (int i = 0; i < m; i++) {
-	//for (int i = 1; i < 2; i++) {
+	for (long long i = 0; i < m; i++) {
+	//for (long long i = 1; i < 2; i++) {
 		if (p->loc[i] == NULL) cout << "!! fault " << endl;
 		else p->loc[i]->delnode();
 		delete p->loc[i];
@@ -68,10 +67,10 @@ void delobj(Object *p) {
 }
 
 */
-void outp(int i) {
+void outp(long long i) {
 	return;
 	cout << "a new round bfs beg" << endl;
-	for (int k = 0; k < sforest[i]->arr.size(); k++) {
+	for (long long k = 0; k < sforest[i]->arr.size(); k++) {
 		sforest[i]->arr[k]->outnode();
 		//continue;
 
@@ -84,67 +83,75 @@ void outp(int i) {
 	cout << "bfs fini" << endl;
 }
 
-int main(int argc, char **argv) {
+signed main(long long argc, char **argv) {
     string dataid=string(argv[1]);
     string queryid=string(argv[2]);
-    int querycount=atoi(argv[3]);
-	int kcount=atoi(argv[4+querycount]);
+    long long querycount=atoi(argv[3]);
+	long long kcount=atoi(argv[4+querycount]);
     m=1;
-	string filedata="../data_set/"+dataid+"/"+dataid+"_afterpca.csv", querydata;
+	string filedata="../../data_set/"+dataid+"/"+dataid+"_afterpca.csv", querydata;
 	ifstream in1;
 
 
 	//freopen("ans.txt", "w", stdout);
 
-//	srand((int)time(NULL));
+//	srand((long long)time(NULL));
 	srand(0);
-	int buffer_size = 32;
+	long long buffer_size = 32;
 	bolcksize = 8192;
 	Obj_f = new RAF();
 //	Obj_c = new Cache(buffer_size, bolcksize);
 	Obj_c = NULL;
-	Obj_f->init("SFObj-Block1",8192, NULL);
+	Obj_f->init("SFObj-Block1",bolcksize, NULL);
 	Objectarr* record = new Objectarr();
-	// cout << "come on 1" << endl;
+	//  << "come on 1" << endl;
 	record->readfile(filedata);
 	//m = 3;
 	//st = 3;
 	in1.close();
+	cout<<"read over"<<endl;
 	querym = new double[m];
-	for (int i = 0; i < m ; i++) querym[i] = 0;
+	for (long long i = 0; i < m ; i++) querym[i] = 0;
 
-//	for (int i = m - 2; i < m; i++) querym[i] = 1;
+//	for (long long i = m - 2; i < m; i++) querym[i] = 1;
 	f = 0;
-	int* objloc = new int[n + 1];
+	long long* objloc = new long long[n + 1];
 //	Obj_c = NULL;
 	char* buffer = new char[Obj_f->file->blocklength];
 	Obj_f->file->append_block(buffer);
-	for (int i = 0; i < n; i++) {	objloc[i] = Obj_f->add_object(record->arr[i]);	}
-
-	Obj_c = new Cache(buffer_size, 8192);
-	Obj_c->clear();
+	cout<<"append over"<<endl;
+	for (long long i = 0; i < n; i++) {	
+		//cout<<i<<endl;
+		objloc[i] = Obj_f->add_object(record->arr[i]);	
+	}
+	cout<<"add over"<<endl;	
+	// Obj_c = new Cache(buffer_size, 8192);
+	// Obj_c->clear();
 	//Obj_c = NULL;
 	//Obj_f->init_restore("Obj-Block", Obj_c);
 
 
 	//cout << "block end : " << Obj_f->file->get_num_of_blocks() << endl;
-	/*for (int i = max(n / 50 - 2, 0); i < n / 40; i++) {
-	for (int i = 0; i < 10; i++) {
+	/*for (long long i = max(n / 50 - 2, 0); i < n / 40; i++) {
+	for (long long i = 0; i < 10; i++) {
 		Object* q = Obj_f->get_object(objloc[i]);
 		q->outnode();
 		delete q;
 	}
 		*/
 
-
+	cout<<"new RAF"<<endl;
 	Index_f = new RAF();
 	//Index_c = new Cache(buffer_size, bolcksize);
 	Index_c = NULL;
 	Index_f->init("SFIndex-Block1", bolcksize, Index_c);
+	cout<<"init over"<<endl;
 	char* buf = new char[Index_f->file->get_blocklength()];
 	Index_f->file->append_block(buf);
 	npiv = 1;
-	for (int i = 0; i < m; i++) {
+	cout<<"append over"<<endl;
+	for (long long i = 0; i < m; i++) {
+		cout<<"SF "<<i<<endl;
 		SF *tmp = new SF();
 		sforest.push_back(tmp);
 		Object* q = record->arr[0];
@@ -160,8 +167,9 @@ int main(int argc, char **argv) {
 	auto tst=steady_clock::now(),ted=steady_clock::now();
 	cout << "building beg" << endl;
 	tst=steady_clock::now();
-	for (int j = st; j < m; j++) {
-		for (int i = 0; i < n; i++) {
+	for (long long j = st; j < m; j++) {
+		for (long long i = 0; i < n; i++) {
+			//cout<<i<<endl;
 			bpnode* q = new bpnode(j, record->arr[i]);
 			q->objloc = objloc[i];
 			Treearr* tmp = findnear(q);
@@ -170,10 +178,13 @@ int main(int argc, char **argv) {
 			q->disr = q->dis;
 
 			bptree* p = new bptree();
+			//cout<<"load start"<<endl;
 			p->loadroot(tmp->tree);
+			//cout<<"load over"<<endl;
 			p->insert(q);
+			//cout<<"insert over"<<endl;
 			delete p;
-			int tmpnp = round(pow(i, PIVOTN));
+			long long tmpnp = round(pow(i, PIVOTN));
 			if (tmpnp > sforest[j]->arr.size()) {
 				compdists = 0;
 				update(j);
@@ -187,70 +198,12 @@ int main(int argc, char **argv) {
 	ofstream ouf("./data/res.csv",ios::out);
 #endif
 
-    struct _stat info;
-    int suc=_stat("./SFIndex-Block1.raf",&info);
+    struct stat info;
+    long long suc=stat("./SFIndex-Block1.raf",&info);
     cout<<suc<<" "<<1.0*info.st_size/1024/1024<<"\n";
     double mem_use=1.0*info.st_size/1024/1024;
 
 	ofstream ouf;
-	
-	ouf.open("./record/"+dataid+"_knn.csv",ios::app);
-    if(!ouf.is_open())
-    {
-        cout<<"open ./record/" + dataid + "_knn.csv" + "failed\n";
-        exit(-1);
-    }
-    ouf.setf(ios::fixed);
-
-	for(int i=0;i<kcount;i++)
-	{
-	    int k=stoi(string(argv[5+querycount+i]));
-		double quem = 0;
-		for (int i = 0; i < m; i++) {
-			//in1 >> querym[i];
-			querym[i] = 1;
-			quem += querym[i];
-		}
-		in1.open("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
-		vector<Object*> queryset;
-		string tmp;
-		while (getline(in1, tmp))
-		{
-			queryset.push_back(new Object());
-			queryset.back()->ini(tmp);
-		}
-		in1.close();
-		compdists = 0;
-		IOread = 0;
-		IOtime = 0;
-		clock_t begin = clock();
-		double sum = 0;
-		double tim=0;
-		for (int j = 0; j < queryset.size(); j++) {
-            tst=steady_clock::now();
-			vector<Object*> tmpres = multiknn_q(queryset[j], k);
-			ted=steady_clock::now();
-            tim+=duration_cast<microseconds>(ted - tst).count()/1000.0;
-			float dis=0;
-			for(Object* tmp:tmpres)
-				dis=max(dis,tmp->distance(queryset[j],0));
-			//cout<<dis<<endl;
-			sum += dis;
-			for (int jj = 0; jj < tmpres.size(); jj++) {
-				delete tmpres[jj];
-				tmpres[jj] = NULL;
-
-			}
-		}
-		clock_t endt = clock();
-		cout<< "alltime: " << (endt - begin) << "ms" << "  IOtime:" << IOtime << "ms\n"<<"CPUtime: "<<
-			(endt - begin)-IOtime<<"ms\n";
-        ouf<<dataid<<","<<queryid<<",DESIRE"<<",null"<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<sum/queryset.size()<<","
-                <<compdists/queryset.size()<<","<<IOread/queryset.size()<<","
-				<<tim/queryset.size()<<"ms,"<<1.0*IOtime/queryset.size()
-                <<"ms,"<<1.0*(tim-IOtime)/queryset.size()<<"ms"<<endl;
-	}
-	ouf.close();
 
 	ouf.open("./record/"+dataid+"_rangequery.csv",ios::app);
     if(!ouf.is_open())
@@ -260,16 +213,78 @@ int main(int argc, char **argv) {
     }
     ouf.setf(ios::fixed);
 
-    for(int i=0;i<querycount;i++)
+    for(long long i=0;i<querycount;i++)
 	{
 	    double r=stod(string(argv[4+i]));
 		double quem = 0;
-		for (int i = 0; i < m; i++) {
+		for (long long i = 0; i < m; i++) {
 			//in1 >> querym[i];
 			querym[i] = 1;
 			quem += querym[i];
 		}
-		in1.open("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
+		in1.open("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
+		vector<Object*> queryset;
+		string tmp;
+		while (getline(in1, tmp))
+		{
+			queryset.push_back(new Object());
+			queryset.back()->ini(tmp);
+		}
+		in1.close();
+		compdists = 0;
+		IOread = 0;
+		IOtime = 0;
+		double sum = 0;
+		double tim=0;
+		for (long long j = 0; j < queryset.size(); j++) {
+            tst=steady_clock::now();
+			vector<Object*> tmpres = multirange_q(queryset[j], r);
+			ted=steady_clock::now();
+            tim+=duration_cast<microseconds>(ted - tst).count()/1000.0;
+			long long k = tmpres.size();
+#ifdef write
+			vector<long long> res;
+			for (long long i = 0; i < k; i++) res.push_back(tmpres[i]->id);
+			sort(res.begin(),res.end());
+			ouf << k;
+			for (long long i = 0; i < k; i++) ouf << "," << res[i];
+			ouf << "\n";
+#endif
+			sum += k;
+			for (long long jj = 0; jj < tmpres.size(); jj++) {
+				delete tmpres[jj];
+				tmpres[jj] = NULL;
+
+			}
+		}
+		cout << "r: " << r << "   "<<"find: "<<sum<<"\n";
+		cout<< "alltime: " << tim << "ms" << "  IOtime:" << IOtime << "ms\n"<<"CPUtime: "<<
+			tim-IOtime<<"ms\n";
+        ouf<<dataid<<","<<queryid<<",DESIRE"<<",null"<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<sum/queryset.size()<<","
+                <<compdists/queryset.size()<<","<<IOread/queryset.size()<<","
+				<<tim/queryset.size()<<"ms,"<<1.0*IOtime/queryset.size()
+                <<"ms,"<<1.0*(tim-IOtime)/queryset.size()<<"ms"<<endl;
+	}
+
+	ouf.close();
+	ouf.open("./record/"+dataid+"_knn.csv",ios::app);
+    if(!ouf.is_open())
+    {
+        cout<<"open ./record/" + dataid + "_knn.csv" + "failed\n";
+        exit(-1);
+    }
+    ouf.setf(ios::fixed);
+
+	for(long long i=0;i<kcount;i++)
+	{
+	    long long k=stoi(string(argv[5+querycount+i]));
+		double quem = 0;
+		for (long long i = 0; i < m; i++) {
+			//in1 >> querym[i];
+			querym[i] = 1;
+			quem += querym[i];
+		}
+		in1.open("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv",ios::in);
 		vector<Object*> queryset;
 		string tmp;
 		while (getline(in1, tmp))
@@ -284,46 +299,43 @@ int main(int argc, char **argv) {
 		clock_t begin = clock();
 		double sum = 0;
 		double tim=0;
-		for (int j = 0; j < queryset.size(); j++) {
+		for (long long j = 0; j < queryset.size(); j++) {
             tst=steady_clock::now();
-			vector<Object*> tmpres = multirange_q(queryset[j], r);
+			vector<Object*> tmpres = multiknn_q(queryset[j], k);
 			ted=steady_clock::now();
             tim+=duration_cast<microseconds>(ted - tst).count()/1000.0;
-			int k = tmpres.size();
-#ifdef write
-			vector<int> res;
-			for (int i = 0; i < k; i++) res.push_back(tmpres[i]->id);
-			sort(res.begin(),res.end());
-			ouf << k;
-			for (int i = 0; i < k; i++) ouf << "," << res[i];
-			ouf << "\n";
-#endif
-			sum += k;
-			for (int jj = 0; jj < tmpres.size(); jj++) {
+			float dis=0;
+			for(Object* tmp:tmpres)
+				dis=max(dis,tmp->distance(queryset[j],0));
+			//cout<<dis<<endl;
+			sum += dis;
+			for (long long jj = 0; jj < tmpres.size(); jj++) {
 				delete tmpres[jj];
 				tmpres[jj] = NULL;
 
 			}
 		}
 		clock_t endt = clock();
-		cout << "r: " << r << "   "<<"find: "<<sum<<"\n";
-		cout<< "alltime: " << (endt - begin) << "ms" << "  IOtime:" << IOtime << "ms\n"<<"CPUtime: "<<
-			(endt - begin)-IOtime<<"ms\n";
-        ouf<<dataid<<","<<queryid<<",DESIRE"<<",null"<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<sum/queryset.size()<<","
+		cout<< "alltime: " << tim << "ms" << "  IOtime:" << IOtime << "ms\n"<<"CPUtime: "<<
+			tim-IOtime<<"ms\n";
+        ouf<<dataid<<","<<queryid<<",DESIRE"<<",null"<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<sum/queryset.size()<<","
                 <<compdists/queryset.size()<<","<<IOread/queryset.size()<<","
 				<<tim/queryset.size()<<"ms,"<<1.0*IOtime/queryset.size()
                 <<"ms,"<<1.0*(tim-IOtime)/queryset.size()<<"ms"<<endl;
 	}
+	ouf.close();
+
+	
 	return 0;
 }
 
 Treearr* findnear(bpnode* q) {
-	int j = q->metric;
-	int k = -1;
+	long long j = q->metric;
+	long long k = -1;
 	float dis = -1;
 	//cout << j << " is j" << endl;
 	//outp(j);
-	for (int i = 0; i < sforest[j]->arr.size(); i++) {
+	for (long long i = 0; i < sforest[j]->arr.size(); i++) {
 
 		//sforest[j]->arr[i]->outnode();
 		//q->outnode("que ");
@@ -336,17 +348,17 @@ Treearr* findnear(bpnode* q) {
 	q->dis = dis;
 	return sforest[j]->arr[k];
 }
-void update(int metric) {
+void update(long long metric) {
 
-	int flag = 0;
+	long long flag = 0;
 //	cout << "updating 1"<< endl;
 
 	SF* tmp = sforest[metric];
-	int m = tmp->arr.size();
+	long long m = tmp->arr.size();
 	bptree** candlist = new bptree * [m];
 
 	//candlist.empty();
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		if (tmp->arr[i]->tree<0) continue;
 		bptree* p = new bptree();
 		p->loadroot(tmp->arr[i]->tree);
@@ -354,9 +366,9 @@ void update(int metric) {
 		//p->outnode("candlist ");
 		candlist[i] = p;
 	}
-	int k = 0;
+	long long k = 0;
 
-	for (int i = 1; i < m; i++) {
+	for (long long i = 1; i < m; i++) {
 		bptree* p = candlist[i];
 		bptree* q = candlist[k];
 		if (p->son[p->leafnum - 1]->disr > q->son[q->leafnum - 1]->disr) k = i;
@@ -415,7 +427,7 @@ void update(int metric) {
 	delete ptt;
 	}
 	//cout << "updating 4" << endl;
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		while (candlist[i] != NULL) {
 
 			bptree* p1 = candlist[i];
@@ -462,8 +474,8 @@ void update(int metric) {
 		}
 	}
 	//cout << "updating 6" << endl;
-	for (int i = tmp->arr.size() - 1; i >= 0; i--) {
-		int flg = 0;
+	for (long long i = tmp->arr.size() - 1; i >= 0; i--) {
+		long long flg = 0;
 		if (tmp->arr[i]->tree >= 0) {
 			bptree* p = new bptree();
 			p->loadroot(tmp->arr[i]->tree);
@@ -475,25 +487,25 @@ void update(int metric) {
 		tmp->arr[i] = NULL;
 		tmp->arr.erase(tmp->arr.begin() + i);
 	}
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		delete candlist[i];
 		candlist[i] = NULL;
 	}
 	delete[] candlist;
 
 }
-void delpiv(int metric) {
+void delpiv(long long metric) {
 	//cout << "deleting when there is " << npiv << endl;
 	//find a candidate pivot
 	SF* tmp = sforest[metric];
-	int m = tmp->arr.size();
+	long long m = tmp->arr.size();
 
 	//candlist.empty();
-	int k = -1;
+	long long k = -1;
 	float min = -1;
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		float dis = -1;
-		for (int j = 0; j < m; j++)
+		for (long long j = 0; j < m; j++)
 			if (i == j) continue;
 			else {
 
@@ -529,7 +541,7 @@ void delpiv(int metric) {
 		//pt->outnode("this");
 		if (pt->isleaf == 1) {
 		//	cout << "delpiv 1" << endl;
-			for (int i = 0; i < pt->leafnum; i++) {
+			for (long long i = 0; i < pt->leafnum; i++) {
 				bpnode* q = new bpnode();
 				q->copy(pt->son[i]);
 				Treearr* tmp = findnear(q);
@@ -545,7 +557,7 @@ void delpiv(int metric) {
 		}
 		else {
 			//cout << "delpiv 2" << endl;
-			for (int i = 0; i < pt->leafnum; i++) {
+			for (long long i = 0; i < pt->leafnum; i++) {
 				bptree* p = new bptree();
 
 				//cout << "doing 1 " << pt->son[i]->son << endl;
@@ -567,27 +579,33 @@ bool Ans_Comp(const AnsLeaf* a, const AnsLeaf* b) {
 	return false;
 }
 vector<Object*> multirange_q(Object* queobj, float r) {
-//	for (int i = 0; i < m; i++) cout <<i<<" "<< querym[i] << " querym " << endl;
+//	for (long long i = 0; i < m; i++) cout <<i<<" "<< querym[i] << " querym " << endl;
 	vector<AnsLeaf*>* mulpri_a = new vector<AnsLeaf*>[m];
 	vector<AnsLeaf*> allobj;
 	vector<Object*> candlist;
 	double totm = 0;
-	for (int i = 0; i < m; i++)  totm+= querym[i] ;
-	for (int i = 0; i < m; i++) if (querym[i] >0.000001) {
+	//cout<<123<<endl;
+	for (long long i = 0; i < m; i++)  totm+= querym[i] ;
+	for (long long i = 0; i < m; i++) if (querym[i] >0.000001) {
 		//bpnode* q = new bpnode(i, queobj);
+		//cout<<456<<endl;
 		vector<AnsLeaf*> tmp = sforest[i]->rnn(queobj, i, r/ totm,0);
 	//	sort(tmp.begin(), tmp.end(), Ans_Comp);
 		mulpri_a[i].swap(tmp);
-		for (int j = 0; j < mulpri_a[i].size(); j++) {
+		for (long long j = 0; j < mulpri_a[i].size(); j++) {
 			allobj.push_back(mulpri_a[i][j]);
 		}
 	}
+	//cout<<"asd"<<endl;
 	sort(allobj.begin(), allobj.end(), Obj_Comp);
-	for (int i = 0; i < allobj.size(); i++) {
+	for (long long i = 0; i < allobj.size(); i++) {
 		if (i == 0 || allobj[i]->obj != allobj[i - 1]->obj) {
+			//cout<<allobj[i]->obj<<endl;
 			Object* q = Obj_f->get_object(allobj[i]->obj);
+			//cout<<m<<endl;
 			q->ansres = new float[m];
-			for (int j = 0; j < m; j++) if (querym[j] >0.00001)q->ansres[j] = r + 1;
+			//cout<<m<<endl;
+			for (long long j = 0; j < m; j++) if (querym[j] >0.00001)q->ansres[j] = r + 1;
 			allobj[i]->o = q;
 			candlist.push_back(q);
 		}
@@ -596,37 +614,37 @@ vector<Object*> multirange_q(Object* queobj, float r) {
 		//cout << "allo " << allobj[i]->dis << endl;
 	}
 	allobj.clear();
-	//	cout << "multi search end" << endl;
-	int maxi = 0;
+	//cout << "multi search end" << endl;
+	long long maxi = 0;
 	float* tmparr = new float[m];
-	for (int i = 0; i < m; i++)if (querym[i] >0.000001) {
-		int k = mulpri_a[i].size();
+	for (long long i = 0; i < m; i++)if (querym[i] >0.000001) {
+		long long k = mulpri_a[i].size();
 		if (k > maxi) maxi = k;
 		tmparr[i] = r  / totm;
 	}
 	float distot = 0;
-	int j = 0;
-
-	//for (int i = 0; i < m; i++) cout << mulpri_a[i].size() << " ";	cout << " thjis is" << endl;
+	long long j = 0;
+	//cout<<"cnmcnm"<<endl;
+	//for (long long i = 0; i < m; i++) cout << mulpri_a[i].size() << " ";	cout << " thjis is" << endl;
 
 	while (distot < r && j < maxi) {
 		distot = 0;
-		for (int i = 0; i < m; i++)if (querym[i] >0.0000001) {
-			int k = j;
+		for (long long i = 0; i < m; i++)if (querym[i] >0.0000001) {
+			long long k = j;
 			if (k >= mulpri_a[i].size()) continue;
 			mulpri_a[i][k]->o->ansres[i] = mulpri_a[i][k]->dis * querym[i];
 			//cout << "mulpre " << mulpri_a[i][k]->dis << endl;
 		}
 		j++;
 	}
-
+	//cout<<"nmbnmb"<<endl;
 	//cout << " Test Multi " << candlist.size() << endl;
-	for (int jj = 0; jj < candlist.size(); jj++) {
+	for (long long jj = 0; jj < candlist.size(); jj++) {
 		Object* tmp = candlist[jj];
 		if (tmp == NULL) continue;
 		float dis = 0;
-		for (int i = 0; i < m; i++)if (querym[i] >0.0000001) {
-			int k = j;
+		for (long long i = 0; i < m; i++)if (querym[i] >0.0000001) {
+			long long k = j;
 			dis += min(tmparr[i], tmp->ansres[i]);
 			//	cout << tmparr[i] << " " << tmp->ansres[i] << " ";
 				//			cout<<tmp->treenode->data->ansres[i]<<" ";
@@ -640,7 +658,7 @@ vector<Object*> multirange_q(Object* queobj, float r) {
 			continue;
 		}
 		dis = 0;
-		for (int i = 0; i < m; i++) if (querym[i] >0.0000001) {
+		for (long long i = 0; i < m; i++) if (querym[i] >0.0000001) {
 			//tmp->ansres[i] = r + 1;  // **********************
 			if (tmp->ansres[i] > r) {
 				bpnode* que = new bpnode(i, queobj);
@@ -657,10 +675,10 @@ vector<Object*> multirange_q(Object* queobj, float r) {
 			candlist[jj] = NULL;
 		}
 	}
-
+	//cout<<"etqtte"<<endl;
 	//cout << " Test Multi 2 " << candlist.size() << endl;
-	for (int i = 0; i < m; i++) if (querym[i] >0.000001) {
-		for (int jj = 0; jj < mulpri_a[i].size(); jj++) {
+	for (long long i = 0; i < m; i++) if (querym[i] >0.000001) {
+		for (long long jj = 0; jj < mulpri_a[i].size(); jj++) {
 			mulpri_a[i][jj]->o = NULL;
 			delete mulpri_a[i][jj];
 		}
@@ -668,11 +686,11 @@ vector<Object*> multirange_q(Object* queobj, float r) {
 	}
 	delete[] mulpri_a;
 	delete[] tmparr;
-
+	//cout<<"252435235"<<endl;
 
 	vector<Object*> mulres;
-	int tots = 0;
-	for (int jj = 0; jj < candlist.size(); jj++) {
+	long long tots = 0;
+	for (long long jj = 0; jj < candlist.size(); jj++) {
 		Object* q = candlist[jj];
 		if (q == NULL) continue;
 		else {
@@ -686,7 +704,7 @@ vector<Object*> multirange_q(Object* queobj, float r) {
 	return mulres;
 }
 
-vector<Object*> multiknn_q(Object* queobj, int k) {
+vector<Object*> multiknn_q(Object* queobj, long long k) {
 	k++;
 	vector<AnsLeaf*>* mulpri_a = new vector<AnsLeaf*>[m];
 
@@ -701,8 +719,8 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 		}
 	};
 	priority_queue<float, vector<float>, cmp1> reslist;
-	int ord = -1;
-	for (int i = 0; i < m; i++) if (querym[i] == 1) {
+	long long ord = -1;
+	for (long long i = 0; i < m; i++) if (querym[i] == 1) {
 		if (ord == -1 || metricmeandis[i]>metricmeandis[ord]) ord = i;
 	}
 	{
@@ -712,17 +730,17 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 		//cout << "KNN " << i << " size " << tmp.size() << endl;
 		//sort(tmp.begin(), tmp.end(), Ans_Comp);
 		mulpri_a[ord].swap(tmp);
-		for (int j = 0; j < mulpri_a[ord].size(); j++) {
+		for (long long j = 0; j < mulpri_a[ord].size(); j++) {
 			allobj.push_back(mulpri_a[ord][j]);
 		}
 	}
 	sort(allobj.begin(), allobj.end(), Obj_Comp);
 
-	for (int i = 0; i < allobj.size(); i++) {
+	for (long long i = 0; i < allobj.size(); i++) {
 		if (i == 0 || allobj[i]->obj != allobj[i - 1]->obj) {
 			Object* q = Obj_f->get_object(allobj[i]->obj);
 			q->ansres = new float[m];
-			for (int j = 0; j < m; j++) q->ansres[j] = -1;
+			for (long long j = 0; j < m; j++) q->ansres[j] = -1;
 			allobj[i]->o = q;
 			candlist.push_back(q);
 		}
@@ -732,34 +750,34 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 	allobj.clear();
 	//	cout << "multi search end" << endl;
 
-	int maxi = 0;
+	long long maxi = 0;
 	float* tmparr = new float[m];
-	for (int i = 0; i < m; i++)if (querym[i] == 1) {
-		int k = mulpri_a[i].size();
+	for (long long i = 0; i < m; i++)if (querym[i] == 1) {
+		long long k = mulpri_a[i].size();
 		if (k > maxi) maxi = k;
 		if (k > 0) tmparr[i] = mulpri_a[i][k - 1]->dis;
 		else tmparr[i] = -1;
 
 	}
 
-	int j = 0;
+	long long j = 0;
 
-	//for (int i = 0; i < m; i++) cout << mulpri_a[i].size() << " ";	cout << " thjis is" << endl;
+	//for (long long i = 0; i < m; i++) cout << mulpri_a[i].size() << " ";	cout << " thjis is" << endl;
 
 	while (j < maxi) {
-		for (int i = 0; i < m; i++)if (querym[i] == 1) {
-			int k = j;
+		for (long long i = 0; i < m; i++)if (querym[i] == 1) {
+			long long k = j;
 			if (k >= mulpri_a[i].size()) continue;
 			mulpri_a[i][k]->o->ansres[i] = mulpri_a[i][k]->dis;
 		}
 		j++;
 	}
 
-	for (int jj = 0; jj < candlist.size(); jj++) {
+	for (long long jj = 0; jj < candlist.size(); jj++) {
 		Object* tmp = candlist[jj];
 		if (tmp == NULL) continue;
 		float dis = 0;
-		for (int i = 0; i < m; i++) if (querym[i] == 1) {
+		for (long long i = 0; i < m; i++) if (querym[i] == 1) {
 			float dd = tmp->ansres[i];
 			if (tmp->ansres[i] < -0.5) dd = tmparr[i];
 			if (dd < -0.5) continue;
@@ -768,7 +786,7 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 		//cout<< "judge 1.5 " << dis << endl;
 		float dk = reslist.top();
 		dis = 0;
-		for (int i = 0; i < m; i++) if (querym[i] == 1) {
+		for (long long i = 0; i < m; i++) if (querym[i] == 1) {
 			if (tmp->ansres[i] < -0.5) {
 				bpnode* que = new bpnode(i, queobj);
 				bpnode* kk = new bpnode(i, tmp);
@@ -791,8 +809,8 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 		candlist[jj] = NULL;
 	}
 
-	for (int i = 0; i < m; i++) if (querym[i] == 1) {
-		for (int jj = 0; jj < mulpri_a[i].size(); jj++) {
+	for (long long i = 0; i < m; i++) if (querym[i] == 1) {
+		for (long long jj = 0; jj < mulpri_a[i].size(); jj++) {
 			mulpri_a[i][jj]->o = NULL;
 			delete mulpri_a[i][jj];
 		}
@@ -808,12 +826,12 @@ vector<Object*> multiknn_q(Object* queobj, int k) {
 	vector<Object*> mulres;
 
 	while (reslist.size() > 0) reslist.pop();
-	for (int jj = 0; jj < candlist.size(); jj++) {
+	for (long long jj = 0; jj < candlist.size(); jj++) {
 		reslist.push(candlist[jj]->dist);
 		while (reslist.size() > k) reslist.pop();
 	}
 	float knnq = reslist.top();
-	for (int jj = 0; jj < candlist.size(); jj++) if (candlist[jj]->dist <= knnq) {
+	for (long long jj = 0; jj < candlist.size(); jj++) if (candlist[jj]->dist <= knnq) {
 	//	cout <<knnq<< " finded in KNN " << mulres.size() << " "<< candlist[jj]->dist<<" ";
 	//	candlist[jj]->outnode();
 		mulres.push_back(candlist[jj]);

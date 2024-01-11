@@ -64,14 +64,14 @@ B_Entry::~B_Entry()
 
 //-----------------------------------------------
 
-int B_Entry::get_size(int _level)
+long long B_Entry::get_size(long long _level)
 { 
-	int size;
+	long long size;
 	
 	if (_level == 0) 
 		size = sizeof(son)+ my_tree->keysize*sizeof(double) + sizeof(double) + sizeof(ptr); //modify by Lu Chen
 	else
-		size = sizeof(son)  + sizeof(double) + sizeof(int);
+		size = sizeof(son)  + sizeof(double) + sizeof(long long);
 
 	return size;
 }
@@ -101,9 +101,9 @@ void B_Entry::del_son()
 
 //-----------------------------------------------
 
-int B_Entry::read_from_buffer(char *_buf)
+long long B_Entry::read_from_buffer(char *_buf)
 {
-	int i;
+	long long i;
 	memcpy(&key, _buf, sizeof(double));
 	i = sizeof(double);
 
@@ -134,7 +134,7 @@ int B_Entry::read_from_buffer(char *_buf)
 
 //-----------------------------------------------
 
-void B_Entry::init(B_Tree *_B_Tree, int _level)
+void B_Entry::init(B_Tree *_B_Tree, long long _level)
 { 
 	my_tree = _B_Tree; 
 	level = _level;
@@ -146,9 +146,9 @@ void B_Entry::init(B_Tree *_B_Tree, int _level)
 
 //-----------------------------------------------
 
-int B_Entry::write_to_buffer(char *_buf)
+long long B_Entry::write_to_buffer(char *_buf)
 {
-	int i;
+	long long i;
 	memcpy(_buf, &key, sizeof(double));
 	i =  sizeof(double);
 
@@ -217,7 +217,7 @@ bool B_Entry::equal_to(B_Entry *_e)
 
 	if (pd != NULL&&_e->pd != NULL)
 	{
-		for(int i =0;i<my_tree->keysize;i++)
+		for(long long i =0;i<my_tree->keysize;i++)
 			if (pd[i] != _e->pd[i])
 			{
 				ret = false;
@@ -261,9 +261,9 @@ return
   1: the host entry comes later
 *****************************************************************/
 
-int B_Entry::compare_key(B_Entry *_e)
+long long B_Entry::compare_key(B_Entry *_e)
 {
-	int ret = 0; 
+	long long ret = 0; 
 	if (key - _e->key<-0.00000001)
 	{
 		ret = -1;
@@ -287,9 +287,9 @@ return
   1: the host entry comes later
 *****************************************************************/
 
-int B_Entry::compare(B_Entry *_e)
+long long B_Entry::compare(B_Entry *_e)
 {
-	int ret = compare_key(_e);
+	long long ret = compare_key(_e);
 
 	if (ret == 0)
 	{

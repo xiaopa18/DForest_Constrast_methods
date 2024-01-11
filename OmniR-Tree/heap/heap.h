@@ -11,7 +11,7 @@ class Heap;
 class TEntry
 {
 public:
-	int id;
+	long long id;
 	double key;
 
 	TEntry()
@@ -69,7 +69,7 @@ public:
 class KEntry
 {
 public:
-	int id;
+	long long id;
 	double key;
 	bool isobject;
 
@@ -99,26 +99,26 @@ public:
 class HeapEntry
 {
 public:
-	int dim;
-	int level;
-	int son1;
-	int son2;
+	long long dim;
+	long long level;
+	long long son1;
+	long long son2;
 	float key;
 
 	//-----functions-----
 	HeapEntry();
 	~HeapEntry();
-	void init_HeapEntry(int _dim);
+	void init_HeapEntry(long long _dim);
 	void copy(HeapEntry *_he);
 };
 
 class Heap
 {
 public:
-	int b;            // needed by HB for access condition
-	int hsize;        // the heap size
-	int used;         // number of used places
-	int maxused;
+	long long b;            // needed by HB for access condition
+	long long hsize;        // the heap size
+	long long used;         // number of used places
+	long long maxused;
 	HeapEntry *cont;  // content of the heap
 
 	//-----functions-----
@@ -126,8 +126,8 @@ public:
 	~Heap();
 	bool check();
 	void clean(float _dist);
-	void enter(HeapEntry *_he, int _pos);
-	void init(int _dim, int _hsize=MAX_HEAP_SIZE);
+	void enter(HeapEntry *_he, long long _pos);
+	void init(long long _dim, long long _hsize=MAX_HEAP_SIZE);
 	void insert(HeapEntry *_he);
 	bool remove(HeapEntry *_he);
 };

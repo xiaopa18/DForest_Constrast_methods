@@ -20,11 +20,11 @@ class RTree : public Cacheable
 {
 public:
 //--===on disk===--
-	int dimension;                       
-	int num_of_data;	                 
-    int num_of_dnodes;	                 
-    int num_of_inodes;	                 
-	int root;                            
+	long long dimension;                       
+	long long num_of_data;	                 
+    long long num_of_dnodes;	                 
+    long long num_of_inodes;	                 
+	long long root;                            
 	bool root_is_data;                   
 //--===others===--
 	RTNode *root_ptr;
@@ -32,18 +32,18 @@ public:
     LinList *re_data_cands; 
 	LinList *deletelist;
 //--===functions===--
-	RTree(char *fname, int _b_length, Cache* c, int _dimension);
+	RTree(char *fname, long long _b_length, Cache* c, long long _dimension);
     RTree(char *fname, Cache* c);
-    RTree(char *inpname, char *fname, int _blength, Cache* c, int _dimension,map<int,string> * keywords);
-	RTree(char *inpname, char *fname, int _blength, Cache* c, int _dimension);
+    RTree(char *inpname, char *fname, long long _blength, Cache* c, long long _dimension,map<long long,string> * keywords);
+	RTree(char *inpname, char *fname, long long _blength, Cache* c, long long _dimension);
     ~RTree();
 
 	bool delete_entry(Entry *d);
 	bool FindLeaf(Entry *e);
-    int get_num() { return num_of_data; }
+    long long get_num() { return num_of_data; }
 	void insert(Entry *d);
 	void load_root();  
-	void NNQuery(float *QueryPoint, SortedLinList *res,string query,map<int,string> * keywords,int k);
+	void NNQuery(float *QueryPoint, SortedLinList *res,string query,map<long long,string> * keywords,long long k);
 	void rangeQuery(float *mbr, SortedLinList *res);
 	void read_header(char *buffer);      
 	void write_header(char *buffer);    

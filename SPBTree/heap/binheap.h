@@ -4,8 +4,8 @@
 class BinHeapEntry
 {
 public:
-	int leftcnt;										//how many nodes in total in the left subtree
-	int rightcnt;										//in the right
+	long long leftcnt;										//how many nodes in total in the left subtree
+	long long rightcnt;										//in the right
 	BinHeapEntry *leftchild;								
 	BinHeapEntry *rightchild;	
 	BinHeapEntry *parent;	
@@ -26,7 +26,7 @@ class BinHeap
 public:
 	
 	BinHeapEntry *root;
-	int (*compare_func)(const void *_e1, const void *_e2);
+	long long (*compare_func)(const void *_e1, const void *_e2);
 	void (*destroy_data)(const void *_e);
 
 	//-----functions-----
@@ -34,7 +34,7 @@ public:
 	~BinHeap();
 	void adjust_upward(BinHeapEntry *_he);
 	void adjust_downward();
-	virtual int compare(const void *_e1, const void *_e2);
+	virtual long long compare(const void *_e1, const void *_e2);
 	void insert(BinHeapEntry *_he);
 	BinHeapEntry * remove();
 	void swap_data(BinHeapEntry *_e1, BinHeapEntry *_e2);

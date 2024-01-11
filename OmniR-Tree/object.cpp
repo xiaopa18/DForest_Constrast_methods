@@ -9,8 +9,8 @@ extern double compdists;
 #define MIN(x, y) ((x<y)? (x): (y))
 #define MAX(x, y) ((x>y)? (x): (y))
 #endif
-int ** table1 = NULL;
-extern int func;
+long long ** table1 = NULL;
+extern long long func;
 
 Object::Object()
 {
@@ -26,7 +26,7 @@ Object::Object(const Object& o)
 	if(o.x!=NULL)
 	{
 		x = new float[size];
-		for(int i =0;i<size;i++)
+		for(long long i =0;i<size;i++)
 			x[i] = o.x[i];
 	}
 	else
@@ -42,14 +42,14 @@ Object::~Object()
 }
 
 
-int Object::getsize()
+long long Object::getsize()
 {
-	return size*sizeof(float)+2*sizeof(int);
+	return size*sizeof(float)+2*sizeof(long long);
 }
 
-int Object::read_from_buffer(char * buffer)
+long long Object::read_from_buffer(char * buffer)
 {
-	int i;
+	long long i;
 	memcpy(&id, buffer, sizeof(id));
 	i = sizeof(id);
 
@@ -64,9 +64,9 @@ int Object::read_from_buffer(char * buffer)
 	return i;
 }
 
-int Object::write_to_buffer(char *buffer)
+long long Object::write_to_buffer(char *buffer)
 {
-	int i;
+	long long i;
 
 	memcpy(buffer, &id, sizeof(id));
 	i = sizeof(id);
@@ -86,18 +86,18 @@ double Object::distance(const Object& other) const
 	compdists++;
 
 	if (func == 1) {
-		for (int i = 0; i < size; i++) dist += fabs(x[i] - other.x[i]); // L1
+		for (long long i = 0; i < size; i++) dist += fabs(x[i] - other.x[i]); // L1
 	}
 	else if (func == 2) {
-		for (int i = 0; i < size; i++) dist += pow(x[i] - other.x[i], 2); // L2
+		for (long long i = 0; i < size; i++) dist += pow(x[i] - other.x[i], 2); // L2
 		dist = sqrt(dist);
 	}
 	else if (func == 5) {
-		for (int i = 0;i < size;i++) dist += pow(fabs(x[i] - other.x[i]), 5);
+		for (long long i = 0;i < size;i++) dist += pow(fabs(x[i] - other.x[i]), 5);
 		dist = pow(dist, 0.2);
 	}
 	else {
-		for (int i = 0; i<size; i++) dist = MAX(dist, fabs(x[i] - other.x[i])); // Linf
+		for (long long i = 0; i<size; i++) dist = MAX(dist, fabs(x[i] - other.x[i])); // Linf
 	}
 	return dist;
 }

@@ -17,33 +17,33 @@ typedef void * voidptr;
 
 //----- functions -----
 
-void	blank_print(int _n);
-int		compfloats(double _v1, double _v2);
+void	blank_print(long long _n);
+long long		compfloats(double _v1, double _v2);
 void	error(char *_msg, bool _exit);
 void	get_leading_folder(char *_path, char *_folder);
 void	getFNameFromPath(char *_path, char *_fname);
 char	getnextChar(char **_s);
 void	getnextWord(char **_s, char *_w);
-bool	is_pow_of_2(int _v);
-double	l2_dist_int(int *_p1, int *_p2, int _dim);
-void	printINT_in_BIN(int _n, int _m);
+bool	is_pow_of_2(long long _v);
+double	l2_dist_int(long long *_p1, long long *_p2, long long _dim);
+void	printINT_in_BIN(long long _n, long long _m);
 
 //----- classes -----
 
 struct ExtSort_heap_entry_data
 {
-	int		file_id;
+	long long		file_id;
 	voidptr * elemadd;
 };
 
 class ExtSort
 {
 public:
-	int n;														//mem size in the # of elements
+	long long n;														//mem size in the # of elements
 	char *src_fname;											//source file name
 	char *tar_fname;											//target file name
 	char *working_folder;
-	int(*compare_func)(const void *_elemadd1, const void *_elemadd2);
+	int (*compare_func)(const void *_elemadd1, const void *_elemadd2);
 
 	ExtSort();
 	virtual ~ExtSort();
@@ -56,10 +56,10 @@ public:
 	//---------------------------------
 
 	virtual void esort();
-	virtual int get_initial_runs();
-	virtual void get_run_fname(int _step, int _run, char *_fname);
-	virtual void init(int _n, char *_src_fname, char *_tar_fname);
-	virtual int merge_runs(int _pass, int _run_num);
+	virtual long long get_initial_runs();
+	virtual void get_run_fname(long long _step, long long _run, char *_fname);
+	virtual void init(long long _n, char *_src_fname, char *_tar_fname);
+	virtual long long merge_runs(long long _pass, long long _run_num);
 };
 
 class ExtSortBinHeap :public BinHeap
@@ -73,7 +73,7 @@ public:
 class exExtSort :public ExtSort
 {
 public:
-	int keysize;
+	long long keysize;
 
 	virtual void destroy_elem(void **_elem);
 	virtual void * new_elem();

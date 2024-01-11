@@ -8,10 +8,10 @@ this file implements the RTree class*/
 #include "../blockfile/blk_file.h"
 #include "../linlist/linlist.h"
 #include "../heap/heap.h"
-extern int DataNum;
+extern long long DataNum;
 
 //------------------------------------------------------------
-RTree::RTree(char *fname, int _b_length, Cache *c, int _dimension)
+RTree::RTree(char *fname, long long _b_length, Cache *c, long long _dimension)
 //use this constructor to build a new tree
 {
 	file = new BlockFile(fname, _b_length);
@@ -37,7 +37,7 @@ RTree::RTree(char *fname, int _b_length, Cache *c, int _dimension)
 RTree::RTree(char *fname, Cache *c)
 //use this constructor to restore a tree from a file
 {
-	int j;
+	long long j;
 
 	file = new BlockFile(fname, 0);
 	cache = c;
@@ -53,7 +53,7 @@ RTree::RTree(char *fname, Cache *c)
 	root_ptr = NULL;
 }
 //------------------------------------------------------------
-RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension, map<int, string> *keywords)
+RTree::RTree(char *inpname, char *fname, long long _b_length, Cache *c, long long _dimension, map<long long, string> *keywords)
 // construct new R-tree from a specified input textfile with rectangles
 {
 	Entry *d;
@@ -79,7 +79,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 	root_ptr->level = 0;
 	root = root_ptr->block;
 
-	int record_count = 0;
+	long long record_count = 0;
 
 	if ((fp = fopen(inpname, "r")) == NULL)
 	{
@@ -88,17 +88,17 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 	}
 	else
 	{
-		int id = 0;
+		long long id = 0;
 		float x0, y0, x1, y1;
 		char s[20];
 
 		while (!feof(fp))
 		{
 			record_count++;
-			fscanf(fp, "%d", &id);
+			fscanf(fp, "%lld", &id);
 			d = new Entry(dimension, NULL);
 			d->son = id;
-			for (int i = 0; i<dimension; i++)
+			for (long long i = 0; i<dimension; i++)
 			{
 				fscanf(fp, "%f", &d->bounces[2 * i]);
 				d->bounces[2 * i + 1] = d->bounces[2 * i];
@@ -106,7 +106,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 
 			insert(d);
 		}
-		printf("inserting object %d", record_count);
+		printf("inserting object %lld", record_count);
 	}
 
 	fclose(fp);
@@ -117,7 +117,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 }
 //------------------------------------------------------------
 
-RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension)
+RTree::RTree(char *inpname, char *fname, long long _b_length, Cache *c, long long _dimension)
 // construct new R-tree from a specified input textfile with rectangles
 {
 	Entry *d;
@@ -149,7 +149,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 	root_ptr->level = 0;
 	root = root_ptr->block;
 
-	int record_count = 0;
+	long long record_count = 0;
 
 	if ((fp = fopen(inpname, "r")) == NULL)
 	{
@@ -161,9 +161,9 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 		while (record_count < DataNum)
 		{
 			d = new Entry(_dimension, NULL);
-			fscanf(fp, "%d ", &d->son);
+			fscanf(fp, "%lld ", &d->son);
 			d->son = record_count;
-			for (int i = 0; i<_dimension; i++)
+			for (long long i = 0; i<_dimension; i++)
 			{
 				fscanf(fp, "%f ", &d->bounces[2 * i]);
 				d->bounces[2 * i + 1] = d->bounces[2 * i];
@@ -172,7 +172,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 			insert(d);
 			record_count++;
 		}
-		printf("inserting object %d", record_count);
+		printf("inserting object %lld", record_count);
 	}
 
 	fclose(fp);
@@ -184,7 +184,7 @@ RTree::RTree(char *inpname, char *fname, int _b_length, Cache *c, int _dimension
 
 RTree::~RTree()
 {
-	int j;
+	long long j;
 
 	char *header = new char[file->get_blocklength()];
 	write_header(header);
@@ -205,7 +205,7 @@ RTree::~RTree()
 	delete re_data_cands;
 	delete deletelist;
 
-	printf("This R-Tree contains %d internal, %d data nodes and %d data\n",
+	printf("This R-Tree contains %lld internal, %lld data nodes and %lld data\n",
 		num_of_inodes, num_of_dnodes, num_of_data);
 }
 
@@ -257,10 +257,10 @@ bool RTree::FindLeaf(Entry *e)
 //------------------------------------------------------------
 void RTree::insert(Entry* d)
 {
-	int i, j;
+	long long i, j;
 	RTNode *sn;
 	RTNode *nroot_ptr;
-	int nroot;
+	long long nroot;
 	Entry *de;
 	R_OVERFLOW split_root;
 	Entry *dc;
@@ -350,7 +350,7 @@ void RTree::load_root()
 }
 //------------------------------------------------------------
 void RTree::NNQuery(float *QueryPoint,
-	SortedLinList *res, string query, map<int, string> * keywords, int k)
+	SortedLinList *res, string query, map<long long, string> * keywords, long long k)
 {
 	float nearest_distanz;
 
@@ -377,7 +377,7 @@ void RTree::rangeQuery(float *mbr, SortedLinList *res)
 //------------------------------------------------------------
 void RTree::read_header(char *buffer)
 {
-	int i;
+	long long i;
 
 	memcpy(&dimension, buffer, sizeof(dimension));
 	i = sizeof(dimension);
@@ -400,7 +400,7 @@ void RTree::read_header(char *buffer)
 //------------------------------------------------------------
 void RTree::write_header(char *buffer)
 {
-	int i;
+	long long i;
 
 	memcpy(buffer, &dimension, sizeof(dimension));
 	i = sizeof(dimension);

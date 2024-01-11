@@ -48,8 +48,8 @@ int main(int argc, char **argv)
     int pn=atoi(argv[3]);
     int querycount=atoi(argv[4]);
     int knnconut=atoi(argv[5+querycount]);
-    vector<vector<double>> dataset=read("../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
-    vector<vector<double>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    vector<vector<double>> dataset=read("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
+    vector<vector<double>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
     printf("read dataset queryset over\n");
     auto tst=steady_clock::now(),ted=steady_clock::now();
     int current_pid=GetCurrentPid();
@@ -104,17 +104,19 @@ int main(int argc, char **argv)
         int k=stoi(argv[6+querycount+i]);
         compDists = 0;
         double rad=0;
-        clock_t start = clock();
+        double tim=0;
         for (int j = 0; j < queryset.size();j++) {
             priority_queue<PDI> q;
+            tst=steady_clock::now();
             gnat._knnSearch(&(gnat.root),queryset[j],k,q);
+            ted=steady_clock::now();
+            tim+=duration_cast<microseconds>(ted - tst).count()/1000.0;
             rad+=q.top().first;
         }
-        clock_t times = clock() - start;
         ouf<<dataid<<","<<queryid<<",GNAT,"<<"pn:"<<pn<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-            <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+            <<compDists/queryset.size()<<","<<1.0*tim/queryset.size()<<"ms"<<endl;
         cout<<dataid<<","<<queryid<<",GNAT,"<<"pn:"<<pn<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-            <<compDists/queryset.size()<<","<<1.0*times/queryset.size()<<"ms"<<endl;
+            <<compDists/queryset.size()<<","<<1.0*tim/queryset.size()<<"ms"<<endl;
     }
     ouf.close();
     return 0;

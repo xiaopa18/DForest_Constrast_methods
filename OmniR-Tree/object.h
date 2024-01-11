@@ -9,18 +9,18 @@ using namespace std;
 class Object
 {
 public:
-	int id;
+	long long id;
 	float * x;
-	int size;
-	int num_piv;
+	long long size;
+	long long num_piv;
 	double key;
 
 	Object();
 	Object(const Object & o);
 	~Object();
-	int write_to_buffer(char* buffer);
-	int read_from_buffer(char* buffer);
-	int getsize();
+	long long write_to_buffer(char* buffer);
+	long long read_from_buffer(char* buffer);
+	long long getsize();
 	double distance(const Object& other) const;
 };
 

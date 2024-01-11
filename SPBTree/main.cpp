@@ -19,7 +19,7 @@
 * DERIVATIVES.                                                       *
 *                                                                    *
 *********************************************************************/
-
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -42,19 +42,19 @@ double compdists = 0;
 double IOread = 0;
 double IOwrite = 0;
 double cc = 0;
-int MAXINT, BITS;
+long long MAXINT, BITS;
 double EPS, MAXDIST,IOtime;
-int bolcksize;
-int dim, num_obj, func;
+long long bolcksize;
+long long dim, num_obj, func;
 
 vector<vector<double>> read(string name);
 
 // Note that the id of data in the file should begin with 0
-Object ** readobjects(string filename, int num_obj, int dim)
+Object ** readobjects(string filename, long long num_obj, long long dim)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	Object ** objset = new Object*[num_obj];
-	for (int i = 0;i<num_obj;i++)
+	for (long long i = 0;i<num_obj;i++)
 	{
 		objset[i] = new Object();
 	}
@@ -67,7 +67,7 @@ Object ** readobjects(string filename, int num_obj, int dim)
 			objset[record_count]->id = record_count;
 			objset[record_count]->size = dim;
 			objset[record_count]->data = new float[objset[record_count]->size];
-			for (int i = 0; i < objset[record_count]->size; i++)
+			for (long long i = 0; i < objset[record_count]->size; i++)
 			{
 				objset[record_count]->data[i] = dataset[record_count][i];
 			}
@@ -108,7 +108,7 @@ vector<vector<double>> read(string name)
 
 Object * readobjects2(string filename)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	{
 	    vector<vector<double>> dataset=read(filename);
 	    num_obj=dataset.size(),dim=dataset[0].size();
@@ -120,7 +120,7 @@ Object * readobjects2(string filename)
 			objset[record_count].id = record_count;
 			objset[record_count].size = dim;
 			objset[record_count].data = new float[dim];
-			for (int i = 0; i < dim; i++)
+			for (long long i = 0; i < dim; i++)
 			{
 				objset[record_count].data[i] = dataset[record_count][i];
 			}
@@ -131,7 +131,7 @@ Object * readobjects2(string filename)
 
 }
 
-clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
+clock_t bulidIndex(char* index_name, string filename, char*pname,long long n_p)
 {
 	/*******
 	index_name -- the path of the index to be stored
@@ -148,7 +148,7 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	pb->num_cand = 40; // the number of candidates for selecting pivots (if we read the pivots from pivot file, it is useless here)
 	pb->num_piv = n_p;
 	pb->bits = BITS;
-	int keysize;
+	long long keysize;
 	Object * os = readobjects2(filename); // the function needed to be rewirte to read differnt formats of the dataset
 
 	pb->readptable(pname);
@@ -174,9 +174,9 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	{
 		node = node->entries[0]->get_son();
 	}
-	int * obj_order = new int[num_obj];
-	int k = 0;
-	for (int i = 0;i<node->num_entries;i++)
+	long long * obj_order = new long long[num_obj];
+	long long k = 0;
+	for (long long i = 0;i<node->num_entries;i++)
 	{
 		obj_order[k] = node->entries[i]->son;
 
@@ -188,7 +188,7 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	{
 
 		node = temp;
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
 			obj_order[k] = node->entries[i]->son;
 			k++;
@@ -202,10 +202,10 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	pb->draf->init(index_name, bolcksize, NULL);
 
 	Object ** objS = readobjects(filename, num_obj, dim);
-	int * result = pb->draf->buid_from_array(objS, obj_order);
+	long long * result = pb->draf->buid_from_array(objS, obj_order);
 
 	//delete object sets
-	for (int i = 0;i<num_obj;i++)
+	for (long long i = 0;i<num_obj;i++)
 		delete objS[i];
 	delete[] obj_order;
 
@@ -218,7 +218,7 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	}
 
 	k = 0;
-	for (int i = 0;i<node->num_entries;i++)
+	for (long long i = 0;i<node->num_entries;i++)
 	{
 		node->entries[i]->ptr = result[k];
 		k++;
@@ -235,7 +235,7 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 	{
 		buffer = new char[bolcksize];
 		node = temp;
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
 			node->entries[i]->ptr = result[k];
 			k++;
@@ -258,11 +258,11 @@ clock_t bulidIndex(char* index_name, string filename, char*pname,int n_p)
 
 
 
-int * build_MBR(B_Node * node, PB_Tree *pb)
+long long * build_MBR(B_Node * node, PB_Tree *pb)
 {
-	int* minp = new int[pb->num_piv];
-	int* maxp = new int[pb->num_piv];
-	for (int i = 0;i<pb->num_piv;i++)
+	long long* minp = new long long[pb->num_piv];
+	long long* maxp = new long long[pb->num_piv];
+	for (long long i = 0;i<pb->num_piv;i++)
 	{
 		minp[i] = MAXINT;
 		maxp[i] = 0;
@@ -270,10 +270,10 @@ int * build_MBR(B_Node * node, PB_Tree *pb)
 
 	if (node->level == 0)
 	{
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
-			int* t = pb->R_Zconvert(node->entries[i]->key);
-			for (int j = 0;j<pb->num_piv;j++)
+			long long* t = pb->R_Zconvert(node->entries[i]->key);
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				if (t[j]<minp[j])
 					minp[j] = t[j];
@@ -286,16 +286,16 @@ int * build_MBR(B_Node * node, PB_Tree *pb)
 	}
 	else
 	{
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
-			int* t = build_MBR(node->entries[i]->get_son(), pb);
+			long long* t = build_MBR(node->entries[i]->get_son(), pb);
 			node->entries[i]->del_son();
-			int * t1 = new int[pb->num_piv];
-			for (int j = 0;j<pb->num_piv;j++)
+			long long * t1 = new long long[pb->num_piv];
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				t1[j] = t[pb->num_piv + j];
 			}
-			for (int j = 0;j<pb->num_piv;j++)
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				if (t[j]<minp[j])
 					minp[j] = t[j];
@@ -318,8 +318,8 @@ int * build_MBR(B_Node * node, PB_Tree *pb)
 
 
 	}
-	int * temp = new int[2 * pb->num_piv];
-	for (int i = 0;i<pb->num_piv;i++)
+	long long * temp = new long long[2 * pb->num_piv];
+	for (long long i = 0;i<pb->num_piv;i++)
 	{
 		temp[i] = minp[i];
 		temp[pb->num_piv + i] = maxp[i];
@@ -330,11 +330,11 @@ int * build_MBR(B_Node * node, PB_Tree *pb)
 	return temp;
 }
 
-int * H_build_MBR(B_Node * node, PB_Tree *pb)
+long long * H_build_MBR(B_Node * node, PB_Tree *pb)
 {
-	int* minp = new int[pb->num_piv];
-	int* maxp = new int[pb->num_piv];
-	for (int i = 0;i<pb->num_piv;i++)
+	long long* minp = new long long[pb->num_piv];
+	long long* maxp = new long long[pb->num_piv];
+	for (long long i = 0;i<pb->num_piv;i++)
 	{
 		minp[i] = MAXINT;
 		maxp[i] = 0;
@@ -342,24 +342,24 @@ int * H_build_MBR(B_Node * node, PB_Tree *pb)
 
 	if (node->level == 0)
 	{
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
 
-			unsigned * key = new unsigned[pb->num_piv];
-			unsigned * t = new unsigned[pb->num_piv];
-			for (int j = 0;j<pb->bplus->keysize;j++)
+			unsigned long long * key = new unsigned long long[pb->num_piv];
+			unsigned long long * t = new unsigned long long[pb->num_piv];
+			for (long long j = 0;j<pb->bplus->keysize;j++)
 			{
 				t[j] = 0;
 				key[pb->num_piv + j - pb->bplus->keysize] = node->entries[i]->key[j];
 			}
-			for (int j = pb->bplus->keysize;j<pb->num_piv;j++)
+			for (long long j = pb->bplus->keysize;j<pb->num_piv;j++)
 			{
 				t[j] = 0;
 				key[j - pb->bplus->keysize] = 0;
 			}
 			pb->R_Hconvert(t, key, pb->num_piv);
 
-			for (int j = 0;j<pb->num_piv;j++)
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				if (t[j]<minp[j])
 					minp[j] = t[j];
@@ -373,16 +373,16 @@ int * H_build_MBR(B_Node * node, PB_Tree *pb)
 	}
 	else
 	{
-		for (int i = 0;i<node->num_entries;i++)
+		for (long long i = 0;i<node->num_entries;i++)
 		{
-			int* t = H_build_MBR(node->entries[i]->get_son(), pb);
+			long long* t = H_build_MBR(node->entries[i]->get_son(), pb);
 			node->entries[i]->del_son();
-			int * t1 = new int[pb->num_piv];
-			for (int j = 0;j<pb->num_piv;j++)
+			long long * t1 = new long long[pb->num_piv];
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				t1[j] = t[pb->num_piv + j];
 			}
-			for (int j = 0;j<pb->num_piv;j++)
+			for (long long j = 0;j<pb->num_piv;j++)
 			{
 				if (t[j]<minp[j])
 					minp[j] = t[j];
@@ -390,13 +390,13 @@ int * H_build_MBR(B_Node * node, PB_Tree *pb)
 					maxp[j] = t1[j];
 			}
 
-			unsigned * mi = new unsigned[pb->num_piv];
-			unsigned * ma = new unsigned[pb->num_piv];
-			pb->Hconvert(mi, (unsigned*)t, pb->num_piv);
-			pb->Hconvert(ma, (unsigned*)t1, pb->num_piv);
-			node->entries[i]->min = new unsigned[pb->bplus->keysize];
-			node->entries[i]->max = new unsigned[pb->bplus->keysize];
-			for (int j = 0;j<pb->bplus->keysize;j++)
+			unsigned long long * mi = new unsigned long long[pb->num_piv];
+			unsigned long long * ma = new unsigned long long[pb->num_piv];
+			pb->Hconvert(mi, (unsigned long long*)t, pb->num_piv);
+			pb->Hconvert(ma, (unsigned long long*)t1, pb->num_piv);
+			node->entries[i]->min = new unsigned long long[pb->bplus->keysize];
+			node->entries[i]->max = new unsigned long long[pb->bplus->keysize];
+			for (long long j = 0;j<pb->bplus->keysize;j++)
 			{
 				node->entries[i]->min[j] = mi[j + pb->num_piv - pb->bplus->keysize];
 				node->entries[i]->max[j] = ma[j + pb->num_piv - pb->bplus->keysize];
@@ -416,8 +416,8 @@ int * H_build_MBR(B_Node * node, PB_Tree *pb)
 
 	}
 
-	int * temp = new int[2 * pb->num_piv];
-	for (int i = 0;i<pb->num_piv;i++)
+	long long * temp = new long long[2 * pb->num_piv];
+	for (long long i = 0;i<pb->num_piv;i++)
 	{
 		temp[i] = minp[i];
 		temp[pb->num_piv + i] = maxp[i];
@@ -428,7 +428,7 @@ int * H_build_MBR(B_Node * node, PB_Tree *pb)
 	return temp;
 }
 
-int main(int argc, char** argv)
+signed main(long long argc, char** argv)
 {
 
     ofstream ouf("./contrast_experiment_record.csv",ios::app);
@@ -437,27 +437,27 @@ int main(int argc, char** argv)
         cout<<"open ./contrast_experiment_record.csv failed\n";
         exit(-1);
     }
-
+    ouf.setf(ios::fixed);
 	//******************************build the index***********
 	clock_t begin, buildEnd, queryEnd;
 	double buildComp, queryComp;
 	struct stat sdata1;
 	struct stat sdata2;
 
-	int buffer_size = 32;
+	long long buffer_size = 32;
     string dataid=string(argv[1]);
     string queryid=string(argv[2]);
-    string datafile="../data_set/"+dataid+"/"+dataid+"_afterpca.csv";
+    string datafile="../../data_set/"+dataid+"/"+dataid+"_afterpca.csv";
 	char *pname = "./pivot.txt";// the path of input pivots
 	char * indexfile = "./index";// the path to store the built index
 	MAXDIST = 1e20;// the maximum distance for the input dataset
-	int pn = stoi(argv[3]);// the number of pivots
+	long long pn = stoi(argv[3]);// the number of pivots
 	bolcksize = stoi(argv[4]);	// the page size
-	vector<vector<double>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
-    int qcount=stoi(argv[5]);
+	vector<vector<double>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    long long qcount=stoi(argv[5]);
 	EPS = MAXDIST / 1000;
 	MAXINT = (MAXDIST / EPS);
-	BITS = ((int)log2(MAXINT) + 1); //  the bits to represent space filling curve values
+	BITS = ((long long)log2(MAXINT) + 1); //  the bits to represent space filling curve values
 
 	compdists = 0;
 	IOread = IOwrite = 0;
@@ -477,13 +477,13 @@ int main(int argc, char** argv)
 	pb->bplus->init_restore(indexfile, NULL);
 	pb->bplus->load_root();
 	H_build_MBR(pb->bplus->root_ptr, pb);
-	buildEnd = clock() - begin;
+	buildEnd = (clock() - begin)/1000;
 	buildComp = compdists;
 
-	char * bfile = new char[strlen(indexfile) + 2];
+	char * bfile = new char[strlen(indexfile) + 10];
 	strcpy(bfile, indexfile);
 	strcat(bfile, ".b");
-	char * raffile = new char[strlen(indexfile) + 4];
+	char * raffile = new char[strlen(indexfile) + 10];
 	strcpy(raffile, indexfile);
 	strcat(raffile, ".raf");
 	stat(bfile, &sdata1);
@@ -503,20 +503,20 @@ int main(int argc, char** argv)
 	q->data = new float[q->size];
 	double rad;
 	cout << "start rangeSearching......" << endl;
-	for (int k = 0; k < qcount; ++k) {
+	for (long long k = 0; k < qcount; ++k) {
         double r=stod(argv[6+k]);
 		begin = clock();
 		IOread = IOwrite = IOtime = 0;
 		dists = 0;
 		rad = 0;
 		double pf = 0;
-		for (int j = 0;j < queryset.size(); j++)
+		for (long long j = 0;j < queryset.size(); j++)
 		{
 
 			c->clear();
 			compdists = 0;
 
-			for (int i = 0;i < q->size;i++)
+			for (long long i = 0;i < q->size;i++)
 			{
 				q->data[i]=queryset[j][i];
 			}
@@ -529,44 +529,44 @@ int main(int argc, char** argv)
 		queryEnd = clock() - begin;
 		queryComp = dists;
 
-		ouf<<dataid<<","<<queryid<<",SPB-Tree,"<<"pn:"<<pn<<" blocksize:"<<bolcksize<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad<<","
-                <<queryComp<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
-        cout<<dataid<<","<<queryid<<",SPB-Tree,"<<"pn:"<<pn<<" blocksize:"<<bolcksize<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad<<","
-                <<queryComp<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+		ouf<<dataid<<","<<queryid<<",SPB-Tree,"<<"pn:"<<pn<<" blocksize:"<<bolcksize<<","<<buildEnd/1000<<"s,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
+                <<queryComp<<","<<1.0*queryEnd/1000/queryset.size()<<"ms,"<<IOtime/1000/queryset.size()<<"ms,"
+                <<(queryEnd-IOtime)/1000/queryset.size()<<"ms"<<endl;
+        cout<<dataid<<","<<queryid<<",SPB-Tree,"<<"pn:"<<pn<<" blocksize:"<<bolcksize<<","<<buildEnd/1000<<"s,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
+                <<queryComp<<","<<1.0*queryEnd/queryset.size()/1000<<"ms,"<<IOtime/queryset.size()/1000<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000<<"ms"<<endl;
 	}
 
 
-    {
-		begin = clock();
-		IOread = IOwrite = 0;
-		dists = 0;
-		rad = 0;
-		double pf = 0;
-		for (int j = 0;j < queryset.size(); j++)
-		{
+    // {
+	// 	begin = clock();
+	// 	IOread = IOwrite = 0;
+	// 	dists = 0;
+	// 	rad = 0;
+	// 	double pf = 0;
+	// 	for (long long j = 0;j < queryset.size(); j++)
+	// 	{
 
-			c->clear();
-			compdists = 0;
+	// 		c->clear();
+	// 		compdists = 0;
 
-			for (int i = 0;i < q->size;i++)
-			{
-				q->data[i]=queryset[j][i];
-			}
+	// 		for (long long i = 0;i < q->size;i++)
+	// 		{
+	// 			q->data[i]=queryset[j][i];
+	// 		}
 
-			rad = pb->BFkNN(q, 1); //kNN query function
+	// 		rad = pb->BFkNN(q, 1); //kNN query function
 
-            c->clear();
+    //         c->clear();
 
-			pf += c->page_faults;
-			dists += compdists;
-		}
-		queryEnd = clock() - begin;
-		queryComp = dists;
+	// 		pf += c->page_faults;
+	// 		dists += compdists;
+	// 	}
+	// 	queryEnd = clock() - begin;
+	// 	queryComp = dists;
 
 
-    }
+    // }
 
     delete q;
     q = NULL;

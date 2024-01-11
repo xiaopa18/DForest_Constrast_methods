@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <cstring>
 #include "iopack/RAF.h"
-#include "iopack\blk_file.h"
+#include "iopack/blk_file.h"
 
 
 
@@ -34,9 +34,9 @@ void Object::ini(string str) {
 	sized = 0;
 	sizes = 0;
 
-	size = new int[m * 2];
+	size = new long long[m * 2];
 //	cout << "m " << m << endl;
-	for (int i = 0; i < m; i++) {
+	for (long long i = 0; i < m; i++) {
 		switch (metricm[i]) {
 			case 0:
 			case 3:
@@ -47,7 +47,7 @@ void Object::ini(string str) {
 				sstr1 >> s1;
 			//	cout << "1 " << s1 << endl;
 				sized ++;
-				for (int k = 0; s1[k]; k++) if (s1[k] == ',')sized++;
+				for (long long k = 0; s1[k]; k++) if (s1[k] == ',')sized++;
 				break;
 			case 6:
 				sstr1 >> s1;
@@ -65,7 +65,7 @@ void Object::ini(string str) {
 	stringstream sstr2(str);
 	sizes = 0;
 	sized = 0;
-	for (int j = 0; j < m; j++) {
+	for (long long j = 0; j < m; j++) {
 		switch (metricm[j]) {
 		case 0:
 		case 3:
@@ -77,14 +77,14 @@ void Object::ini(string str) {
 			size[j * 2] = sized;
 			sstr2 >> s1;
 			sized++;
-			for (int k = 0; s1[k]; k++)
+			for (long long k = 0; s1[k]; k++)
 				if (s1[k] == ',') {
 					s1[k] = ' ';
 					sized++;
 				}
 			size[j * 2+1] = sized;
 			stringstream sstr3(s1);
-			for (int i = size[j * 2]; i < size[j * 2 + 1]; i++) {
+			for (long long i = size[j * 2]; i < size[j * 2 + 1]; i++) {
 				sstr3 >> datad[i];
 			}
 			break;
@@ -94,7 +94,7 @@ void Object::ini(string str) {
 			sstr2 >> s1;
 			sizes += s1.length()+1;
 			size[j * 2+1] = sizes;
-			for (int i = size[j * 2]; i < size[j * 2 + 1]; i++) {
+			for (long long i = size[j * 2]; i < size[j * 2 + 1]; i++) {
 				datas[i]=(char)s1[i- size[j * 2]];
 			}
 			break;
@@ -106,7 +106,7 @@ void Object::outnode()
 {
 	cout << " id " << id;
 	cout << " data :";
-	for (int j = 0; j < m; j++) {
+	for (long long j = 0; j < m; j++) {
 		switch (metricm[j]) {
 		case 0:
 		case 1:
@@ -114,13 +114,13 @@ void Object::outnode()
 		case 3:
 		case 4:
 		case 5:
-			for (int i = size[j * 2]; i < size[j * 2 + 1]; i++) {
+			for (long long i = size[j * 2]; i < size[j * 2 + 1]; i++) {
 				cout<<datad[i]<<",";
 			}
 			cout << " # ";
 			break;
 		case 6:
-			for (int i = size[j * 2]; i < size[j * 2 + 1]; i++) {
+			for (long long i = size[j * 2]; i < size[j * 2 + 1]; i++) {
 				cout <<datas[i];
 			}
 			cout << " # ";
@@ -130,7 +130,7 @@ void Object::outnode()
 	cout << endl;
 	/*
 	cout<< " disres :";
-	for (int i = 0; i < m; i++)
+	for (long long i = 0; i < m; i++)
 		cout << " " << ansres[i];
 	cout << endl<<endl;
 	*/
@@ -177,13 +177,13 @@ void Objectarr::readfile(string filedata)
     vector<string> tmps=readcsv(filedata);
     n=tmps.size();m=1;
     cout<<n<<"\n";
-	metricm = new int[m];
+	metricm = new long long[m];
 	metricmaxdis = new float[m];
-	for (int i = 0; i < m; i++) metricm[i]=2;
-	for (int i = 0; i < m; i++) metricmaxdis[i]=1;
+	for (long long i = 0; i < m; i++) metricm[i]=2;
+	for (long long i = 0; i < m; i++) metricmaxdis[i]=1;
 	arr = new Object * [n + 1];
-	int maxsize = 0;
-	for (int i = 0; i < n; i++) {
+	long long maxsize = 0;
+	for (long long i = 0; i < n; i++) {
 		//cout << "trying " << str << endl;
 		arr[i] = new Object();
 //		cout << "new finish " << str << endl;
@@ -194,11 +194,11 @@ void Objectarr::readfile(string filedata)
 		//arr[i]->outnode();
 	}
 	metricmeandis=new float[m];
-	for (int j = 0; j < m; j++) {
+	for (long long j = 0; j < m; j++) {
 		metricmeandis[j] = 0;
-		for (int i = 0; i < 1000; i++) {
-			int p = rand()%n;
-			int q = rand() % n;
+		for (long long i = 0; i < 1000; i++) {
+			long long p = rand()%n;
+			long long q = rand() % n;
 			metricmeandis[j] += arr[p]->distance(arr[q], j);
 		}
 		metricmeandis[j]/= metricmaxdis[j]*1000;
@@ -208,7 +208,7 @@ void Objectarr::readfile(string filedata)
 }
 
 
-float Object::distance(Object* other, int  m)
+float Object::distance(Object* other, long long  m)
 {
 	//cout<<m<<" "<<metricm[m]<<endl;
 	//cout<<endl << "==========  distance " <<m<< endl;
@@ -218,14 +218,14 @@ float Object::distance(Object* other, int  m)
 	case 0:
 	case 1:
 	case 4: {
-		for (int i = size[m * 2]; i < size[m * 2 + 1]; i++) {
+		for (long long i = size[m * 2]; i < size[m * 2 + 1]; i++) {
 			dis += abs(datad[i] - other->datad[i]);
 		}
 		break; }
 	case 5: {
 		float sa1 = 0, sa2 = 0, sa3 = 0;
 
-		for (int i = size[m * 2]; i < size[m * 2 + 1]; i++) {
+		for (long long i = size[m * 2]; i < size[m * 2 + 1]; i++) {
 			sa1 += datad[i] * datad[i];
 			sa2 += other->datad[i] * other->datad[i];
 			sa3 += datad[i] * other->datad[i];
@@ -243,7 +243,7 @@ float Object::distance(Object* other, int  m)
 		break; }
 	case 2: {
 
-		for (int i = size[m * 2]; i < size[m * 2 + 1]; i++) {
+		for (long long i = size[m * 2]; i < size[m * 2 + 1]; i++) {
 			dis += abs(datad[i] - other->datad[i]) * abs(datad[i] - other->datad[i]);
 		}
 		//cout<<"asd"<<" "<<dis<<endl;
@@ -251,7 +251,7 @@ float Object::distance(Object* other, int  m)
 		break;
 	}
 	case 3: {
-		int st = size[m * 2];
+		long long st = size[m * 2];
 		dis += trans(datad[st], other->datad[st]);
 		if (size[m * 2 + 1] - st > 1) dis = dis * 24 * 3600 + trans2(datad[st + 1], other->datad[st + 1]);
 		dis = abs(dis);
@@ -259,26 +259,26 @@ float Object::distance(Object* other, int  m)
 	}
 
 	case 6: {
-		int n = 0;
-		int m = 0;
-		for (int i = 0; datas[i]; i++) n++;
-		for (int i = 0; other->datas[i]; i++) m++;
+		long long n = 0;
+		long long m = 0;
+		for (long long i = 0; datas[i]; i++) n++;
+		for (long long i = 0; other->datas[i]; i++) m++;
 		if (n == 0) return m;
 		if (m == 0) return n;
-		int** table1 = new int* [n + 1];
-		for (int i = 0; i < n + 1; i++)
-			table1[i] = new int[m + 1];
-		for (int i = 0; i <= n; i++) table1[i][0] = i;
-		for (int j = 0; j <= m; j++) table1[0][j] = j;
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= m; j++) {
-				int cost = (datas[i - 1] == other->datas[j - 1]) ? 0 : 1;	// ith character of s, jth character of t
+		long long** table1 = new long long* [n + 1];
+		for (long long i = 0; i < n + 1; i++)
+			table1[i] = new long long[m + 1];
+		for (long long i = 0; i <= n; i++) table1[i][0] = i;
+		for (long long j = 0; j <= m; j++) table1[0][j] = j;
+		for (long long i = 1; i <= n; i++) {
+			for (long long j = 1; j <= m; j++) {
+				long long cost = (datas[i - 1] == other->datas[j - 1]) ? 0 : 1;	// ith character of s, jth character of t
 				table1[i][j] = 1 + MIN(table1[i - 1][j], table1[i][j - 1]);
 				table1[i][j] = MIN(table1[i - 1][j - 1] + cost, table1[i][j]);
 			}
 		}
 		dis = table1[n][m];
-		for (int i = 0; i < n + 1; i++)
+		for (long long i = 0; i < n + 1; i++)
 			delete[] table1[i];
 		delete[]table1;
 		table1 = NULL;
@@ -316,11 +316,11 @@ Object::~Object()
 	size = NULL;
 
 }
-int Object::getsize()
+long long Object::getsize()
 {
-	//return size * sizeof(float) + 2 * sizeof(int);
+	//return size * sizeof(float) + 2 * sizeof(long long);
 
-	int i = 0;
+	long long i = 0;
 	i+= sizeof(id);
 	i += sizeof(sized);
 	i += sizeof(sizes);
@@ -329,13 +329,13 @@ int Object::getsize()
 	i += sized * sizeof(float);
 	i += sizes * sizeof(char);
 //	i += m * sizeof(float);
-	i += 2*m * sizeof(int);
+	i += 2*m * sizeof(long long);
 
 	return i;
 }
-int Object::read_from_buffer(char* buffer)
+long long Object::read_from_buffer(char* buffer)
 {
-	int i;
+	long long i;
 	memcpy(&id, buffer, sizeof(id));
 	i = sizeof(id);
 
@@ -349,9 +349,9 @@ int Object::read_from_buffer(char* buffer)
 //	memcpy(ansres, &buffer[i], m * sizeof(float));
 //	i += m * sizeof(float);
 
-	size = new int[2*m];
-	memcpy(size, &buffer[i], 2*m * sizeof(int));
-	i += m*2 * sizeof(int);
+	size = new long long[2*m];
+	memcpy(size, &buffer[i], 2*m * sizeof(long long));
+	i += m*2 * sizeof(long long);
 
 	datad = new float[sized];
 	memcpy(datad, &buffer[i], sized * sizeof(float));
@@ -364,9 +364,9 @@ int Object::read_from_buffer(char* buffer)
 	//cout << "end i " << i <<" "<<getsize()<< endl;
 	return i;
 }
-int Object::write_to_buffer(char* buffer)
+long long Object::write_to_buffer(char* buffer)
 {
-	int i;
+	long long i;
 
 	memcpy(buffer, &id, sizeof(id));
 	i = sizeof(id);
@@ -380,8 +380,8 @@ int Object::write_to_buffer(char* buffer)
 //	memcpy(&buffer[i], ansres, m * sizeof(float));
 //	i += m * sizeof(float);
 
-	memcpy(&buffer[i], size, 2*m * sizeof(int));
-	i += 2*m * sizeof(int);
+	memcpy(&buffer[i], size, 2*m * sizeof(long long));
+	i += 2*m * sizeof(long long);
 
 	memcpy(&buffer[i], datad, sized * sizeof(float));
 	i += sized * sizeof(float);

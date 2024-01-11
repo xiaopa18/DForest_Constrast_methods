@@ -15,16 +15,16 @@ public:
 
 	double key;
 
-	int leafson;										//this field is needed only at nonleaf levels
+	long long leafson;										//this field is needed only at nonleaf levels
 														//(key, leafson) forms the search key. 
 														//this is to ensure fast deletions when many leaf entries have
 														//the same key.
 
-	int ptr;
+	long long ptr;
 	double * pd;
 
-	int son;
-	int level; 
+	long long son;
+	long long level; 
 
 	//--==others==--
 	B_Tree *my_tree;
@@ -34,18 +34,18 @@ public:
 	B_Entry();
 	virtual ~B_Entry();
 	virtual void close();
-	virtual int compare_key(B_Entry *_e);
-	virtual int compare(B_Entry *_e);
+	virtual long long compare_key(B_Entry *_e);
+	virtual long long compare(B_Entry *_e);
 	virtual void del_son();
 	virtual bool equal_to(B_Entry *_e);
-	virtual int get_size(int _level);
+	virtual long long get_size(long long _level);
 	virtual B_Node *get_son();
-	virtual void init(B_Tree *_B_Tree, int _level);
+	virtual void init(B_Tree *_B_Tree, long long _level);
 	virtual B_Node *new_one_node();
-	virtual int read_from_buffer(char *_buf);
+	virtual long long read_from_buffer(char *_buf);
 	virtual void set_from(B_Entry *_e);
 	virtual void set_from_child(B_Node *_nd);
-	virtual int write_to_buffer(char *_buf);
+	virtual long long write_to_buffer(char *_buf);
 };
 
 typedef B_Entry * B_Entryptr;

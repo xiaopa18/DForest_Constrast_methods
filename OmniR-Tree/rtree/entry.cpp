@@ -15,7 +15,7 @@ Entry::Entry()
 	bounces = NULL;
 }
 //------------------------------------------------------------
-Entry::Entry(int _dimension, RTree *rt)
+Entry::Entry(long long _dimension, RTree *rt)
 {
     dimension = _dimension;
     my_tree = rt;
@@ -47,16 +47,16 @@ Linkable* Entry::gen_Linkable()
 {
 	Linkable *new_link = new Linkable(dimension);
 	new_link -> son = son;
-	for (int i = 0; i < 2 * dimension; i ++)
+	for (long long i = 0; i < 2 * dimension; i ++)
 		new_link -> bounces[i] = bounces[i];
 	new_link -> level = level;
 	new_link->ptr = ptr;
 	return new_link;
 }
 //------------------------------------------------------------
-int Entry::get_size()
+long long Entry::get_size()
 {
-    return 2 * dimension * sizeof(float) + sizeof(int) + sizeof(int);
+    return 2 * dimension * sizeof(float) + sizeof(long long) + sizeof(long long);
 }
 //------------------------------------------------------------
 RTNode* Entry::get_son()
@@ -67,7 +67,7 @@ RTNode* Entry::get_son()
     return son_ptr;
 }
 //------------------------------------------------------------
-void Entry::init_entry(int _dimension, RTree *_rt)
+void Entry::init_entry(long long _dimension, RTree *_rt)
 {
 	dimension = _dimension;
     my_tree = _rt;
@@ -80,16 +80,16 @@ void Entry::init_entry(int _dimension, RTree *_rt)
 //------------------------------------------------------------
 void Entry::read_from_buffer(char *buffer)
 {
-    int i;
+    long long i;
 
     i = 2 * dimension * sizeof(float);
     memcpy(bounces, buffer, i);
 
-    memcpy(&son, &buffer[i], sizeof(int));
-    i += sizeof(int);
+    memcpy(&son, &buffer[i], sizeof(long long));
+    i += sizeof(long long);
 
-	memcpy(&ptr, &buffer[i], sizeof(int));
-    i += sizeof(int);
+	memcpy(&ptr, &buffer[i], sizeof(long long));
+    i += sizeof(long long);
 }
 //------------------------------------------------------------
 SECTION Entry::section(float *mbr)
@@ -100,7 +100,7 @@ SECTION Entry::section(float *mbr)
     overlap = TRUE;
     inside = TRUE;
 
-    for (int i = 0; i < dimension; i++)
+    for (long long i = 0; i < dimension; i++)
     {
 		if (mbr[2 * i] > bounces[2 * i + 1] ||  mbr[2 * i + 1] < bounces[2 * i])
 			overlap = FALSE;
@@ -141,16 +141,16 @@ void Entry::set_from_Linkable(Linkable *link)
 //------------------------------------------------------------
 void Entry::write_to_buffer(char *buffer)
 {
-    int i;
+    long long i;
 
     i = 2 * dimension * sizeof(float);
     memcpy(buffer, bounces, i);
 
-    memcpy(&buffer[i], &son, sizeof(int));
-    i += sizeof(int);
+    memcpy(&buffer[i], &son, sizeof(long long));
+    i += sizeof(long long);
 
-	memcpy(&buffer[i], &ptr, sizeof(int));
-    i += sizeof(int);
+	memcpy(&buffer[i], &ptr, sizeof(long long));
+    i += sizeof(long long);
 }
 //------------------------------------------------------------
 bool Entry::operator == (Entry &_d)
@@ -159,7 +159,7 @@ bool Entry::operator == (Entry &_d)
 	if (son != _d.son) return false;
 	if (dimension != _d.dimension) return false;
 	if( ptr!= _d.ptr) return false;
-	for (int i = 0; i < 2 * dimension; i++)
+	for (long long i = 0; i < 2 * dimension; i++)
 		if (fabs(bounces[i] - _d.bounces[i]) > FLOATZERO) return false;
 	return true;
 }

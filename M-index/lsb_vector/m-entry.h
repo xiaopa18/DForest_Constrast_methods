@@ -1,10 +1,10 @@
 #ifndef __M_Entry
 #define __M_Entry
-#include "..\gadget\gadget.h"
+#include "../gadget/gadget.h"
 #include <memory.h>
 //-----------------------------------------------
 
-extern int MAXLEVEL;
+extern long long MAXLEVEL;
 
 class M_Node;
 
@@ -12,17 +12,17 @@ class M_Entry
 {
 public:
 
-	int level;
-	int num_piv;
-	int num;
+	long long level;
+	long long num_piv;
+	long long num;
 	double minkey;
 	double maxkey;
 	double mkey;
 	double mxkey;
 	double* min;
 	double * max;
-	int * pivots;
-	int ptr;
+	long long * pivots;
+	long long ptr;
 	bool isleaf;
 
 	//--==functions==--
@@ -71,21 +71,21 @@ public:
 		}
 		if (m.pivots != NULL)
 		{
-			pivots = new int[MAXLEVEL];
-			memcpy(pivots, m.pivots, MAXLEVEL * sizeof(int));
+			pivots = new long long[MAXLEVEL];
+			memcpy(pivots, m.pivots, MAXLEVEL * sizeof(long long));
 		}
 	}
 
 	~M_Entry() ;
 
-	int get_size()
+	long long get_size()
 	{
-		return 4 * sizeof(int) + 4 * sizeof(double) + 2 * num_piv * sizeof(double) + MAXLEVEL*sizeof(int) + sizeof(bool);
+		return 4 * sizeof(long long) + 4 * sizeof(double) + 2 * num_piv * sizeof(double) + MAXLEVEL*sizeof(long long) + sizeof(bool);
 	}
 
-	int read_from_buffer(char *_buf);
+	long long read_from_buffer(char *_buf);
 
-	int write_to_buffer(char *_buf);
+	long long write_to_buffer(char *_buf);
 };
 
 //-----------------------------------------------

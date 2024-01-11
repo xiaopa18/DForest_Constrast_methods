@@ -19,13 +19,11 @@
 * DERIVATIVES.                                                       *
 *                                                                    *
 *********************************************************************/
-
 #include <iostream>
 #include <fstream>
 #include <math.h>
 #include <time.h>
 #include <vector>
-#include <direct.h>
 #include <sys/stat.h>
 using namespace std;
 
@@ -54,26 +52,26 @@ using namespace std;
 #include "./gadget/gadget.h"
 #include "./gadget/gadget.cpp"
 #include <string>
-#include"lsb_vector\m-entry.h"
-#include"lsb_vector\m-entry.cpp"
+#include"lsb_vector/m-entry.h"
+#include"lsb_vector/m-entry.cpp"
 double compdists = 0;
 double IOread = 0;
 double IOwrite = 0;
 double cc = 0;
-int MAXINT, MAXNUM, MAXLEVEL;
+long long MAXINT, MAXNUM, MAXLEVEL;
 double EPS, MAXDIST;
-int dim, num_obj, func;
-int blocksize;
+long long dim, num_obj, func;
+long long blocksize;
 double IOtime;
 
 vector<vector<double>> read(string name);
 
 // Note that the id of data in the file should begin with 0
-Object ** readobjects(string filename, int num_obj, int dim)
+Object ** readobjects(string filename, long long num_obj, long long dim)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	Object ** objset = new Object*[num_obj];
-	for (int i = 0;i<num_obj;i++)
+	for (long long i = 0;i<num_obj;i++)
 	{
 		objset[i] = new Object();
 	}
@@ -86,7 +84,7 @@ Object ** readobjects(string filename, int num_obj, int dim)
 			objset[record_count]->id = record_count;
 			objset[record_count]->size = dim;
 			objset[record_count]->data = new float[objset[record_count]->size];
-			for (int i = 0; i < objset[record_count]->size; i++)
+			for (long long i = 0; i < objset[record_count]->size; i++)
 			{
 				objset[record_count]->data[i] = dataset[record_count][i];
 			}
@@ -127,7 +125,7 @@ vector<vector<double>> read(string name)
 
 Object * readobjects2(string filename)
 {
-	int record_count = 0;
+	long long record_count = 0;
 	{
 	    vector<vector<double>> dataset=read(filename);
 	    num_obj=dataset.size(),dim=dataset[0].size();
@@ -139,7 +137,7 @@ Object * readobjects2(string filename)
 			objset[record_count].id = record_count;
 			objset[record_count].size = dim;
 			objset[record_count].data = new float[dim];
-			for (int i = 0; i < dim; i++)
+			for (long long i = 0; i < dim; i++)
 			{
 				objset[record_count].data[i] = dataset[record_count][i];
 			}
@@ -152,7 +150,7 @@ Object * readobjects2(string filename)
 
 
 
-clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
+clock_t bulidIndex(char* index_name, string filename,char *pname, long long n_p)
 {
 	/*******
 	index_name -- the path of the index to be stored
@@ -168,7 +166,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	pb->num_cand = 40; // the number of candidates for selecting pivots
 	pb->num_piv = n_p;
 
-	int keysize;
+	long long keysize;
 	Object * os = readobjects2(filename); // the function needed to be rewirte to read differnt formats of the dataset
 	pb->readptable(pname);
 
@@ -180,10 +178,10 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	out1 << pb->num_piv << endl;
 	if(pb->num_piv<=MAXLEVEL)
 		MAXLEVEL = pb->num_piv - 1;
-	for (int i = 0; i<pb->num_piv; i++)
+	for (long long i = 0; i<pb->num_piv; i++)
 	{
 		out1 << pb->ptable[i].id << " " << pb->ptable[i].size << " ";
-		for (int j = 0; j<pb->ptable[i].size; j++)
+		for (long long j = 0; j<pb->ptable[i].size; j++)
 			out1 << pb->ptable[i].data[j] << " ";
 		out1 << endl;
 	}
@@ -210,9 +208,9 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	{
 		node = node->entries[0]->get_son();
 	}
-	int * obj_order = new int[num_obj];
-	int k = 0;
-	for (int i = 0; i<node->num_entries; i++)
+	long long * obj_order = new long long[num_obj];
+	long long k = 0;
+	for (long long i = 0; i<node->num_entries; i++)
 	{
 		obj_order[k] = node->entries[i]->son;
 		k++;
@@ -222,7 +220,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	while (temp != NULL)
 	{
 		node = temp;
-		for (int i = 0; i<node->num_entries; i++)
+		for (long long i = 0; i<node->num_entries; i++)
 		{
 			obj_order[k] = node->entries[i]->son;
 			k++;
@@ -236,10 +234,10 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	pb->draf->init(index_name, blocksize, NULL);
 
 	Object ** objS = readobjects(filename, num_obj, dim);
-	int * result = pb->draf->buid_from_array(objS, obj_order);
+	long long * result = pb->draf->buid_from_array(objS, obj_order);
 
 	//delete object sets
-	for (int i = 0; i<num_obj; i++)
+	for (long long i = 0; i<num_obj; i++)
 		delete objS[i];
 	delete[] obj_order;
 
@@ -252,7 +250,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	}
 
 	k = 0;
-	for (int i = 0; i<node->num_entries; i++)
+	for (long long i = 0; i<node->num_entries; i++)
 	{
 		node->entries[i]->ptr = result[k];
 		k++;
@@ -269,7 +267,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 	{
 		buffer = new char[blocksize];
 		node = temp;
-		for (int i = 0; i<node->num_entries; i++)
+		for (long long i = 0; i<node->num_entries; i++)
 		{
 			node->entries[i]->ptr = result[k];
 			k++;
@@ -292,7 +290,7 @@ clock_t bulidIndex(char* index_name, string filename,char *pname, int n_p)
 
 
 
-int main(int argc, char** argv)
+signed main(long long argc, char** argv)
 {
 
 	clock_t begin, buildEnd, queryEnd;
@@ -302,12 +300,12 @@ int main(int argc, char** argv)
 	struct stat sdata3;
 
 
-	int buffer_size = 32;
+	long long buffer_size = 32;
     string dataid=string(argv[1]);
     //string dataid="audio";
     string queryid=string(argv[2]);
     //string queryid="uniform1000";
-    string datafile="../data_set/"+dataid+"/"+dataid+"_afterpca.csv"; // the path of input data file
+    string datafile="../../data_set/"+dataid+"/"+dataid+"_afterpca.csv"; // the path of input data file
 	char * pname = "./pivot.txt"; // the path of input pivots
 	char * indexfile = "./index"; // the path to store the built index
 
@@ -318,14 +316,14 @@ int main(int argc, char** argv)
 	MAXNUM = 1600; //  the number of objects in one cluster (can be any value set by the user)
 
 
-	//int pvnb = stoi(argv[3]);	// the number of pivots
-	int pvnb = stoi(argv[3]);
+	//long long pvnb = stoi(argv[3]);	// the number of pivots
+	long long pvnb = stoi(argv[3]);
 	blocksize = stoi(argv[4]); // the page size
 
 
 	//***********************************************build the index****************************************
 
-	int pn = pvnb;
+	long long pn = pvnb;
 	MAXLEVEL = pn - 1; // MAXLEVEL is the height of dynamic cluster tree
 	if (pn > 5)
 		MAXLEVEL = 5;
@@ -339,7 +337,7 @@ int main(int argc, char** argv)
 	//compute the blocksize
 	M_Entry te;
 	te.num_piv = pn;
-	int blocklength = sizeof(int) * 4 + pn*te.get_size();
+	long long blocklength = sizeof(long long) * 4 + pn*te.get_size();
 
 	PB_Tree * pb = new PB_Tree();
 	pb->bf = new BlockFile(nodefile, blocklength);
@@ -351,13 +349,16 @@ int main(int argc, char** argv)
 	pb->bplus = new B_Tree();
 	pb->bplus->init_restore(indexfile, b);
 	pb->readptable(pname);
-
+    //cout<<123<<endl;
 	buildEnd = clock() - begin;
 	buildComp = compdists;
-	char * bfile = new char[strlen(indexfile) + 2];
+	//cout<<"123123"<<endl;
+	//cout<<strlen(indexfile)<<endl;
+	char * bfile = new char[strlen(indexfile) + 10];
 	strcpy(bfile, indexfile);
 	strcat(bfile, ".b");
-	char * raffile = new char[strlen(indexfile) + 4];
+	char * raffile = new char[strlen(indexfile) + 10];
+	//cout<<"123123"<<endl;
 	strcpy(raffile, indexfile);
 	strcat(raffile, ".raf");
 	stat(bfile, &sdata1);
@@ -366,13 +367,13 @@ int main(int argc, char** argv)
 
 	pb->draf = new RAF();
 	pb->draf->init_restore(indexfile, c);
-
+    cout<<456<<endl;
 	//******************************similarity query***********************************************
 
 	Object * q = new Object();
-    vector<vector<double>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
-    int qcount=stoi(argv[5]);
-    int kcount=stoi(argv[6+qcount]);
+    vector<vector<double>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    long long qcount=stoi(argv[5]);
+    long long kcount=stoi(argv[6+qcount]);
 	double io = 0;
 	double dists = 0;
 	double pf = 0;
@@ -390,7 +391,7 @@ int main(int argc, char** argv)
 
     cout << "start rangeSearching......" << endl;
     //ofstream ouf("./audio/audio_uniform1000_mindex.csv",ios::out);
-    for (int k = 0; k < qcount; k++) {
+    for (long long k = 0; k < qcount; k++) {
         IOtime=0.0;
         double r=stod(argv[6+k]);
         begin = clock();
@@ -398,7 +399,7 @@ int main(int argc, char** argv)
         pf = 0;
         rad = 0;
 
-        for (int j = 0; j < queryset.size(); j++)
+        for (long long j = 0; j < queryset.size(); j++)
         {
             IOread = 0;
             c->clear();
@@ -406,16 +407,16 @@ int main(int argc, char** argv)
             compdists = 0;
 
             float temp;
-            for (int i = 0; i < q->size; i++)
+            for (long long i = 0; i < q->size; i++)
             {
                 temp=queryset[j][i];
                 q->data[i] = temp / yiwan;
             }
 
-            vector<int> p=pb->rangequery_orignal(q, r / yiwan);
+            vector<long long> p=pb->rangequery_orignal(q, r / yiwan);
 //            sort(p.begin(),p.end());
 //            ouf<<p.size();
-//            for(int &idx:p) ouf<<","<<idx;
+//            for(long long &idx:p) ouf<<","<<idx;
 //            ouf<<"\n";
             rad += p.size();
             pf += b->page_faults + c->page_faults;
@@ -423,12 +424,12 @@ int main(int argc, char** argv)
         }
         queryEnd = clock() - begin;
         queryComp = dists;
-        ouf<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
-        cout<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+        ouf<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd/1000.0<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
+                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000.0<<"ms,"<<IOtime/queryset.size()/1000.0<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000.0<<"ms"<<endl;
+        cout<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd/1000.0<<"ms,"<<"MB,"<<r<<","<<rad/queryset.size()<<","
+                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000.0<<"ms,"<<IOtime/queryset.size()/1000.0<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000.0<<"ms"<<endl;
     }
     ouf.close();
 
@@ -440,18 +441,18 @@ int main(int argc, char** argv)
     }
     ouf.setf(ios::fixed);
     cout<<kcount<<"\n";
-    for(int ki=0;ki<kcount;ki++)
+    for(long long ki=0;ki<kcount;ki++)
     {
         //cout<<"ki:"<<ki<<"\n";
         //cout<<7+qcount+ki<<" "<<argv[7+qcount+ki]<<"\n";
-        int k=stoi(argv[7+qcount+ki]);
+        long long k=stoi(argv[7+qcount+ki]);
         IOtime=0.0;
         begin = clock();
         dists = 0;
         pf = 0;
         rad = 0;
         //cout<<"ki:"<<ki<<"\n\n";
-        for (int j = 0; j < queryset.size(); j++)
+        for (long long j = 0; j < queryset.size(); j++)
         {
             IOread = 0;
             c->clear();
@@ -459,7 +460,7 @@ int main(int argc, char** argv)
             compdists = 0;
 
             float temp;
-            for (int i = 0; i < q->size; i++)
+            for (long long i = 0; i < q->size; i++)
             {
                 temp=queryset[j][i];
                 q->data[i] = temp / yiwan;
@@ -471,12 +472,12 @@ int main(int argc, char** argv)
         }
         queryEnd = clock() - begin;
         queryComp = dists;
-        ouf<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
-        cout<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()<<"ms,"<<IOtime/queryset.size()<<"ms,"
-                <<(queryEnd-IOtime)/queryset.size()<<"ms"<<endl;
+        ouf<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd/1000.0<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
+                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000.0<<"ms,"<<IOtime/queryset.size()/1000.0<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000.0<<"ms"<<endl;
+        cout<<dataid<<","<<queryid<<",M-index,"<<"pn:"<<pn<<" blocksize:"<<blocksize<<","<<buildEnd/1000.0<<"ms,"<<"MB,"<<k<<","<<rad/queryset.size()<<","
+                <<queryComp/queryset.size()<<","<<pf/queryset.size()<<","<<1.0*queryEnd/queryset.size()/1000.0<<"ms,"<<IOtime/queryset.size()/1000.0<<"ms,"
+                <<(queryEnd-IOtime)/queryset.size()/1000.0<<"ms"<<endl;
     }
     ouf.close();
 

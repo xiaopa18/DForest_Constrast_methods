@@ -7,7 +7,7 @@
 #include "../object.h"
 #include "blk_file.h"
 #include "gadget.h"
-extern int bolcksize; 
+extern long long bolcksize; 
 extern RAF* Obj_f;
 extern RAF* Index_f;
 extern Cache* Obj_c;
@@ -18,12 +18,12 @@ void add_fname_ext(char * _fname)
 	strcat(_fname, ".raf");
 }
 
-void RAF::init(char *_fname, int _b_length, Cache *_c)
+void RAF::init(char *_fname, long long _b_length, Cache *_c)
 {
 	char *fname = new char[strlen(_fname) + 10]; //allow 9 characters for extension name
 	strcpy(fname, _fname);
 	add_fname_ext(fname);
-	last_ptr= 2 * sizeof(int);
+	last_ptr= 2 * sizeof(long long);
 	FILE *fp = fopen(fname, "r");
 	if (fp)
 	{
@@ -46,7 +46,7 @@ void RAF::init_restore(char *_fname, Cache *_c)
 	char *fname = new char[strlen(_fname) + 10]; //allow 9 characters for extension name
 	strcpy(fname, _fname);
 	add_fname_ext(fname);
-	last_ptr = 2 * sizeof(int);
+	last_ptr = 2 * sizeof(long long);
 	//--=== testing if the file exists ===--
 	FILE *fp = fopen(fname, "r");
 	if (!fp)
@@ -66,10 +66,10 @@ void RAF::init_restore(char *_fname, Cache *_c)
 	delete [] fname;
 }
 
-int RAF::add_object(Object* obj) {
+long long RAF::add_object(Object* obj) {
 	char* buffer= new char[file->blocklength];
-	int i = last_ptr,sizeo= obj->getsize();
-	int fnum = last_ptr / file->blocklength;
+	long long i = last_ptr,sizeo= obj->getsize();
+	long long fnum = last_ptr / file->blocklength;
 	//cout << "trying " << last_ptr << " fnum " << fnum << endl;
 //	cout << "number " << file->number << endl;
 	if (last_ptr % file->blocklength + sizeo < file->blocklength) {
@@ -92,15 +92,19 @@ int RAF::add_object(Object* obj) {
 	return i;
 }
 
-Object* RAF::get_object(int ptr) {
+Object* RAF::get_object(long long ptr) {
 	Object* q = new Object();
+	//cout<<"obj inter "<< Obj_f->file->blocklength <<endl;
 	char* buffer = new char[Obj_f->file->blocklength];
-	int i = ptr / file->blocklength;
-	int j = ptr % file->blocklength;
+	//cout<<"obj inter "<< Obj_f->file->blocklength <<endl;
+	long long i = ptr / file->blocklength;
+	long long j = ptr % file->blocklength;
 	//cout << "i = " << i << " j = " << j << endl;
 
 	if (Obj_c == NULL) {
+		//cout<<"to read "<<endl;
 		file->read_block(buffer, i);
+		//cout<<"read over"<<endl;
 	}
 	else {
 	//	cout << "read from cache" << endl;
@@ -110,22 +114,22 @@ Object* RAF::get_object(int ptr) {
 	q->read_from_buffer(&buffer[j]);
 	delete[] buffer;
 	return q;
-	//printf("%d %d %f\n",o->id, o->size, o->data[0]);
+	//printf("%lld %lld %f\n",o->id, o->size, o->data[0]);
 }
 
-int* RAF::buid_from_array(Object ** objset)
+long long* RAF::buid_from_array(Object ** objset)
 {
 	char * buffer;
-	int * ptrset = new int[num_obj];
+	long long * ptrset = new long long[num_obj];
 
 
 	//need to be modified
-	//for(int i =0;i<num_obj;i++)
+	//for(long long i =0;i<num_obj;i++)
 		//order[i]--;
-	//	printf("%d \n",order[i]);
+	//	printf("%lld \n",order[i]);
 
-	int i = 0;
-	int j = 0;
+	long long i = 0;
+	long long j = 0;
 	bool flag = true;
 	
 	while(j<num_obj)
@@ -133,14 +137,14 @@ int* RAF::buid_from_array(Object ** objset)
 		buffer = new char[file->blocklength];
 		if(flag)
 		{
-			i+=2*sizeof(int);
+			i+=2*sizeof(long long);
 			flag = false;
 		}
 		else
 			i=0;
 		while(i+objset[j]->getsize()<file->blocklength && j< num_obj)
 		{
-			//printf("%d %d %f\n",j, objset[order[j]]->id, objset[order[j]]->data[0]);
+			//printf("%lld %lld %f\n",j, objset[order[j]]->id, objset[order[j]]->data[0]);
 			ptrset[j] = file->number * file->blocklength +i;
 			objset[j]->write_to_buffer(&buffer[i]);
 			i += objset[j]->getsize();

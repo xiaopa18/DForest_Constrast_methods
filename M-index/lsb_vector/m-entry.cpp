@@ -29,25 +29,25 @@ M_Entry::~M_Entry()
 	min = NULL;
 }
 
-int M_Entry::read_from_buffer(char* _buf)
+long long M_Entry::read_from_buffer(char* _buf)
 {
-	int i;
+	long long i;
 
-	memcpy(&level, _buf, sizeof(int));
-	i = sizeof(int);
+	memcpy(&level, _buf, sizeof(long long));
+	i = sizeof(long long);
 
 	memcpy(&isleaf, &_buf[i], sizeof(bool));
 	i += sizeof(bool);
 
-	memcpy(&num_piv, &_buf[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&num_piv, &_buf[i], sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&ptr, &_buf[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&ptr, &_buf[i], sizeof(long long));
+	i += sizeof(long long);
 
 
-	memcpy(&num, &_buf[i], sizeof(int));
-	i += sizeof(int);
+	memcpy(&num, &_buf[i], sizeof(long long));
+	i += sizeof(long long);
 
 	memcpy(&mkey, &_buf[i], sizeof(double));
 	i += sizeof(double);
@@ -69,32 +69,32 @@ int M_Entry::read_from_buffer(char* _buf)
 	memcpy(max, &_buf[i], num_piv * sizeof(double));
 	i += num_piv * sizeof(double);
 
-	pivots = new int[MAXLEVEL];
-	memcpy(pivots, &_buf[i], MAXLEVEL * sizeof(int));
-	i += MAXLEVEL * sizeof(int);
+	pivots = new long long[MAXLEVEL];
+	memcpy(pivots, &_buf[i], MAXLEVEL * sizeof(long long));
+	i += MAXLEVEL * sizeof(long long);
 
 	return i;
 }
 
-int M_Entry::write_to_buffer(char*_buf)
+long long M_Entry::write_to_buffer(char*_buf)
 {
-	int i;
-	memcpy(_buf, &level, sizeof(int));
-	i = sizeof(int);
+	long long i;
+	memcpy(_buf, &level, sizeof(long long));
+	i = sizeof(long long);
 
 
 	memcpy(&_buf[i], &isleaf, sizeof(bool));
 	i += sizeof(bool);
 
-	memcpy(&_buf[i], &num_piv, sizeof(int));
-	i += sizeof(int);
+	memcpy(&_buf[i], &num_piv, sizeof(long long));
+	i += sizeof(long long);
 
 
-	memcpy(&_buf[i], &ptr, sizeof(int));
-	i += sizeof(int);
+	memcpy(&_buf[i], &ptr, sizeof(long long));
+	i += sizeof(long long);
 
-	memcpy(&_buf[i], &num, sizeof(int));
-	i += sizeof(int);
+	memcpy(&_buf[i], &num, sizeof(long long));
+	i += sizeof(long long);
 
 	memcpy(&_buf[i], &mkey, sizeof(double));
 	i += sizeof(double);
@@ -114,8 +114,8 @@ int M_Entry::write_to_buffer(char*_buf)
 	memcpy(&_buf[i], max, num_piv * sizeof(double));
 	i += num_piv * sizeof(double);
 
-	memcpy(&_buf[i], pivots, MAXLEVEL * sizeof(int));
-	i += MAXLEVEL * sizeof(int);
+	memcpy(&_buf[i], pivots, MAXLEVEL * sizeof(long long));
+	i += MAXLEVEL * sizeof(long long);
 
 	return i;
 }

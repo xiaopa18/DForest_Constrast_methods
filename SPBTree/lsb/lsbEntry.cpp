@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <memory.h>
 #include "../btree/b-entry.h"
-#include "lsbentry.h"
-#include "lsbnode.h"
-#include "lsbtree.h"
+#include "lsbEntry.h"
+#include "lsbNode.h"
+#include "lsbTree.h"
 
 
-LSBentry::LSBentry()           
+LSBentry::LSBentry()
 {
 	pt = NULL;
 }
@@ -23,32 +23,32 @@ LSBentry::~LSBentry()
 
 
 
-int LSBentry::get_size(int _level)
-{ 
-	int ret = 0;
-	
+long long LSBentry::get_size(long long _level)
+{
+	long long ret = 0;
+
 	ret = B_Entry::get_size(_level);
-	
-	if (_level == 0) 
-		ret += sizeof(int) * ((LSBtree *) my_tree)->dim;
+
+	if (_level == 0)
+		ret += sizeof(long long) * ((LSBtree *) my_tree)->dim;
 
 	return ret;
 }
 
 
 
-int LSBentry::read_from_buffer(char *_buf)
+long long LSBentry::read_from_buffer(char *_buf)
 {
-	int i = B_Entry::read_from_buffer(_buf);
+	long long i = B_Entry::read_from_buffer(_buf);
 
-	int dim = ((LSBtree *)my_tree)->dim;
+	long long dim = ((LSBtree *)my_tree)->dim;
 
 	if (level == 0)
 	{
-		for (int j = 0; j < dim; j ++)
+		for (long long j = 0; j < dim; j ++)
 		{
-			memcpy(&pt[j], &_buf[i], sizeof(int));
-			i += sizeof(int);
+			memcpy(&pt[j], &_buf[i], sizeof(long long));
+			i += sizeof(long long);
 		}
 	}
 
@@ -57,13 +57,13 @@ int LSBentry::read_from_buffer(char *_buf)
 
 
 
-void LSBentry::init(B_Tree *_btree, int _level)
-{ 
-	int		i;
+void LSBentry::init(B_Tree *_btree, long long _level)
+{
+	long long		i;
 
 	B_Entry::init(_btree, _level);
 
-	pt = new int[((LSBtree *) _btree)->dim];
+	pt = new long long[((LSBtree *) _btree)->dim];
 
 	for (i = 0; i < ((LSBtree *) _btree)->dim; i ++)
 		pt[i] = -1;
@@ -71,18 +71,18 @@ void LSBentry::init(B_Tree *_btree, int _level)
 
 
 
-int LSBentry::write_to_buffer(char *_buf)
+long long LSBentry::write_to_buffer(char *_buf)
 {
-	int i = B_Entry::write_to_buffer(_buf);
+	long long i = B_Entry::write_to_buffer(_buf);
 
-	int dim = ((LSBtree *)my_tree)->dim;
+	long long dim = ((LSBtree *)my_tree)->dim;
 
 	if (level == 0)
 	{
-		for (int j = 0; j < dim; j ++)
+		for (long long j = 0; j < dim; j ++)
 		{
-			memcpy(&_buf[i], &pt[j], sizeof(int));
-			i += sizeof(int);
+			memcpy(&_buf[i], &pt[j], sizeof(long long));
+			i += sizeof(long long);
 		}
 	}
 
@@ -95,8 +95,8 @@ void LSBentry::set_from(B_Entry *_e)
 {
 	B_Entry::set_from(_e);
 
-	int dim = ((LSBtree *) my_tree)->dim;
-	memcpy(pt, ((LSBentry *) _e)->pt, sizeof(int) * dim);
+	long long dim = ((LSBtree *) my_tree)->dim;
+	memcpy(pt, ((LSBentry *) _e)->pt, sizeof(long long) * dim);
 }
 
 /*****************************************************************
@@ -110,13 +110,13 @@ return value: true or false
 
 bool LSBentry::equal_to(B_Entry *_e)
 {
-	bool ret = B_Entry::equal_to(_e); 
+	bool ret = B_Entry::equal_to(_e);
 
 	if (ret)
 	{
-		int dim = ((LSBtree *) my_tree)->dim;
+		long long dim = ((LSBtree *) my_tree)->dim;
 
-		for (int i = 0; i < dim; i ++)
+		for (long long i = 0; i < dim; i ++)
 		{
 			if (pt[i] != ((LSBentry *) _e)->pt[i])
 			{

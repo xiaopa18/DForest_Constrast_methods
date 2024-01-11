@@ -13,51 +13,51 @@ class BlockFile
 public:
    FILE* fp;			// os file pointer
    char* filename;		 
-   int blocklength;	    // length of a block
-   int act_block; 	    // block # of fp's position (fp can stay at block boundaries)
-   int number;		    // total # of blocks
+   long long blocklength;	    // length of a block
+   long long act_block; 	    // block # of fp's position (fp can stay at block boundaries)
+   long long number;		    // total # of blocks
    bool new_flag;		// specifies if this is a new file
 
      //=====================================================
-   BlockFile(char* name, int b_length);
+   BlockFile(char* name, long long b_length);
    			        // Filename und Blocklaenge (fuer neue Files)
    ~BlockFile();
 
-   void put_bytes(char* bytes,int num)
+   void put_bytes(char* bytes,long long num)
 		{ fwrite(bytes,num,1,fp); 
 	    }
 
-   void get_bytes(char* bytes,int num)	     
+   void get_bytes(char* bytes,long long num)	     
 		{ fread(bytes,num,1,fp); 
        	}
 
-   void fwrite_number(int num);	
+   void fwrite_number(long long num);	
 
-   int fread_number();		
+   long long fread_number();		
 
-   void seek_block(int bnum)    
+   void seek_block(long long bnum)    
 		{ fseek(fp,(bnum-act_block)*blocklength,SEEK_CUR); }
 
    void read_header(char * header);
 
    void set_header(char* header);
    					
-   bool read_block(Block b,int i);	
+   bool read_block(Block b,long long i);	
 
-   bool write_block(Block b,int i);
+   bool write_block(Block b,long long i);
 
-   int append_block(Block b);	
+   long long append_block(Block b);	
 
-   bool delete_last_blocks(int num);
+   bool delete_last_blocks(long long num);
 
    bool file_new()			
 		{ return new_flag; }
 
-   int get_blocklength()	
+   long long get_blocklength()	
 		{ 
 	       return blocklength; }
 
-   int get_num_of_blocks()	
+   long long get_num_of_blocks()	
 		{ return number; }
 };
 
@@ -66,38 +66,38 @@ class CachedBlockFile : public BlockFile
 {
 public:
    enum uses {free,used,fixed};
-   int ptr;		        // current position in cache
-   int cachesize;		// //the number of blocks kept in memory
-   int page_faults;     
+   long long ptr;		        // current position in cache
+   long long cachesize;		// //the number of blocks kept in memory
+   long long page_faults;     
 
-   int *cache_cont;	    // array of the indices of blocks that are in cache
+   long long *cache_cont;	    // array of the indices of blocks that are in cache
    uses *fuf_cont; 		// indicator array that shows whether one cache block is free, used or fixed
-   int  *LRU_indicator; // indicator that shows how old (unused) is a page in the cache
+   long long  *LRU_indicator; // indicator that shows how old (unused) is a page in the cache
    bool  *dirty_indicator;  // indicator that shows if a page has been modified
 
    char **cache;   		// Cache
 
 	//=====================================================
 
-   CachedBlockFile(char* name, int blength, int csize);
+   CachedBlockFile(char* name, long long blength, long long csize);
    					
    ~CachedBlockFile();
 
-   int next();		
+   long long next();		
 
-   int in_cache(int index);	// liefert Pos. im Cache oder -1
+   long long in_cache(long long index);	// liefert Pos. im Cache oder -1
 
-   bool read_block(Block b,int i);
+   bool read_block(Block b,long long i);
 
-   bool write_block(Block b,int i);
+   bool write_block(Block b,long long i);
 
-   bool fix_block(int i);
+   bool fix_block(long long i);
 
-   bool unfix_block(int i);
+   bool unfix_block(long long i);
 
    void unfix_all();			
 
-   void set_cachesize(int s);
+   void set_cachesize(long long s);
 
    void flush();
 };

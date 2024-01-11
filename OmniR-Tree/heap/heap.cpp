@@ -16,7 +16,7 @@ HeapEntry::~HeapEntry()
 {
 }
 //------------------------------------------
-void HeapEntry::init_HeapEntry(int _dim)
+void HeapEntry::init_HeapEntry(long long _dim)
 {
 	dim = _dim;
 }
@@ -38,16 +38,16 @@ Heap::Heap()
 //------------------------------------------
 Heap::~Heap()
 {
-	printf("maximum heap entry=%d\n", maxused);
+	printf("maximum heap entry=%lld\n", maxused);
 	delete [] cont;
 	cont = NULL;
 }
 //------------------------------------------
-void Heap::enter(HeapEntry *_he, int _pos)
+void Heap::enter(HeapEntry *_he, long long _pos)
 //this function enters a new entry into the heap at position _pos
 {
 
-	for (int i = used - 1; i >= _pos; i --)
+	for (long long i = used - 1; i >= _pos; i --)
 	{
 		cont[i + 1].copy(&(cont[i]));
 	}
@@ -60,15 +60,15 @@ void Heap::enter(HeapEntry *_he, int _pos)
 //------------------------------------------
 void Heap::insert(HeapEntry *_he)
 {
-	int pos = used;  //pos is the position _he will be inserted
+	long long pos = used;  //pos is the position _he will be inserted
 
 	enter(_he, pos);
 	// now perform swapping
 	pos++;
-	int parent = pos;
+	long long parent = pos;
 	while (parent != 1)
 	{
-		int child = parent;
+		long long child = parent;
 		parent /= 2;
 		if (cont[parent - 1].key > cont[child - 1].key)
 		{
@@ -100,10 +100,10 @@ bool Heap::remove(HeapEntry *_he)
 	_he -> copy(&(cont[0]));
 	used--;
 	cont[0].copy(&(cont[used]));
-	int parent = 1;
+	long long parent = 1;
 	while (2 * parent <= used)
 	{
-		int child = 2 * parent;
+		long long child = 2 * parent;
 		if (2 * parent + 1 > used)
 			child = 2 * parent;
 		else
@@ -132,7 +132,7 @@ void Heap::clean(float _dist)
 //this function cleans those entries with keys greater thab _dist
 //in the memory
 {
-	for (int i = 0; i < used; i ++)
+	for (long long i = 0; i < used; i ++)
 	{
 		if (cont[i].key > _dist)
 			used = i;
@@ -146,7 +146,7 @@ function for debugging
 
 bool Heap::check()
 {
-	for (int i = 0; i < used; i ++)
+	for (long long i = 0; i < used; i ++)
 	{
 		if (cont[i].son1<0 || cont[i].son2<0)
 			return false;
@@ -154,13 +154,13 @@ bool Heap::check()
 	return true;
 }
 //------------------------------------------
-void Heap::init(int _dim, int _hsize)
+void Heap::init(long long _dim, long long _hsize)
 {
 	if (cont)
 		delete [] cont;
 	hsize = _hsize;
 	cont = new HeapEntry [hsize + 1];   // +1 is to facilitate insert
-	for (int i = 0; i < hsize + 1; i ++)
+	for (long long i = 0; i < hsize + 1; i ++)
 		cont[i].init_HeapEntry(_dim);
 	used = 0;
 	maxused=0;

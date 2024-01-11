@@ -1,5 +1,5 @@
 #include "pb-tree.h"
-#include ".\gadget\gadget.h"
+#include "./gadget/gadget.h"
 #include <math.h>
 #include <vector>
 #include <iostream>
@@ -8,13 +8,13 @@
 #include <sstream>
 #include <bitset>
 #include <queue>
-#include "lsb_vector\m-entry.h"
-#include "lsb_vector\m-node.h"
+#include "lsb_vector/m-entry.h"
+#include "lsb_vector/m-node.h"
 
 using namespace std;
 extern double cc;
 extern double IOread;
-extern int MAXNUM;
+extern long long MAXNUM;
 extern double MAXDIST;
 
 PB_Tree::PB_Tree()
@@ -42,23 +42,23 @@ PB_Tree::~PB_Tree()
 
 
 //find num_cand pivots in O using FFT
-double** PB_Tree::FFT(Object * O, int num)
+double** PB_Tree::FFT(Object * O, long long num)
 {
 	cand = new Object[num_cand];
 	bool * indicator = new bool[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 		indicator[i] = true;
-	int * idset = new int[num_cand];
+	long long * idset = new long long[num_cand];
 
 	double d = 0.0;
 	double t;
-	int choose = 0;
+	long long choose = 0;
 
 	double** distmatrix = new double*[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		distmatrix[i] = new double[num_cand];
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 			distmatrix[i][j] = 0;
 	}
 
@@ -66,7 +66,7 @@ double** PB_Tree::FFT(Object * O, int num)
 	if (num_cand > 0)
 	{
 
-		for (int i = 1; i < num; i++)
+		for (long long i = 1; i < num; i++)
 		{
 			t = O[i].distance(O[0]);
 			if (t > d)
@@ -85,7 +85,7 @@ double** PB_Tree::FFT(Object * O, int num)
 	if (num_cand > 1)
 	{
 		d = 0;
-		for (int i = 0; i < num; i++)
+		for (long long i = 0; i < num; i++)
 		{
 			if (indicator[i])
 			{
@@ -106,15 +106,15 @@ double** PB_Tree::FFT(Object * O, int num)
 
 
 	d = 0;
-	for (int i = 2; i < num_cand; i++)
+	for (long long i = 2; i < num_cand; i++)
 	{
 		d = 0;
-		for (int j = 0; j < num; j++)
+		for (long long j = 0; j < num; j++)
 		{
 			if (indicator[j])
 			{
 				t = MAXREAL;
-				for (int k = 0; k < i - 1; k++)
+				for (long long k = 0; k < i - 1; k++)
 				{
 					if (distmatrix[j][k] < t)
 						t = distmatrix[j][k];
@@ -138,7 +138,7 @@ double** PB_Tree::FFT(Object * O, int num)
 
 	//print distance matrix
 
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		if (indicator[i])
 		{
@@ -146,8 +146,8 @@ double** PB_Tree::FFT(Object * O, int num)
 		}
 	}
 
-	for (int i = 0; i < num_cand; i++)
-		for (int j = i + 1; j < num_cand; j++)
+	for (long long i = 0; i < num_cand; i++)
+		for (long long j = i + 1; j < num_cand; j++)
 			distmatrix[idset[i]][j] = O[idset[i]].distance(cand[j]);
 
 	delete[] indicator;
@@ -158,30 +158,30 @@ double** PB_Tree::FFT(Object * O, int num)
 
 
 //find num_cand pivots in O using maxpruning strategy
-double** PB_Tree::MaxPrunning(Object * O, int num)
+double** PB_Tree::MaxPrunning(Object * O, long long num)
 {
 	cand = new Object[num_cand];
 	bool * indicator = new bool[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 		indicator[i] = true;
-	int * idset = new int[num_cand];
+	long long * idset = new long long[num_cand];
 
 	double d = 0.0;
 	double t;
-	int choose = 0;
+	long long choose = 0;
 
 	double** distmatrix = new double*[num];
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		distmatrix[i] = new double[num_cand];
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 			distmatrix[i][j] = 0;
 	}
 
 	if (num_cand > 0)
 	{
 
-		for (int i = 1; i < num; i++)
+		for (long long i = 1; i < num; i++)
 		{
 			t = O[i].distance(O[0]);
 			if (t > d)
@@ -200,7 +200,7 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 	if (num_cand > 1)
 	{
 		d = 0;
-		for (int i = 0; i < num; i++)
+		for (long long i = 0; i < num; i++)
 		{
 			if (indicator[i])
 			{
@@ -220,15 +220,15 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 
 	double edge = d;
 	d = MAXREAL;
-	for (int i = 2; i < num_cand; i++)
+	for (long long i = 2; i < num_cand; i++)
 	{
 		d = MAXREAL;
-		for (int j = 0; j < num; j++)
+		for (long long j = 0; j < num; j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int k = 0; k < i - 1; k++)
+				for (long long k = 0; k < i - 1; k++)
 				{
 					t += fabs(edge - distmatrix[j][k]);
 				}
@@ -250,7 +250,7 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 
 	//print distance matrix
 
-	for (int i = 0; i < num; i++)
+	for (long long i = 0; i < num; i++)
 	{
 		if (indicator[i])
 		{
@@ -258,8 +258,8 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 		}
 	}
 
-	for (int i = 0; i < num_cand; i++)
-		for (int j = i + 1; j < num_cand; j++)
+	for (long long i = 0; i < num_cand; i++)
+		for (long long j = i + 1; j < num_cand; j++)
 			distmatrix[idset[i]][j] = O[idset[i]].distance(cand[j]);
 
 	delete[] indicator;
@@ -268,34 +268,34 @@ double** PB_Tree::MaxPrunning(Object * O, int num)
 	return distmatrix;
 }
 
-void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double thred)
+void PB_Tree::PivotSelect(Object * O, Object * Q, long long o_num, long long q_num, double thred)
 {
-	vector<int> pivots;
+	vector<long long> pivots;
 
 	double ** O_P_matrix = MaxPrunning(O, o_num);
 
 	double ** Q_O_matrix = new double *[q_num];
 	double ** Q_P_matrix = new double*[q_num];
 	double ** esti = new double*[q_num];
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
 		Q_O_matrix[i] = new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
 		esti[i] = new double[o_num];
 	}
 	bool* indicator = new bool[num_cand];
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 		indicator[i] = true;
 
 
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
-		for (int j = 0; j < o_num; j++)
+		for (long long j = 0; j < o_num; j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j] = 0;
 		}
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -304,20 +304,20 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 	double d = 0;
 	double t = 0;
 	double last = 0;
-	int choose;
+	long long choose;
 	ptable = new Object[num_piv];
-	int i;
+	long long i;
 	while (true)
 	{
 		choose = -1;
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int m = 0; m < q_num; m++)
+				for (long long m = 0; m < q_num; m++)
 				{
-					for (int n = 0; n < o_num; n++)
+					for (long long n = 0; n < o_num; n++)
 					{
 						if (Q_O_matrix[m][n] != 0)
 						{
@@ -340,39 +340,39 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 		last = d;
 		indicator[choose] = false;
 		pivots.push_back(choose);
-		for (int m = 0; m < q_num; m++)
-			for (int n = 0; n < o_num; n++)
+		for (long long m = 0; m < q_num; m++)
+			for (long long n = 0; n < o_num; n++)
 				esti[m][n] = MAX(fabs(Q_P_matrix[m][choose] - O_P_matrix[n][choose]), esti[m][n]);
 	}
 
 
-	int victim;
-	int iter = 0;
+	long long victim;
+	long long iter = 0;
 	while (true)
 	{
 		d = 1;
 		iter++;
 		victim = -1;
-		for (int i = 0; i < pivots.size(); i++)
+		for (long long i = 0; i < pivots.size(); i++)
 		{
-			for (int m = 0; m < q_num; m++)
-				for (int n = 0; n < o_num; n++)
+			for (long long m = 0; m < q_num; m++)
+				for (long long n = 0; n < o_num; n++)
 					esti[m][n] = 0;
 
-			for (int j = 0; j < pivots.size(); j++)
+			for (long long j = 0; j < pivots.size(); j++)
 			{
 				if (j != i)
 				{
-					for (int m = 0; m < q_num; m++)
-						for (int n = 0; n < o_num; n++)
+					for (long long m = 0; m < q_num; m++)
+						for (long long n = 0; n < o_num; n++)
 							esti[m][n] = MAX(fabs(Q_P_matrix[m][pivots[j]] - O_P_matrix[n][pivots[j]]), esti[m][n]);
 				}
 			}
 
 			t = 0;
-			for (int m = 0; m < q_num; m++)
+			for (long long m = 0; m < q_num; m++)
 			{
-				for (int n = 0; n < o_num; n++)
+				for (long long n = 0; n < o_num; n++)
 				{
 					if (Q_O_matrix[m][n] != 0)
 						t += esti[m][n] / Q_O_matrix[m][n];
@@ -388,16 +388,16 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 			}
 		}
 
-		for (int m = 0; m < q_num; m++)
-			for (int n = 0; n < o_num; n++)
+		for (long long m = 0; m < q_num; m++)
+			for (long long n = 0; n < o_num; n++)
 				esti[m][n] = 0;
 
-		for (int j = 0; j < pivots.size(); j++)
+		for (long long j = 0; j < pivots.size(); j++)
 		{
 			if (j != victim)
 			{
-				for (int m = 0; m < q_num; m++)
-					for (int n = 0; n < o_num; n++)
+				for (long long m = 0; m < q_num; m++)
+					for (long long n = 0; n < o_num; n++)
 						esti[m][n] = MAX(fabs(Q_P_matrix[m][pivots[j]] - O_P_matrix[n][pivots[j]]), esti[m][n]);
 			}
 		}
@@ -406,14 +406,14 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 
 		choose = -1;
 		d = last;
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int m = 0; m < q_num; m++)
+				for (long long m = 0; m < q_num; m++)
 				{
-					for (int n = 0; n < o_num; n++)
+					for (long long n = 0; n < o_num; n++)
 					{
 						if (Q_O_matrix[m][n] != 0)
 						{
@@ -442,7 +442,7 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 
 	num_piv = pivots.size();
 	ptable = new Object[num_piv];
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 		ptable[i] = cand[pivots[i]];
 
 	for (i = 0; i < q_num; i++)
@@ -456,32 +456,32 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num, double t
 		delete[] O_P_matrix[i];
 }
 
-void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
+void PB_Tree::PivotSelect(Object * O, Object * Q, long long o_num, long long q_num)
 {
 	double ** O_P_matrix = MaxPrunning(O, o_num);
 
 	double ** Q_O_matrix = new double *[q_num];
 	double ** Q_P_matrix = new double*[q_num];
 	double ** esti = new double*[q_num];
-	for (int i = 0;i < q_num;i++)
+	for (long long i = 0;i < q_num;i++)
 	{
 		Q_O_matrix[i] = new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
 		esti[i] = new double[o_num];
 	}
 	bool* indicator = new bool[num_cand];
-	for (int i = 0;i < num_cand;i++)
+	for (long long i = 0;i < num_cand;i++)
 		indicator[i] = true;
 
 
-	for (int i = 0;i < q_num;i++)
+	for (long long i = 0;i < q_num;i++)
 	{
-		for (int j = 0;j < o_num;j++)
+		for (long long j = 0;j < o_num;j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j] = 0;
 		}
-		for (int j = 0;j < num_cand;j++)
+		for (long long j = 0;j < num_cand;j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -490,20 +490,20 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	double d = 0;
 	double t = 0;
-	int choose;
+	long long choose;
 	ptable = new Object[num_piv];
-	int i;
+	long long i;
 	for (i = 0;i < num_piv;i++)
 	{
 		choose = -1;
-		for (int j = 0;j < num_cand;j++)
+		for (long long j = 0;j < num_cand;j++)
 		{
 			if (indicator[j])
 			{
 				t = 0;
-				for (int m = 0;m < q_num;m++)
+				for (long long m = 0;m < q_num;m++)
 				{
-					for (int n = 0;n < o_num;n++)
+					for (long long n = 0;n < o_num;n++)
 					{
 						if (Q_O_matrix[m][n] != 0)
 						{
@@ -524,8 +524,8 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 			break;
 		indicator[choose] = false;
 		ptable[i] = cand[choose];
-		for (int m = 0;m < q_num;m++)
-			for (int n = 0;n < o_num;n++)
+		for (long long m = 0;m < q_num;m++)
+			for (long long n = 0;n < o_num;n++)
 				esti[m][n] = MAX(fabs(Q_P_matrix[m][choose] - O_P_matrix[n][choose]), esti[m][n]);
 	}
 
@@ -545,7 +545,7 @@ void PB_Tree::PivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		delete[] O_P_matrix[i];
 }
 
-void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
+void PB_Tree::RPivotSelect(Object * O, Object * Q, long long o_num, long long q_num)
 {
 	ptable = new Object[num_piv];
 	double ** O_P_matrix = MaxPrunning(O, o_num);
@@ -553,7 +553,7 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	double ** Q_P_matrix = new double*[q_num];
 
 	double ** esti = new double*[q_num];
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
 		Q_O_matrix[i] = new double[o_num];
 		Q_P_matrix[i] = new double[num_cand];
@@ -561,21 +561,21 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	}
 
 	double *** esti_temp = new double **[num_cand];
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 	{
 		esti_temp[i] = new double*[q_num];
-		for (int j = 0; j < q_num; j++)
+		for (long long j = 0; j < q_num; j++)
 			esti_temp[i][j] = new double[o_num];
 	}
 
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
-		for (int j = 0; j < o_num; j++)
+		for (long long j = 0; j < o_num; j++)
 		{
 			Q_O_matrix[i][j] = Q[i].distance(O[j]);
 			esti[i][j] = 0;
 		}
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			Q_P_matrix[i][j] = Q[i].distance(cand[j]);
 		}
@@ -583,11 +583,11 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	double score = 0;
 
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
-		for (int j = 0; j < o_num; j++)
+		for (long long j = 0; j < o_num; j++)
 		{
-			for (int k = 0; k < num_cand; k++)
+			for (long long k = 0; k < num_cand; k++)
 			{
 				esti_temp[k][i][j] = fabs(Q_P_matrix[i][k] - O_P_matrix[j][k]);
 				if (esti[i][j] < esti_temp[k][i][j])
@@ -602,31 +602,31 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 
 	bool * flag_c = new bool[num_cand];
 
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 	{
 		flag_c[i] = true;
 	}
 
 	double * contribution = new double[num_cand];
 	double temp = MAXREAL;
-	int choose;
+	long long choose;
 	double t;
-	for (int i = 0; i < num_cand - num_piv; i++)
+	for (long long i = 0; i < num_cand - num_piv; i++)
 	{
 		temp = MAXREAL;
-		for (int j = 0; j < num_cand; j++)
+		for (long long j = 0; j < num_cand; j++)
 		{
 			if (flag_c[j])
 			{
 				contribution[j] = 0;
-				for (int m = 0; m < q_num; m++)
+				for (long long m = 0; m < q_num; m++)
 				{
-					for (int n = 0; n < o_num; n++)
+					for (long long n = 0; n < o_num; n++)
 					{
 						if (esti[m][n] == esti_temp[j][m][n])
 						{
 							t = 0;
-							for (int k = 0; k < num_cand; k++)
+							for (long long k = 0; k < num_cand; k++)
 							{
 								if (flag_c[k] && k != j && esti_temp[k][m][n] > t)
 									t = esti_temp[k][m][n];
@@ -646,14 +646,14 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		}
 		flag_c[choose] = false;
 		cout << choose << " " << contribution[choose] << endl;
-		for (int m = 0; m < q_num; m++)
+		for (long long m = 0; m < q_num; m++)
 		{
-			for (int n = 0; n < o_num; n++)
+			for (long long n = 0; n < o_num; n++)
 			{
 				if (esti[m][n] == esti_temp[choose][m][n])
 				{
 					t = 0;
-					for (int k = 0; k < num_cand; k++)
+					for (long long k = 0; k < num_cand; k++)
 					{
 						if (flag_c[k])
 							if (esti_temp[k][m][n] > t)
@@ -665,15 +665,15 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 		}
 	}
 	score = 0;
-	for (int i = 0; i < q_num; i++)
-		for (int j = 0; j < o_num; j++)
+	for (long long i = 0; i < q_num; i++)
+		for (long long j = 0; j < o_num; j++)
 		{
 			if (Q_O_matrix[i][j] != 0)
 				score += esti[i][j] / Q_O_matrix[i][j];
 		}
 
 	choose = 0;
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 		if (flag_c[i])
 		{
 			ptable[choose] = cand[i];
@@ -683,17 +683,17 @@ void PB_Tree::RPivotSelect(Object * O, Object * Q, int o_num, int q_num)
 	delete[] flag_c;
 	delete[] contribution;
 
-	for (int i = 0; i < q_num; i++)
+	for (long long i = 0; i < q_num; i++)
 	{
 		delete[] esti[i];
 		delete[] Q_P_matrix[i];
 		delete[] Q_O_matrix[i];
 	}
-	for (int i = 0; i < o_num; i++)
+	for (long long i = 0; i < o_num; i++)
 		delete[] O_P_matrix[i];
-	for (int i = 0; i < num_cand; i++)
+	for (long long i = 0; i < num_cand; i++)
 	{
-		for (int j = 0; j < q_num; j++)
+		for (long long j = 0; j < q_num; j++)
 			delete[] esti_temp[i][j];
 		delete[] esti_temp[i];
 	}
@@ -706,11 +706,11 @@ void PB_Tree::readptable(char* pname)
 {
 	ifstream in1(pname,ios::in);
 	ptable = new Object[num_piv];
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		in1 >> ptable[i].id >> ptable[i].size;
 		ptable[i].data = new float[ptable[i].size];
-		for (int j = 0; j < ptable[i].size; j++)
+		for (long long j = 0; j < ptable[i].size; j++)
 		{
 			in1 >> ptable[i].data[j];
 		}
@@ -718,23 +718,23 @@ void PB_Tree::readptable(char* pname)
 	in1.close();
 }
 
-void PB_Tree::bulkload(Object * O,  int o_num)
+void PB_Tree::bulkload(Object * O,  long long o_num)
 {
-	int* power = new int[num_piv];
-	for (int i = 0; i < MAXLEVEL; i++)
+	long long* power = new long long[num_piv];
+	for (long long i = 0; i < MAXLEVEL; i++)
 		power[i] = pow(num_piv, MAXLEVEL - i - 1);
-	int** arraysort = new int*[o_num];
-	for (int i = 0; i < o_num; i++)
-		arraysort[i] = new int[MAXLEVEL];
+	long long** arraysort = new long long*[o_num];
+	for (long long i = 0; i < o_num; i++)
+		arraysort[i] = new long long[MAXLEVEL];
 
 	vector<TEntry> GH;
 
 	double key = 0;
-	for (int i = 0; i < o_num; i++)
+	for (long long i = 0; i < o_num; i++)
 	{
 		vector<TEntry> H;
 		O[i].pd = new double[num_piv];
-		for (int j = 0; j < num_piv; j++)
+		for (long long j = 0; j < num_piv; j++)
 		{
 			TEntry te;
 			te.id = j;
@@ -744,7 +744,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 		}
 		sort(H.begin(), H.end());
 		key = 0;
-		for (int j = 0; j < MAXLEVEL; j++)
+		for (long long j = 0; j < MAXLEVEL; j++)
 		{
 			key += power[j] * (H[j].id + 1);
 			arraysort[i][j] = H[j].id;
@@ -764,22 +764,22 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 	char bl[] = "bulkload.txt";
 	FILE* f = fopen(bl, "w+");
 	if (f != NULL)
-		for (int i = 0; i < o_num; i++)
+		for (long long i = 0; i < o_num; i++)
 		{
 			fprintf(f, "%d\n", GH[i].id);
 		}
 	fclose(f);
-	int size = (pow(num_piv, MAXLEVEL) - 1)*num_piv / (num_piv - 1) + 1;
+	long long size = (pow(num_piv, MAXLEVEL) - 1)*num_piv / (num_piv - 1) + 1;
 	cout << size << endl;
 	M_Entry ** entries = new M_Entry*[size];
-	for (int i = 0; i < size; i++)
+	for (long long i = 0; i < size; i++)
 	{
 		entries[i] = NULL;
 	}
-	for (int i = 0; i < o_num; i++)
+	for (long long i = 0; i < o_num; i++)
 	{
-		int id = 0;
-		for (int j = 0; j < MAXLEVEL; j++)
+		long long id = 0;
+		for (long long j = 0; j < MAXLEVEL; j++)
 			id += power[j] * (arraysort[GH[i].id][j] + 1);
 
 		if (entries[id] == NULL)
@@ -789,7 +789,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 			entries[id]->level = MAXLEVEL;
 			entries[id]->max = new double[num_piv];
 			entries[id]->min = new double[num_piv];
-			for (int j = 0; j < num_piv; j++)
+			for (long long j = 0; j < num_piv; j++)
 			{
 				entries[id]->max[j] = 0;
 				entries[id]->min[j] = MAXDIST;
@@ -798,8 +798,8 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 			entries[id]->mxkey = GH[i].key;
 			entries[id]->minkey = GH[i].key - MAXDIST*id;
 			entries[id]->maxkey = GH[i].key - MAXDIST*id;
-			entries[id]->pivots = new int[MAXLEVEL];
-			memcpy(entries[id]->pivots, arraysort[GH[i].id], MAXLEVEL * sizeof(int));
+			entries[id]->pivots = new long long[MAXLEVEL];
+			memcpy(entries[id]->pivots, arraysort[GH[i].id], MAXLEVEL * sizeof(long long));
 		}
 		entries[id]->num++;
 		if (entries[id]->maxkey - GH[i].key + MAXDIST*id < -0.000000001)
@@ -811,7 +811,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 		if (entries[id]->minkey - GH[i].key + MAXDIST*id  > 0.000000001)
 			entries[id]->minkey = GH[i].key - MAXDIST*id;
 
-		for (int j = 0; j < num_piv; j++)
+		for (long long j = 0; j < num_piv; j++)
 		{
 			if (entries[id]->max[j] - O[GH[i].id].pd[j] < -0.000000001)
 				entries[id]->max[j] = O[GH[i].id].pd[j];
@@ -820,13 +820,13 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 		}
 	}
 
-	for (int i = size - 1; i > num_piv; i--)
+	for (long long i = size - 1; i > num_piv; i--)
 	{
 		if (entries[i] == NULL)
 			continue;
-		int id = 0;
-		int t = MAXLEVEL - entries[i]->level + 1;
-		for (int j = 0; j < entries[i]->level - 1; j++)
+		long long id = 0;
+		long long t = MAXLEVEL - entries[i]->level + 1;
+		for (long long j = 0; j < entries[i]->level - 1; j++)
 			id += power[j + t] * (entries[i]->pivots[j] + 1);
 		if (entries[id] == NULL)
 		{
@@ -835,7 +835,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 			entries[id]->level = entries[i]->level - 1;
 			entries[id]->max = new double[num_piv];
 			entries[id]->min = new double[num_piv];
-			for (int j = 0; j < num_piv; j++)
+			for (long long j = 0; j < num_piv; j++)
 			{
 				entries[id]->max[j] = 0;
 				entries[id]->min[j] = MAXDIST;
@@ -845,8 +845,8 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 			entries[id]->mxkey = entries[i]->mxkey;
 			entries[id]->minkey = entries[i]->minkey;
 			entries[id]->maxkey = entries[i]->maxkey;
-			entries[id]->pivots = new int[MAXLEVEL];
-			memcpy(entries[id]->pivots, entries[i]->pivots, MAXLEVEL * sizeof(int));
+			entries[id]->pivots = new long long[MAXLEVEL];
+			memcpy(entries[id]->pivots, entries[i]->pivots, MAXLEVEL * sizeof(long long));
 		}
 		if (entries[id]->mkey - entries[i]->mkey > 0.000000001)
 			entries[id]->mkey = entries[i]->mkey;
@@ -857,7 +857,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 		if (entries[id]->maxkey - entries[i]->maxkey < -0.000000001)
 			entries[id]->maxkey = entries[i]->maxkey;
 		entries[id]->num += entries[i]->num;
-		for (int j = 0; j < num_piv; j++)
+		for (long long j = 0; j < num_piv; j++)
 		{
 			if (entries[id]->max[j] - entries[i]->max[j] < -0.000000001)
 				entries[id]->max[j] = entries[i]->max[j];
@@ -868,17 +868,17 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 
 	delete[] power;
 
-	for (int i = size - 1; i > 0;)
+	for (long long i = size - 1; i > 0;)
 	{
-		int count = 0;
-		for (int j = 0; j < num_piv; j++)
+		long long count = 0;
+		for (long long j = 0; j < num_piv; j++)
 		{
 			if (entries[i - j] != NULL)
 				count += entries[i - j]->num;
 		}
 		if (count <= MAXNUM)
 		{
-			for (int j = 0; j < num_piv; j++)
+			for (long long j = 0; j < num_piv; j++)
 			{
 				if (entries[i - j] != NULL)
 				{
@@ -897,13 +897,13 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 		fclose(fp);
 		remove("node.b");
 	}
-	BlockFile index("node.b", num_piv*te.get_size() + 4 * sizeof(int));
+	BlockFile index("node.b", num_piv*te.get_size() + 4 * sizeof(long long));
 
-	int n_id = 0;
-	for (int i = 1; i < size; )
+	long long n_id = 0;
+	for (long long i = 1; i < size; )
 	{
-		int count = 0;
-		for (int j = 0; j < num_piv; j++)
+		long long count = 0;
+		for (long long j = 0; j < num_piv; j++)
 		{
 			if (entries[i + j] != NULL)
 			{
@@ -916,7 +916,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 			n.num_entries = count;
 			n.entries = new M_Entry *[count];
 			count = 0;
-			for (int j = 0; j < num_piv; j++)
+			for (long long j = 0; j < num_piv; j++)
 			{
 				if (entries[i + j] != NULL)
 				{
@@ -937,7 +937,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 					count++;
 				}
 			}
-			char* buf = new char[num_piv*te.get_size() + 4 * sizeof(int)];
+			char* buf = new char[num_piv*te.get_size() + 4 * sizeof(long long)];
 			n.write_to_buffer(buf);
 			index.append_block(buf);
 			delete[] buf;
@@ -947,7 +947,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 	}
 
 	delete[] entries;
-	for (int i = 0; i < o_num; i++)
+	for (long long i = 0; i < o_num; i++)
 		delete[] arraysort[i];
 	delete[] arraysort;
 }
@@ -955,7 +955,7 @@ void PB_Tree::bulkload(Object * O,  int o_num)
 
 void clear(vector<B_Node *> * inodes)
 {
-	for (int i = 0; i < inodes->size(); i++)
+	for (long long i = 0; i < inodes->size(); i++)
 	{
 		if ((*inodes)[i]->num_entries == 0)
 		{
@@ -969,7 +969,7 @@ double PB_Tree::idist(double * q, double* mi, double* ma)
 {
 	double dist = 0;
 	double temp;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		if (q[i] - mi[i]<-0.000000001)
 			temp = mi[i] - q[i];
@@ -989,7 +989,7 @@ double PB_Tree::idist(double * q, double* mi, double* ma)
 // true: point is in region [oqmin, oqmax]
 bool PB_Tree::inregion(double* point, double* oqmin, double* oqmax)
 {
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		if (point[i] - oqmin[i]<-0.000000001 || point[i] - oqmax[i]>0.000000001)
 			return false;
@@ -998,11 +998,11 @@ bool PB_Tree::inregion(double* point, double* oqmin, double* oqmax)
 }
 
 
-int PB_Tree::edist(int * query, int* o)
+long long PB_Tree::edist(long long * query, long long* o)
 {
-	int ed = 0;
-	int temp;
-	for (int i = 0; i < num_piv; i++)
+	long long ed = 0;
+	long long temp;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		temp = abs(query[i] - o[i]);
 		if (temp > ed)
@@ -1011,11 +1011,11 @@ int PB_Tree::edist(int * query, int* o)
 	return ed;
 }
 
-int PB_Tree::edist(int * query, unsigned * o)
+long long PB_Tree::edist(long long * query, unsigned * o)
 {
-	int ed = 0;
-	int temp;
-	for (int i = 0; i < num_piv; i++)
+	long long ed = 0;
+	long long temp;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		temp = o[i];
 		temp = abs(query[i] - temp);
@@ -1026,11 +1026,11 @@ int PB_Tree::edist(int * query, unsigned * o)
 }
 
 
-int PB_Tree::determine(int * min1, int * max1, int* min2, int* max2)
+long long PB_Tree::determine(long long * min1, long long * max1, long long* min2, long long* max2)
 {
-	int c1, c2, c3;
+	long long c1, c2, c3;
 	c1 = c2 = c3 = 0;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		if (min2[i] >= min1[i] && max2[i] <= max1[i])
 			c1++;
@@ -1045,9 +1045,9 @@ int PB_Tree::determine(int * min1, int * max1, int* min2, int* max2)
 }
 
 
-Object* PB_Tree::getobject(int ptr)
+Object* PB_Tree::getobject(long long ptr)
 {
-	int i = ptr / draf->file->blocklength;
+	long long i = ptr / draf->file->blocklength;
 	char * buffer = new char[draf->file->blocklength];
 
 	if (c == NULL)
@@ -1059,7 +1059,7 @@ Object* PB_Tree::getobject(int ptr)
 		c->read_block(buffer, i, draf);
 	}
 
-	int j = ptr - i*draf->file->blocklength;
+	long long j = ptr - i*draf->file->blocklength;
 	Object* o = new Object();
 	o->read_from_buffer(&buffer[j]);
 
@@ -1068,14 +1068,14 @@ Object* PB_Tree::getobject(int ptr)
 	return o;
 }
 
-vector<int> PB_Tree::rangequery(Object* q, double r)
+vector<long long> PB_Tree::rangequery(Object* q, double r)
 {
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1084,12 +1084,12 @@ vector<int> PB_Tree::rangequery(Object* q, double r)
 		ve.push_back(t);
 	}
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1103,24 +1103,24 @@ vector<int> PB_Tree::rangequery(Object* q, double r)
 	node->init(bf, 0);
 	queue.push(node);
 
-	vector<int> * candi = new vector<int>;
-	vector<int> answer;
+	vector<long long> * candi = new vector<long long>;
+	vector<long long> answer;
 	while (!queue.empty())
 	{
 		node = queue.front();
 		queue.front() = NULL;
 		queue.pop();
 
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
-			int near = 0;
-			for (int j = 0; j < MAXLEVEL; j++)
+			long long near = 0;
+			for (long long j = 0; j < MAXLEVEL; j++)
 				ispurned[j] = false;
-			for (int k = 0; k < node->entries[i]->level - 1; k++)
+			for (long long k = 0; k < node->entries[i]->level - 1; k++)
 			{
 				ispurned[position[node->entries[i]->pivots[k]]] = true;
 			}
-			for (int k = 0; k < MAXLEVEL; k++)
+			for (long long k = 0; k < MAXLEVEL; k++)
 			{
 				if (!ispurned[k])
 				{
@@ -1133,7 +1133,7 @@ vector<int> PB_Tree::rangequery(Object* q, double r)
 				continue;
 
 			bool prune = false;
-			for (int k = 0; k < num_piv; k++)
+			for (long long k = 0; k < num_piv; k++)
 			{
 				if (q->pd[k] + r - node->entries[i]->min[k] < -0.0000001 || q->pd[k] - r - node->entries[i]->max[k] > 0.000000001)
 				{
@@ -1162,7 +1162,7 @@ vector<int> PB_Tree::rangequery(Object* q, double r)
 		delete node;
 	}
 
-	for (int i = 0; i < candi->size(); i++)
+	for (long long i = 0; i < candi->size(); i++)
 	{
 		Object* o = getobject((*candi)[i]);
 		if (q->distance(*o) - r < 0.000000001)
@@ -1181,15 +1181,15 @@ vector<int> PB_Tree::rangequery(Object* q, double r)
 }
 
 
-vector<int> PB_Tree::rangequery_orignal(Object* q, double r)
+vector<long long> PB_Tree::rangequery_orignal(Object* q, double r)
 
 {
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1198,12 +1198,12 @@ vector<int> PB_Tree::rangequery_orignal(Object* q, double r)
 		ve.push_back(t);
 	}
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1217,24 +1217,24 @@ vector<int> PB_Tree::rangequery_orignal(Object* q, double r)
 	node->init(bf, 0);
 	queue.push(node);
 
-	vector<int> * candi = new vector<int>;
-	vector<int> answer;
+	vector<long long> * candi = new vector<long long>;
+	vector<long long> answer;
 	while (!queue.empty())
 	{
 		node = queue.front();
 		queue.front() = NULL;
 		queue.pop();
 
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
-			int near = 0;
-			for (int j = 0; j < MAXLEVEL; j++)
+			long long near = 0;
+			for (long long j = 0; j < MAXLEVEL; j++)
 				ispurned[j] = false;
-			for (int k = 0; k < node->entries[i]->level - 1; k++)
+			for (long long k = 0; k < node->entries[i]->level - 1; k++)
 			{
 				ispurned[position[node->entries[i]->pivots[k]]] = true;
 			}
-			for (int k = 0; k < MAXLEVEL; k++)
+			for (long long k = 0; k < MAXLEVEL; k++)
 			{
 				if (!ispurned[k])
 				{
@@ -1266,7 +1266,7 @@ vector<int> PB_Tree::rangequery_orignal(Object* q, double r)
 		delete node;
 	}
 
-	for (int i = 0; i < candi->size(); i++)
+	for (long long i = 0; i < candi->size(); i++)
 	{
 		Object* o = getobject((*candi)[i]);
 		if (q->distance(*o) - r < 0.000000001)
@@ -1285,16 +1285,16 @@ vector<int> PB_Tree::rangequery_orignal(Object* q, double r)
 }
 
 
-double PB_Tree::knn(Object * q, int k)
+double PB_Tree::knn(Object * q, long long k)
 {
 	double upper = MAXDIST;
 	vector<TEntry> answer;
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1304,13 +1304,13 @@ double PB_Tree::knn(Object * q, int k)
 	}
 
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
 
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1354,21 +1354,21 @@ double PB_Tree::knn(Object * q, int k)
 		}
 		M_Node* node = new M_Node();
 		node->init(bf, e.id);
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
 			bool flag = false;
-			for (int x = 0; x < node->entries[i]->level; x++)
+			for (long long x = 0; x < node->entries[i]->level; x++)
 			{
-				int near = 0;
-				for (int j = 0; j < MAXLEVEL; j++)
+				long long near = 0;
+				for (long long j = 0; j < MAXLEVEL; j++)
 					ispurned[j] = false;
 
-				for (int k = 0; k < x; k++)
+				for (long long k = 0; k < x; k++)
 				{
 					ispurned[position[node->entries[i]->pivots[k]]] = true;
 				}
 
-				for (int k = 0; k < x + 1; k++)
+				for (long long k = 0; k < x + 1; k++)
 				{
 					if (!ispurned[k])
 					{
@@ -1416,16 +1416,16 @@ double PB_Tree::knn(Object * q, int k)
 	return answer[k - 1].key;
 }
 
-double PB_Tree::knn_optimal(Object * q, int k)
+double PB_Tree::knn_optimal(Object * q, long long k)
 {
 	double upper = MAXDIST;
 	vector<TEntry> answer;
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1434,12 +1434,12 @@ double PB_Tree::knn_optimal(Object * q, int k)
 		ve.push_back(t);
 	}
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1486,21 +1486,21 @@ double PB_Tree::knn_optimal(Object * q, int k)
 		}
 		M_Node* node = new M_Node();
 		node->init(bf, e.id);
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
 			bool flag = false;
-			for (int x = 0; x < node->entries[i]->level; x++)
+			for (long long x = 0; x < node->entries[i]->level; x++)
 			{
-				int near = 0;
-				for (int j = 0; j < MAXLEVEL; j++)
+				long long near = 0;
+				for (long long j = 0; j < MAXLEVEL; j++)
 					ispurned[j] = false;
 
-				for (int k = 0; k < x; k++)
+				for (long long k = 0; k < x; k++)
 				{
 					ispurned[position[node->entries[i]->pivots[k]]] = true;
 				}
 
-				for (int k = 0; k < MAXLEVEL; k++)
+				for (long long k = 0; k < MAXLEVEL; k++)
 				{
 					if (!ispurned[k])
 					{
@@ -1526,7 +1526,7 @@ double PB_Tree::knn_optimal(Object * q, int k)
 			{
 				candi = new vector<TEntry>();
 				bplus->root_ptr->find_kNN_range(node->entries[i]->mkey, node->entries[i]->mxkey, q->pd, upper, candi);
-				for (int j = 0; j < candi->size(); j++)
+				for (long long j = 0; j < candi->size(); j++)
 				{
 					if ((*candi)[i].key - upper > 0.0000001)
 						continue;
@@ -1566,16 +1566,16 @@ double PB_Tree::knn_optimal(Object * q, int k)
 	return answer[k - 1].key;
 }
 
-double PB_Tree::knn_range(Object * q, int k)
+double PB_Tree::knn_range(Object * q, long long k)
 {
 	double upper = MAXDIST;
 	vector<TEntry> answer;
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1584,12 +1584,12 @@ double PB_Tree::knn_range(Object * q, int k)
 		ve.push_back(t);
 	}
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1603,8 +1603,8 @@ double PB_Tree::knn_range(Object * q, int k)
 	te.isobject = false;
 	queue<KEntry> queue;
 	queue.push(te);
-	int access;
-	int p;
+	long long access;
+	long long p;
 	vector<TEntry>* candi = new vector<TEntry>();
 	while (!queue.empty())
 	{
@@ -1612,9 +1612,9 @@ double PB_Tree::knn_range(Object * q, int k)
 		queue.pop();
 		M_Node* node = new M_Node();
 		node->init(bf, e.id);
-		int min = num_piv;
+		long long min = num_piv;
 
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
 			if (position[node->entries[i]->pivots[node->entries[i]->level - 1]] < min&&node->entries[i]->num >= k)
 			{
@@ -1636,7 +1636,7 @@ double PB_Tree::knn_range(Object * q, int k)
 		}
 	}
 
-	for (int i = 0; i < candi->size(); i++)
+	for (long long i = 0; i < candi->size(); i++)
 	{
 		if ((*candi)[i].key - upper > 0.0000001)
 			continue;
@@ -1667,16 +1667,16 @@ double PB_Tree::knn_range(Object * q, int k)
 		queue.pop();
 		M_Node* node = new M_Node();
 		node->init(bf, e.id);
-		for (int i = 0; i < node->num_entries; i++)
+		for (long long i = 0; i < node->num_entries; i++)
 		{
-			int near = 0;
-			for (int j = 0; j < MAXLEVEL; j++)
+			long long near = 0;
+			for (long long j = 0; j < MAXLEVEL; j++)
 				ispurned[j] = false;
-			for (int k = 0; k < node->entries[i]->level - 1; k++)
+			for (long long k = 0; k < node->entries[i]->level - 1; k++)
 			{
 				ispurned[position[node->entries[i]->pivots[k]]] = true;
 			}
-			for (int k = 0; k < MAXLEVEL; k++)
+			for (long long k = 0; k < MAXLEVEL; k++)
 			{
 				if (!ispurned[k])
 				{
@@ -1702,7 +1702,7 @@ double PB_Tree::knn_range(Object * q, int k)
 				{
 					candi = new vector<TEntry>();
 					bplus->root_ptr->find_kNN_range(node->entries[i]->mkey, node->entries[i]->mxkey, q->pd, upper, candi);
-					for (int j = 0; j < candi->size(); j++)
+					for (long long j = 0; j < candi->size(); j++)
 					{
 						if ((*candi)[i].key - upper > 0.0000001)
 							continue;
@@ -1743,17 +1743,17 @@ double PB_Tree::knn_range(Object * q, int k)
 	return answer[k - 1].key;
 }
 
-double PB_Tree::knn_orignal(Object * q, int k, double inc, int datasize)
+double PB_Tree::knn_orignal(Object * q, long long k, double inc, long long datasize)
 {
 	double r = inc;
 	double upper = MAXDIST;
 	vector<TEntry> answer;
 	q->pd = new double[num_piv];
 	double temp = MAXDIST;
-	int* nearpivot = new int[MAXLEVEL];
-	int* position = new int[num_piv];
+	long long* nearpivot = new long long[MAXLEVEL];
+	long long* position = new long long[num_piv];
 	vector<TEntry> ve;
-	for (int i = 0; i < num_piv; i++)
+	for (long long i = 0; i < num_piv; i++)
 	{
 		q->pd[i] = q->distance(ptable[i]);
 		TEntry t;
@@ -1763,16 +1763,16 @@ double PB_Tree::knn_orignal(Object * q, int k, double inc, int datasize)
 	}
 
 	bool* isaccess = new bool[datasize];
-	for (int i = 0; i < datasize; i++)
+	for (long long i = 0; i < datasize; i++)
 		isaccess[i] = false;
 	sort(ve.begin(), ve.end());
-	for (int i = 0; i < MAXLEVEL; i++)
+	for (long long i = 0; i < MAXLEVEL; i++)
 	{
 		nearpivot[i] = ve[i].id;
 	}
 
-	int count = 0;
-	for (int i = 0; i < num_piv; i++)
+	long long count = 0;
+	for (long long i = 0; i < num_piv; i++)
 	{
 		position[ve[i].id] = count;
 		count++;
@@ -1785,7 +1785,7 @@ double PB_Tree::knn_orignal(Object * q, int k, double inc, int datasize)
 
 	while (r - upper - inc < 0.000001)
 	{
-		vector<int> candi;
+		vector<long long> candi;
 		queue<M_Node*> queue;
 		M_Node * node = new M_Node();
 		node->init(bf, 0);
@@ -1796,16 +1796,16 @@ double PB_Tree::knn_orignal(Object * q, int k, double inc, int datasize)
 			node = queue.front();
 			queue.front() = NULL;
 			queue.pop();
-			for (int i = 0; i < node->num_entries; i++)
+			for (long long i = 0; i < node->num_entries; i++)
 			{
-				int near = 0;
-				for (int j = 0; j < MAXLEVEL; j++)
+				long long near = 0;
+				for (long long j = 0; j < MAXLEVEL; j++)
 					ispurned[j] = false;
-				for (int k = 0; k < node->entries[i]->level - 1; k++)
+				for (long long k = 0; k < node->entries[i]->level - 1; k++)
 				{
 					ispurned[position[node->entries[i]->pivots[k]]] = true;
 				}
-				for (int k = 0; k < MAXLEVEL; k++)
+				for (long long k = 0; k < MAXLEVEL; k++)
 				{
 					if (!ispurned[k])
 					{
@@ -1840,7 +1840,7 @@ double PB_Tree::knn_orignal(Object * q, int k, double inc, int datasize)
 			delete node;
 		}
 
-		for (int x = 0; x < candi.size(); x++)
+		for (long long x = 0; x < candi.size(); x++)
 		{
 			Object* o = getobject((candi)[x]);
 

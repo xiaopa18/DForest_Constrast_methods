@@ -53,8 +53,9 @@ int main(int argc, char **argv)
     int mx=atoi(argv[4]);
     int querycount=atoi(argv[5]);
     int knncount=atoi(argv[6+querycount]);
-    vector<vector<double>> dataset=read("../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
-    vector<vector<double>> queryset=read("../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
+    //cout<<"sad"<<endl;
+    vector<vector<double>> dataset=read("../../data_set/"+dataid+"/"+dataid+"_afterpca.csv");
+    vector<vector<double>> queryset=read("../../data_set/"+dataid+"/"+dataid+"_"+queryid+"_afterpca.csv");
     auto tst=steady_clock::now(),ted=steady_clock::now();
     int current_pid=GetCurrentPid();
     auto mem_use=-GetMemoryUsage(current_pid);
@@ -89,9 +90,9 @@ int main(int argc, char **argv)
         }
         tim+=clock();
         ouf<<dataid<<","<<queryid<<",Mtree,"<<"mn:"<<mn<<" mx:"<<mx<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<sum/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<tim/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<tim/queryset.size()/1000<<"ms"<<endl;
         cout<<dataid<<","<<queryid<<",Mtree,"<<"mn:"<<mn<<" mx:"<<mx<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<r<<","<<sum/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<tim/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<tim/queryset.size()/1000<<"ms"<<endl;
     }
     ouf.close();
 
@@ -117,9 +118,9 @@ int main(int argc, char **argv)
         }
         tim+=clock();
         ouf<<dataid<<","<<queryid<<",Mtree,"<<"mn:"<<mn<<" mx:"<<mx<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<tim/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<tim/queryset.size()/1000<<"ms"<<endl;
         cout<<dataid<<","<<queryid<<",Mtree,"<<"mn:"<<mn<<" mx:"<<mx<<","<<buildEnd<<"ms,"<<mem_use<<"MB,"<<k<<","<<rad/queryset.size()<<","
-                <<compDists/queryset.size()<<","<<tim/queryset.size()<<"ms"<<endl;
+                <<compDists/queryset.size()<<","<<tim/queryset.size()/1000<<"ms"<<endl;
     }
     ouf.close();
     return 0;

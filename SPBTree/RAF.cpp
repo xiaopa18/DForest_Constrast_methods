@@ -4,10 +4,10 @@
 #include <string.h>
 #include <memory.h>
 #include <fstream>
-#include ".\object.h"
-#include ".\blockfile\blk_file.h"
-#include ".\gadget\gadget.h"
-extern int bolcksize;
+#include "./object.h"
+#include "./blockfile/blk_file.h"
+#include "./gadget/gadget.h"
+extern long long bolcksize;
 
 
 void add_fname_ext(char * _fname)
@@ -15,7 +15,7 @@ void add_fname_ext(char * _fname)
 	strcat(_fname, ".raf");
 }
 
-void RAF::init(char *_fname, int _b_length, Cache *_c)
+void RAF::init(char *_fname, long long _b_length, Cache *_c)
 {
 	char *fname = new char[strlen(_fname) + 10]; //allow 9 characters for extension name
 	strcpy(fname, _fname);
@@ -58,13 +58,13 @@ void RAF::init_restore(char *_fname, Cache *_c)
 	delete [] fname;
 }
 
-int* RAF::buid_from_array(Object ** objset, int * order)
+long long* RAF::buid_from_array(Object ** objset, long long * order)
 {
 	char * buffer;
-	int * ptrset = new int[num_obj];
+	long long * ptrset = new long long[num_obj];
 
-	int i = 0;
-	int j = 0;
+	long long i = 0;
+	long long j = 0;
 	bool flag = true;
 	
 	while(j<num_obj)
@@ -72,7 +72,7 @@ int* RAF::buid_from_array(Object ** objset, int * order)
 		buffer = new char[file->blocklength];
 		if(flag)
 		{
-			i+=2*sizeof(int);
+			i+=2*sizeof(long long);
 			flag = false;
 		}
 		else

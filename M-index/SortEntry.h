@@ -3,14 +3,14 @@
 #include <string>
 #include <iostream>
 using namespace std;
-#include"gadget\gadget.h"
+#include"gadget/gadget.h"
 
-extern int MAXLEVEL;
+extern long long MAXLEVEL;
 
 class TEntry
 {
 public:
- int id;
+ long long id;
  double key;
 
 TEntry()
@@ -25,13 +25,13 @@ key = -1;
 		key = se.key;
 	}
 
- bool operator < (const TEntry &a) const 
+ bool operator < (const TEntry &a) const
 	{
 		if(key - a.key<-0.00000000001)
 			return true;
 		else if(fabs(key - a.key)<0.00000000001)
 			return id<a.id;
-		else 
+		else
 			return false;
 	 }
 };
@@ -39,11 +39,11 @@ key = -1;
 class KEntry
 {
 public:
-	int id;
+	long long id;
 	double key;
 	bool isobject;
-	int level;
-	int pivot;
+	long long level;
+	long long pivot;
 
 	KEntry()
 	{
@@ -73,7 +73,7 @@ public:
 			}
 			else
 				return level>a.level;
-		}			
+		}
 		else
 			return true;
 	}
@@ -83,9 +83,9 @@ class HEntry
 {
 public:
 	unsigned * key;
-	int keysize;
-	int id;
-	HEntry(unsigned * a, int s, int i)
+	long long keysize;
+	long long id;
+	HEntry(unsigned * a, long long s, long long i)
 	{
 		key = a;
 		keysize = s;
@@ -109,10 +109,10 @@ public:
 		id = a.id;
 	}
 
-	bool operator < (const HEntry &a) const 
+	bool operator < (const HEntry &a) const
 	{
 		bool flag = true;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -122,15 +122,15 @@ public:
 			{
 				flag = false;
 				return flag;
-			}		
+			}
 		}
 		return id<a.id;
 	 }
 
-	bool operator > (const HEntry &a) const 
+	bool operator > (const HEntry &a) const
 	{
 		bool flag = false;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -147,7 +147,7 @@ public:
 
 	void print()
 	{
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			cout<<key[i]<<" ";
 		}
@@ -158,9 +158,9 @@ class IntArray
 {
 public:
 	unsigned * key;
-	int keysize;
-	int edist;
-	IntArray(unsigned * a, int s)
+	long long keysize;
+	long long edist;
+	IntArray(unsigned * a, long long s)
 	{
 		key = a;
 		a = NULL;
@@ -184,10 +184,10 @@ public:
 		edist = a.edist;
 	}
 
-	bool operator < (const IntArray &a) const 
+	bool operator < (const IntArray &a) const
 	{
 		bool flag = true;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -202,10 +202,10 @@ public:
 		return flag;
 	 }
 
-	bool operator > (const IntArray &a) const 
+	bool operator > (const IntArray &a) const
 	{
 		bool flag = false;
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			if(key[i] < a.key[i])
 			{
@@ -222,7 +222,7 @@ public:
 
 	void print()
 	{
-		for(int i =0;i<keysize;i++)
+		for(long long i =0;i<keysize;i++)
 		{
 			cout<<key[i]<<" ";
 		}

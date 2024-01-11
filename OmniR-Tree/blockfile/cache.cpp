@@ -5,9 +5,9 @@
 #include "cache.h"
 #include "blk_file.h"
 //----------------------------------------------------------------
-Cache::Cache(int csize, int blength)
+Cache::Cache(long long csize, long long blength)
 {
-	int i;
+	long long i;
 
 	ptr=0;
 	blocklength = blength;
@@ -15,10 +15,10 @@ Cache::Cache(int csize, int blength)
 	if (csize >= 0) cachesize=csize;
 	else error("Cache size cannot be negative\n", TRUE);
 
-	cache_cont = new int[cachesize];
+	cache_cont = new long long[cachesize];
 	cache_tree = new Cacheable*[cachesize];
 	fuf_cont = new uses[cachesize];
-	LRU_indicator = new int[cachesize];
+	LRU_indicator = new long long[cachesize];
 	dirty_indicator = new bool[cachesize];
 
 	for (i = 0; i < cachesize; i++)
@@ -48,7 +48,7 @@ Cache::~Cache()
 	delete[] cache_tree;
 	delete [] dirty_indicator;
 
-	for (int i=0;i<cachesize;i++)
+	for (long long i=0;i<cachesize;i++)
 	    delete[] cache[i];
 	delete[] cache;
 }
@@ -56,7 +56,7 @@ Cache::~Cache()
 
 void Cache::clear()
 {
-	for (int i = 0; i < cachesize; i++)
+	for (long long i = 0; i < cachesize; i++)
 	{
 		cache_cont[i] = 0;
 		cache_tree[i] = NULL;
@@ -67,9 +67,9 @@ void Cache::clear()
 	page_faults = 0;
 }
 //----------------------------------------------------------------
-int Cache::next()
+long long Cache::next()
 {
-   int ret_val, tmp;
+   long long ret_val, tmp;
 
    if (cachesize == 0) return -1;
    else
@@ -89,8 +89,8 @@ int Cache::next()
 		 if (ptr == tmp)	//failed to find a free block
 		 {
 	         // select a victim page to be written back to disk
-             int lru_index = 0; // the index of the victim page
-             for (int i = 0; i < cachesize; i++)
+             long long lru_index = 0; // the index of the victim page
+             for (long long i = 0; i < cachesize; i++)
                 if (LRU_indicator[i] > LRU_indicator[lru_index])
                     lru_index = i;
 
@@ -111,10 +111,10 @@ int Cache::next()
    }
 }
 //----------------------------------------------------------------
-int Cache::in_cache(int index, Cacheable *rt)
+long long Cache::in_cache(long long index, Cacheable *rt)
 {
-   int i;
-   int ret_val = -1;
+   long long i;
+   long long ret_val = -1;
    for (i = 0; i < cachesize; i++)
 	   if ((cache_cont[i] == index) && (cache_tree[i] == rt) && (fuf_cont[i] != free))
 	   {
@@ -126,9 +126,9 @@ int Cache::in_cache(int index, Cacheable *rt)
    return ret_val;
 }
 //----------------------------------------------------------------
-bool Cache::read_block(Block block,int index, Cacheable *rt)
+bool Cache::read_block(Block block,long long index, Cacheable *rt)
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// Externe Num. --> interne Num.
 	if(index <= rt->file->get_num_of_blocks() && index>0)
@@ -155,15 +155,15 @@ bool Cache::read_block(Block block,int index, Cacheable *rt)
 	}
 	else
 	{
-		printf("Requested block %d is illegal.", index - 1);  error("\n", true);
+		printf("Requested block %lld is illegal.", index - 1);  error("\n", true);
     }
 
 	return false;
 }
 //----------------------------------------------------------------
-bool Cache::write_block(Block block, int index, Cacheable *rt)
+bool Cache::write_block(Block block, long long index, Cacheable *rt)
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// Externe Num. --> interne Num.
 	if(index <= rt->file->get_num_of_blocks() && index > 0)
@@ -193,15 +193,15 @@ bool Cache::write_block(Block block, int index, Cacheable *rt)
 	}
 	else
 	{
-		printf("Requested block %d is illegal.", index - 1);  error("\n", true);
+		printf("Requested block %lld is illegal.", index - 1);  error("\n", true);
     }
 
 	return false;
 }
 //----------------------------------------------------------------
-bool Cache::fix_block(int index, Cacheable *rt)
+bool Cache::fix_block(long long index, Cacheable *rt)
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// Externe Num. --> interne Num.
 	if (index <= rt -> file -> get_num_of_blocks() && index>0)
@@ -216,15 +216,15 @@ bool Cache::fix_block(int index, Cacheable *rt)
 	}
 	else
 	{
-		printf("Requested block %d is illegal.", index - 1);  error("\n", true);
+		printf("Requested block %lld is illegal.", index - 1);  error("\n", true);
     }
 
 	return false;;
 }
 //----------------------------------------------------------------
-bool Cache::unfix_block(int index, Cacheable *rt)
+bool Cache::unfix_block(long long index, Cacheable *rt)
 {
-	int i;
+	long long i;
 
 	i = 0;
 	index++;	// Externe Num. --> interne Num.
@@ -238,7 +238,7 @@ bool Cache::unfix_block(int index, Cacheable *rt)
 	}
 	else
 	{
-		printf("Requested block %d is illegal.", index - 1);  error("\n", true);
+		printf("Requested block %lld is illegal.", index - 1);  error("\n", true);
     }
 
 	return false;
@@ -246,16 +246,16 @@ bool Cache::unfix_block(int index, Cacheable *rt)
 //----------------------------------------------------------------
 void Cache::unfix_all()
 {
-	int i;
+	long long i;
 
 	for (i = 0; i < cachesize; i++)
 		if (fuf_cont[i] == fixed)
 			fuf_cont[i] = used;
 }
 //----------------------------------------------------------------
-void Cache::set_cachesize(int size)
+void Cache::set_cachesize(long long size)
 {
-	int i;
+	long long i;
 
 	if (size >= 0)
 	{
@@ -272,9 +272,9 @@ void Cache::set_cachesize(int size)
 		delete[] dirty_indicator;
 
     	cachesize = size;
-    	cache_cont = new int[cachesize];
+    	cache_cont = new long long[cachesize];
     	cache_tree = new Cacheable*[cachesize];
-    	LRU_indicator = new int[cachesize];
+    	LRU_indicator = new long long[cachesize];
     	fuf_cont = new uses[cachesize];
 		dirty_indicator = new bool[cachesize];
 
@@ -299,7 +299,7 @@ void Cache::set_cachesize(int size)
 //----------------------------------------------------------------
 void Cache::flush()
 {
-	int i;
+	long long i;
 
 	for (i=0; i<cachesize; i++)
 	{

@@ -23,27 +23,27 @@ extern double IOwrite;
 extern double IOtime;
 //--------------------------BlockFile-----------------------------
 
-void BlockFile::fwrite_number(int value)
+void BlockFile::fwrite_number(long long value)
 {
-   put_bytes((char *) &value, sizeof(int));
+   put_bytes((char *) &value, sizeof(long long));
 }
 
 //----------------------------------------------------------------
 
-int BlockFile::fread_number()
+long long BlockFile::fread_number()
 {
-   char ca[sizeof(int)];
+   char ca[sizeof(long long)];
 
-   get_bytes(ca,sizeof(int));
-   return *((int *)ca);
+   get_bytes(ca,sizeof(long long));
+   return *((long long *)ca);
 }
 
 //----------------------------------------------------------------
 
-BlockFile::BlockFile(char* name,int b_length)
+BlockFile::BlockFile(char* name,long long b_length)
 {
    char *buffer;
-   int l;
+   long long l;
 
    printf("BlockFile Version 1.0\n");
 
@@ -72,7 +72,7 @@ BlockFile::BlockFile(char* name,int b_length)
       fwrite_number(blocklength);
       fwrite_number(0);       //write # of blocks in the file
 
-	  buffer = new char[(l=blocklength-(int)ftell(fp))];
+	  buffer = new char[(l=blocklength-(long long)ftell(fp))];
       memset(buffer, 0, sizeof(buffer));
       put_bytes(buffer,l);    //fill in the rest of block with 0
 
@@ -126,7 +126,7 @@ void BlockFile::set_header(char* header)
 
 //----------------------------------------------------------------
 
-bool BlockFile::read_block(Block b,int pos)
+bool BlockFile::read_block(Block b,long long pos)
 {
     IOtime-=clock();
 	IOread++;
@@ -135,7 +135,7 @@ bool BlockFile::read_block(Block b,int pos)
        seek_block(pos);
    else
    {
-	   printf("Requested block %d is illegal.", pos - 1);  error("\n", true);
+	   printf("Requested block %lld is illegal.", pos - 1);  error("\n", true);
    }
 
    get_bytes(b,blocklength);
@@ -152,7 +152,7 @@ bool BlockFile::read_block(Block b,int pos)
 
 //----------------------------------------------------------------
 
-bool BlockFile::write_block(Block block, int pos)
+bool BlockFile::write_block(Block block, long long pos)
   //note that this function can only write to an already allocated block.  to
   //allocate a new block, use append_block instead.
 {
@@ -164,7 +164,7 @@ bool BlockFile::write_block(Block block, int pos)
        seek_block(pos);
    else
    {
-	   printf("Requested block %d is illegal.", pos - 1);  error("\n", true);
+	   printf("Requested block %lld is illegal.", pos - 1);  error("\n", true);
    }
    put_bytes(block,blocklength);
    if (pos+1>number)
@@ -180,12 +180,12 @@ bool BlockFile::write_block(Block block, int pos)
 
 //----------------------------------------------------------------
 
-int BlockFile::append_block(Block block)
+long long BlockFile::append_block(Block block)
 {
    fseek(fp,0,SEEK_END);
    put_bytes(block,blocklength);
    number++;
-   fseek(fp,sizeof(int),SEEK_SET);
+   fseek(fp,sizeof(long long),SEEK_SET);
    fwrite_number(number);
    fseek(fp,-blocklength,SEEK_END);
 
@@ -194,13 +194,13 @@ int BlockFile::append_block(Block block)
 
 //----------------------------------------------------------------
 
-bool BlockFile::delete_last_blocks(int num)
+bool BlockFile::delete_last_blocks(long long num)
 {
    if (num>number)
       return FALSE;
 
    number -= num;
-   fseek(fp,sizeof(int),SEEK_SET);
+   fseek(fp,sizeof(long long),SEEK_SET);
    fwrite_number(number);
    fseek(fp,0,SEEK_SET);
    act_block=0;
@@ -211,9 +211,9 @@ bool BlockFile::delete_last_blocks(int num)
 
 //========================CachedBlockFile=========================
 
-int CachedBlockFile::next()
+long long CachedBlockFile::next()
 {
-   int ret_val, tmp;
+   long long ret_val, tmp;
 
    if (cachesize == 0) return -1;
    else
@@ -234,9 +234,9 @@ int CachedBlockFile::next()
 		 if (ptr == tmp)	//failed to find a free block
 		 {
 		        // select a victim page to be written back to disk
-             int lru_index = 0; // the index of the victim page
+             long long lru_index = 0; // the index of the victim page
 
-			 for (int i = 1; i < cachesize; i++)
+			 for (long long i = 1; i < cachesize; i++)
                 if (LRU_indicator[i] > LRU_indicator[lru_index])
                     lru_index=i;        /*the replacement policy is least recently used.  pick
 										out the page with the maximum ilde time counter*/
@@ -259,11 +259,11 @@ int CachedBlockFile::next()
 
 //----------------------------------------------------------------
 
-int CachedBlockFile::in_cache(int index)
+long long CachedBlockFile::in_cache(long long index)
 // liefert Pos. eines Blocks im Cache, sonst -1
 {
-   int i;
-   int ret_val = -1;
+   long long i;
+   long long ret_val = -1;
 
    for (i = 0; i < cachesize; i++)
 	   if (cache_cont[i] == index && fuf_cont[i] != free)
@@ -278,21 +278,21 @@ int CachedBlockFile::in_cache(int index)
 
 //----------------------------------------------------------------
 
-CachedBlockFile::CachedBlockFile(char* name,int blength, int csize)
+CachedBlockFile::CachedBlockFile(char* name,long long blength, long long csize)
    : BlockFile(name,blength)
 {
 	printf("CachedBlockFile Version 1.0\n");
 
-	int i;
+	long long i;
 
 	ptr=0;
 
 	if (csize>=0) cachesize=csize;
 	else error("Cache size cannot be negative",TRUE);
 
-	cache_cont = new int[cachesize];
+	cache_cont = new long long[cachesize];
 	fuf_cont = new uses[cachesize];
-	LRU_indicator = new int[cachesize];
+	LRU_indicator = new long long[cachesize];
 	dirty_indicator = new bool[cachesize];
 
 	for (i=0; i<cachesize; i++)
@@ -320,7 +320,7 @@ CachedBlockFile::~CachedBlockFile()
 	delete[] LRU_indicator;
 	delete[] dirty_indicator;
 
-	for (int i=0;i<cachesize;i++)
+	for (long long i=0;i<cachesize;i++)
 		delete[] cache[i];
 
 	delete[] cache;
@@ -328,9 +328,9 @@ CachedBlockFile::~CachedBlockFile()
 
 //----------------------------------------------------------------
 
-bool CachedBlockFile::read_block(Block block, int index)
+bool CachedBlockFile::read_block(Block block, long long index)
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// Externe Num. --> interne Num.
 
@@ -357,7 +357,7 @@ bool CachedBlockFile::read_block(Block block, int index)
 	}
 	else
 	{
-		printf("The requested block %d is illegal", index - 1);  error("\n", true);
+		printf("The requested block %lld is illegal", index - 1);  error("\n", true);
 		return FALSE;  //adding this line is just to avoid the warning "not all the
 		               //path return values".
 	}
@@ -365,9 +365,9 @@ bool CachedBlockFile::read_block(Block block, int index)
 
 //----------------------------------------------------------------
 
-bool CachedBlockFile::write_block(Block block, int index)
+bool CachedBlockFile::write_block(Block block, long long index)
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// Externe Num. --> interne Num.
 	if(index <= get_num_of_blocks() && index > 0)
@@ -396,17 +396,17 @@ bool CachedBlockFile::write_block(Block block, int index)
 	}
 	else
 	{
-	   printf("Requested block %d is illegal.", index - 1); error("\n", true);
+	   printf("Requested block %lld is illegal.", index - 1); error("\n", true);
 	   return FALSE;
 	}
 }
 
 //----------------------------------------------------------------
 
-bool CachedBlockFile::fix_block(int index)
+bool CachedBlockFile::fix_block(long long index)
   //call the function to pin a certain block in the memory.
 {
-	int c_ind;
+	long long c_ind;
 
 	index++;	// External Num. --> internal Num.
 
@@ -422,16 +422,16 @@ bool CachedBlockFile::fix_block(int index)
 	}
 	else
 	{
-		printf("Requested block %d is illegal.", index - 1);  error("\n", true);
+		printf("Requested block %lld is illegal.", index - 1);  error("\n", true);
     }
 
 	return false;
 }
 //----------------------------------------------------------------
-bool CachedBlockFile::unfix_block(int index)
+bool CachedBlockFile::unfix_block(long long index)
 // Fixierung eines Blocks durch fix_block wieder aufheben
 {
-	int i;
+	long long i;
 
 	i = 0;
 	index++;	// Externe Num. --> interne Num.
@@ -452,7 +452,7 @@ bool CachedBlockFile::unfix_block(int index)
 
 void CachedBlockFile::unfix_all()
 {
-	int i;
+	long long i;
 
 	for (i = 0; i < cachesize; i++)
 		if (fuf_cont[i] == fixed)
@@ -461,9 +461,9 @@ void CachedBlockFile::unfix_all()
 
 //----------------------------------------------------------------
 
-void CachedBlockFile::set_cachesize(int size)
+void CachedBlockFile::set_cachesize(long long size)
 {
-	int i;
+	long long i;
 
 	if (size>=0)
 	{
@@ -483,9 +483,9 @@ void CachedBlockFile::set_cachesize(int size)
 
 		cachesize = size;
 
-		cache_cont = new int[cachesize];
+		cache_cont = new long long[cachesize];
 		fuf_cont = new uses[cachesize];
-		LRU_indicator = new int[cachesize];
+		LRU_indicator = new long long[cachesize];
 		dirty_indicator = new bool[cachesize];
 
 		for (i=0; i<cachesize; i++)
@@ -509,7 +509,7 @@ void CachedBlockFile::set_cachesize(int size)
 void CachedBlockFile::flush()
 // schreibt den  Cache auf Platte, gibt ihn nicht frei
 {
-	int i;
+	long long i;
 
 	for (i = 0; i < cachesize; i++)
 		if (fuf_cont[i] != free && dirty_indicator[i])
